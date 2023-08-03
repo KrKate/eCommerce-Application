@@ -1,4 +1,4 @@
-1. Task: [link](https://github.com/);
+1. Link in project: [link](https://github.com/users/KrKate/projects/1/views/1?pane=issue&itemId=34862439);
 2. Sprint number, requirements point: 2 sprint, 1 requirements point;
 3. Done 01.08.2023 / deadline 01.08.2023;
 4. Description:
