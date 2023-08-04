@@ -30,12 +30,6 @@ This application is written in TypeScript using Vue.js, Pinia, and Vite. It requ
 - Start server: `$ npm run dev`.
 - Now you can send requests to the address: `http://localhost:5173/`.
 
-### Project Scripts
-
-```sh
-npm install
-```
-
 ### Compile and Hot-Reload for Development
 
 ```sh
