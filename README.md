@@ -19,7 +19,18 @@ Key pages in the application include:
 The application is powered by CommerceTools 🌐, a leading provider of commerce solutions for B2C and B2B enterprises. CommerceTools offers a cloud-native, microservices-based commerce platform that enables brands to create unique and engaging digital commerce experiences.
 
 This application is written in TypeScript using Vue.js, Pinia, and Vite. It requires Node.js version "18.17.0".
-### Project Setup
+
+
+### Setup and Running
+
+- Use `node 18.17.0`.
+- Clone this repo: `$ git clone https://github.com/KrKate/eCommerce-Application.git`.
+- Git checkout branch `$ git checkout eCommerce-Application`
+- Install dependencies: `$ npm install`.
+- Start server: `$ npm run dev`.
+- Now you can send requests to the address: `http://localhost:5173/`.
+
+### Project Scripts
 
 ```sh
 npm install
