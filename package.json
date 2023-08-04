@@ -13,7 +13,8 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore --color",
     "format": "prettier --write src/",
     "prepare": "husky install",
-    "test": "jest --passWithNoTests"
+    "test": "jest --passWithNoTests",
+    "lint-staged": "lint-staged"
   },
   "dependencies": {
     "pinia": "^2.1.4",
@@ -50,7 +51,7 @@
   },
   "lint-staged": {
     "*.ts": [
-      "npm run lint: fix",
+      "npm run lint -- --fix",
       "git add"
     ]
   }
