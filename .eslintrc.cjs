@@ -17,6 +17,7 @@ module.exports = {
     "no-console": 0,
     "class-methods-use-this": "off",
     "@typescript-eslint/no-explicit-any": 2,
-    "eol-last": ["error", "always"]
+    "eol-last": ["error", "always"],
+    "max-lines-per-function": ["error", { "max": 40 }]
 }
 }
