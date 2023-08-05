@@ -14,7 +14,7 @@
     "format": "prettier --write src/",
     "prepare": "husky install",
     "test": "jest --passWithNoTests",
-    "lint-staged": "lint-staged"
+    "my-lint-staged": "lint-staged --relative"
   },
   "dependencies": {
     "pinia": "2.1.4",
@@ -52,9 +52,11 @@
     }
   },
   "lint-staged": {
-    "*.ts": [
-      "npm run lint -- --fix",
-      "git add"
+    "*.{ts,vue}": [
+      "eslint --fix"
+    ],
+    "*.css": [
+      "prettier --write --config .prettierrc"
     ]
   }
 }

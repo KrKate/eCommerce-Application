@@ -8,7 +8,6 @@ if [ "$branch" = "main" ] || [ "$branch" = "develop" ]; then
   exit 1
 fi
 
-npm run format
-npm run lint
-npm run lint-staged
+
 npm test
+npm run my-lint-staged
