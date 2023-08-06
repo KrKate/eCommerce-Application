@@ -1,0 +1,8 @@
+
+parameters:
+    project: ecommerce_app_sloths
+    client_id: dfl2XWxHLbWwv8yU8bYwctWO
+    client_secret: rsHEEwEvL3-cpCElTgirDd7Pep8HjTwW
+    oauth_url: https://auth.europe-west1.gcp.commercetools.com
+    api_url: https://api.europe-west1.gcp.commercetools.com
+    scope: manage_project:ecommerce_app_sloths
