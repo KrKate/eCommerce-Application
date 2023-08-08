@@ -28,18 +28,19 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '@/assets/mixins';
+@import '@/assets/styles/mixins';
+@import '@/assets/styles/colors';
 
 header {
   @include view(100vw, 100px, fixed, flex);
-  background-color: var(--app-red);
+  background-color: $app-red;
   left: 0;
   top: 0;
   user-select: none;
 
   nav {
     @include view(100vw, 60px, absolute, flex);
-    background-color: var(--app-gray);
+    background-color: $app-gray;
     left: 0;
     top: 100px;
     z-index: 1;
@@ -54,10 +55,11 @@ header {
     justify-content: space-between;
 
     h1 {
-      @include pokemon-text(var(--app-yelow), var(--app-light-blue));
+      @include pokemon-text($app-yelow, $app-dark-blue);
       @include view(auto, auto, relative, flex);
-      font-size: 3rem;
-      padding-left: 30px;
+      font-size: 2.5rem;
+      -webkit-text-stroke: 1px $app-light-blue;
+      padding-left: 5%;
     }
 
     .control {
@@ -65,7 +67,7 @@ header {
       gap: 15px;
 
       button {
-        @include pokemon-text(var(--app-yelow), var(--app-light-blue));
+        @include pokemon-text($app-yelow, $app-light-blue);
         letter-spacing: 5px;
         font-size: 2em;
         display: flex;
@@ -76,7 +78,7 @@ header {
       }
 
       button:hover {
-        @include pokemon-text(var(--app-light-blue), var(--app-yelow));
+        @include pokemon-text($app-light-blue, $app-yelow);
         cursor: pointer;
       }
     }
@@ -94,13 +96,13 @@ header {
     }
 
     li a {
-      @include pokemon-text(var(--app-black), var(--app-white));
+      @include pokemon-text($app-black, $app-white);
       font-size: 1.5rem;
       background: transparent;
     }
 
     li a:hover {
-      @include pokemon-text(var(--app-white), var(--app-black));
+      @include pokemon-text($app-white, $app-black);
       font-size: 1.5rem;
     }
   }
@@ -114,10 +116,10 @@ header {
 
   input {
     @include view(30%, auto, relative, flex);
-    background-color: var(--app-gray);
+    background-color: $app-gray;
     padding: 2px 5px;
-    color: var(--app-black);
-    border: 1px solid var(--app-white);
+    color: $app-black;
+    border: 1px solid $app-white;
   }
 }
 </style>
