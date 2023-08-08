@@ -4,8 +4,30 @@
       <h1>Pokemon market</h1>
       <img src="@/assets/images/mewtwo.png" alt="mewtwo" class="logo" />
       <div class="control">
-        <button>Login</button>
-        <button>Cart</button>
+        <router-link
+            to="/login"
+            custom
+            v-slot="{ navigate }"
+        >
+          <button
+              @click="navigate"
+              role="link"
+          >
+            Login
+          </button>
+        </router-link>
+        <router-link
+            to="/cart"
+            custom
+            v-slot="{ navigate }"
+        >
+          <button
+              @click="navigate"
+              role="link"
+          >
+            Cart
+          </button>
+        </router-link>
       </div>
     </div>
     <nav>

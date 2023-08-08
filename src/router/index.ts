@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
+import AuthorizationView from '../views/AuthorizationView.vue'
+import CartView from '../views/CartView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,7 +20,17 @@ const router = createRouter({
     {
       path: '/catalog',
       name: 'catalog',
-      component: () => import('../views/CatalogView.vue')
+      component: AuthorizationView
+    },
+    {
+      path: '/cart',
+      name: 'cart',
+      component: CartView
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('../views/AuthorizationView.vue')
     },
     { path: '/:pathMatch(.*)*', name: '404', component: NotFoundView }
   ]
