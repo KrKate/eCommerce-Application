@@ -1,7 +1,17 @@
 <template>
   <header>
     <div class="wrapper">
-      <h1>Pokemon market</h1>
+      <router-link
+          to="/"
+          custom
+          v-slot="{ navigate }"
+      >
+        <h1
+            @click="navigate"
+        >
+          Pokemon market
+        </h1>
+      </router-link>
       <img src="@/assets/images/mewtwo.png" alt="mewtwo" class="logo" />
       <div class="control">
         <router-link
@@ -82,6 +92,13 @@ header {
       font-size: 2.5rem;
       -webkit-text-stroke: 1px $app-light-blue;
       padding-left: 5%;
+
+      &:hover {
+        -webkit-text-stroke: 3px $app-light-blue;
+        text-shadow: 5px 5px $app-dark-blue;
+        cursor: pointer;
+        transform: scale(1.1);
+      }
     }
 
     .control {
