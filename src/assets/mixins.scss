@@ -1,0 +1,21 @@
+@font-face {
+  font-family: pokemon solid;
+  font-style: normal;
+  font-weight: 400;
+  src:
+    local('Pokemon Solid'),
+    url('@/assets/fonts/Pokemon Solid.woff') format('woff');
+}
+
+@mixin view($width, $height, $position, $display) {
+  width: $width;
+  height: $height;
+  position: $position;
+  display: $display;
+}
+
+@mixin pokemon-text($color, $shadow) {
+  color: $color;
+  text-shadow: 2px 2px $shadow;
+  font-family: 'Pokemon Solid', sans-serif;
+}
