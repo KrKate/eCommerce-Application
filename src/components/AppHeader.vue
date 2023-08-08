@@ -12,7 +12,7 @@
           Pokemon market
         </h1>
       </router-link>
-      <img src="@/assets/images/mewtwo.png" alt="mewtwo" class="logo" />
+      <img src="@/assets/images/25.svg" alt="pikachu" class="logo" />
       <div class="control">
         <router-link
             to="/login"
