@@ -69,6 +69,7 @@ header {
   left: 0;
   top: 0;
   user-select: none;
+  z-index: 99;
 
   nav {
     @include view(100vw, 60px, absolute, flex);
@@ -132,17 +133,18 @@ header {
 
     li {
       display: flex;
-    }
 
-    li a {
-      @include pokemon-text($app-black, $app-white);
-      font-size: 1.5rem;
-      background: transparent;
-    }
+      a {
+        @include pokemon-text($app-black, $app-white);
+        font-size: 1.5rem;
+        background: transparent;
+        text-decoration: none;
 
-    li a:hover {
-      @include pokemon-text($app-white, $app-black);
-      font-size: 1.5rem;
+        &:hover {
+          @include pokemon-text($app-white, $app-black);
+          font-size: 1.5rem;
+        }
+      }
     }
   }
 
