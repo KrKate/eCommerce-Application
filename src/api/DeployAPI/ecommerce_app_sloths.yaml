@@ -1,0 +1,7 @@
+parameters:
+  project: ecommerce_app_sloths
+  client_id: xwqO1nzfmYl_5H7Fs9zftimW
+  client_secret: rGYBHhNA_Tod_6_liNo1HFko2H3rsLlI
+  oauth_url: https://auth.europe-west1.gcp.commercetools.com
+  api_url: https://api.europe-west1.gcp.commercetools.com
+  scope: create_anonymous_token:ecommerce_app_sloths manage_my_business_units:ecommerce_app_sloths manage_my_quote_requests:ecommerce_app_sloths view_categories:ecommerce_app_sloths manage_my_shopping_lists:ecommerce_app_sloths manage_my_payments:ecommerce_app_sloths manage_my_profile:ecommerce_app_sloths view_published_products:ecommerce_app_sloths manage_my_orders:ecommerce_app_sloths manage_my_quotes:ecommerce_app_sloths
