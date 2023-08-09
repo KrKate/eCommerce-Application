@@ -19,3 +19,16 @@
   text-shadow: 2px 2px $shadow;
   font-family: 'Pokemon Solid', sans-serif;
 }
+
+@mixin fly-animation($left, $right, $rotate) {
+  from {
+    top: 55%;
+    left: 50%;
+    transform: rotate(360deg);
+  }
+  to {
+    left: $left;
+    top: $right;
+    transform: rotate($rotate);
+  }
+}
