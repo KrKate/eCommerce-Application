@@ -23,7 +23,7 @@
 @mixin fly-animation($left, $right, $rotate) {
   from {
     top: 55%;
-    left: 50%;
+    left: 44%;
     transform: rotate(360deg);
   }
   to {

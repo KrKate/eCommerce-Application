@@ -34,14 +34,14 @@ img {
   position: absolute;
   height: 100px;
   top: 55%;
-  left: 50%;
+  left: 44%;
 }
 .bush {
   position: absolute;
   height: 300px;
   top: 40%;
-  left: 40%;
-  animation: shake 1s infinite cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  left: 38%;
+  animation: shake 2s infinite cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
   animation-delay: 0.6s;
@@ -50,39 +50,51 @@ img {
 
 #letter_1 {
   animation: fly1 4s forwards;
+  animation-delay: 4s;
 }
 #letter_2 {
   animation: fly2 4s forwards;
+  animation-delay: 4s;
 }
 #letter_3 {
   animation: fly3 4s forwards;
+  animation-delay: 4s;
 }
 #letter_4 {
   animation: fly4 4s forwards;
+  animation-delay: 4s;
 }
 #letter_5 {
   animation: fly5 4s forwards;
+  animation-delay: 4s;
 }
 #letter_6 {
   animation: fly6 4s forwards;
+  animation-delay: 4s;
 }
 #letter_7 {
   animation: fly7 4s forwards;
+  animation-delay: 4s;
 }
 #letter_8 {
   animation: fly8 4s forwards;
+  animation-delay: 4s;
 }
 #letter_9 {
   animation: fly9 4s forwards;
+  animation-delay: 4s;
 }
 #letter_10 {
   animation: fly10 4s forwards;
+  animation-delay: 4s;
 }
 #letter_11 {
   animation: fly11 4s forwards;
+  animation-delay: 4s;
 }
 #letter_12 {
   animation: fly12 4s forwards;
+  animation-delay: 4s;
 }
 @keyframes shake {
   10%,
@@ -107,39 +119,39 @@ img {
   }
 }
 @keyframes fly1 {
-  @include fly-animation(23%, 36%, -49deg);
+  @include fly-animation(21%, 36%, -49deg);
 }
 @keyframes fly2 {
-  @include fly-animation(30%, 31%, -10deg);
+  @include fly-animation(28%, 31%, -10deg);
 }
 @keyframes fly3 {
-  @include fly-animation(39%, 27%, 10deg);
+  @include fly-animation(37%, 27%, 10deg);
 }
 @keyframes fly4 {
-  @include fly-animation(48%, 26%, -8deg);
+  @include fly-animation(46%, 26%, -8deg);
 }
 @keyframes fly5 {
-  @include fly-animation(62%, 27%, 26deg);
+  @include fly-animation(58%, 28%, 26deg);
 }
 @keyframes fly6 {
-  @include fly-animation(70%, 30%, 20deg);
+  @include fly-animation(65%, 33%, 20deg);
 }
 @keyframes fly7 {
-  @include fly-animation(77%, 35%, 38deg);
+  @include fly-animation(71%, 38%, 40deg);
 }
 @keyframes fly8 {
-  @include fly-animation(32%, 75%, 10deg);
+  @include fly-animation(30%, 75%, 10deg);
 }
 @keyframes fly9 {
-  @include fly-animation(40%, 80%, 15deg);
+  @include fly-animation(38%, 80%, 15deg);
 }
 @keyframes fly10 {
-  @include fly-animation(49%, 82%, 10deg);
+  @include fly-animation(46%, 82%, 10deg);
 }
 @keyframes fly11 {
-  @include fly-animation(58%, 80%, -2deg);
+  @include fly-animation(54%, 80%, -2deg);
 }
 @keyframes fly12 {
-  @include fly-animation(66%, 74%, -30deg);
+  @include fly-animation(62%, 74%, -30deg);
 }
 </style>
