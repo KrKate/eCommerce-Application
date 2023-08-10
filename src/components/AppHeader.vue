@@ -1,42 +1,16 @@
 <template>
   <header>
     <div class="wrapper">
-      <router-link
-          to="/"
-          custom
-          v-slot="{ navigate }"
-      >
-        <h1
-            @click="navigate"
-        >
-          Pokemon market
-        </h1>
+      <router-link to="/" custom v-slot="{ navigate }">
+        <h1 @click="navigate">Pokemon market</h1>
       </router-link>
       <img src="@/assets/images/25.svg" alt="pikachu" class="logo" />
       <div class="control">
-        <router-link
-            to="/login"
-            custom
-            v-slot="{ navigate }"
-        >
-          <button
-              @click="navigate"
-              role="link"
-          >
-            Login
-          </button>
+        <router-link to="/login" custom v-slot="{ navigate }">
+          <button @click="navigate" role="link">Login</button>
         </router-link>
-        <router-link
-            to="/cart"
-            custom
-            v-slot="{ navigate }"
-        >
-          <button
-              @click="navigate"
-              role="link"
-          >
-            Cart
-          </button>
+        <router-link to="/cart" custom v-slot="{ navigate }">
+          <button @click="navigate" role="link">Cart</button>
         </router-link>
       </div>
     </div>
@@ -109,7 +83,7 @@ header {
       button {
         @include pokemon-text($app-yelow, $app-light-blue);
         letter-spacing: 5px;
-        font-size: 2em;
+        font-size: 2rem;
         display: flex;
         align-items: center;
         padding: 10px;
@@ -158,9 +132,160 @@ header {
   input {
     @include view(30%, auto, relative, flex);
     background-color: $app-gray;
-    padding: 2px 5px;
+    padding: 10px 10px;
     color: $app-black;
     border: 1px solid $app-white;
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  header {
+    .wrapper {
+      padding: 0 20px 0 25%;
+
+      h1 {
+        font-size: 2rem;
+        padding-left: 0;
+      }
+
+      .control {
+        display: flex;
+        gap: 15px;
+
+        button {
+          font-size: 1.5rem;
+        }
+      }
+    }
+
+    ul {
+      @include view(50%, auto, relative, flex);
+      justify-content: space-between;
+    }
+
+    .logo {
+      left: calc(0% + 20px);
+    }
+
+    input {
+      @include view(40%, auto, relative, flex);
+    }
+  }
+}
+
+@media screen and (max-width: 700px) {
+  header {
+    .wrapper {
+      padding: 0 20px 0 25%;
+
+      h1 {
+        font-size: 1.5rem;
+
+        &:hover {
+          -webkit-text-stroke: 1px $app-light-blue;
+        }
+      }
+
+      .control {
+        gap: 10px;
+
+        button {
+          letter-spacing: 3px;
+          font-size: 1.2rem;
+          padding: 5px;
+        }
+      }
+    }
+
+    ul {
+      width: 40%;
+      li {
+        a {
+          font-size: 1rem;
+
+          &:hover {
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+
+    input {
+      @include view(50%, auto, relative, flex);
+      padding: 5px 10px;
+    }
+  }
+}
+
+@media screen and (max-width: 580px) {
+  header {
+    .wrapper {
+      padding: 0 20px;
+
+      h1 {
+        padding-left: 100px;
+      }
+    }
+
+    .control {
+      max-width: 100px;
+      flex-wrap: wrap;
+      flex-direction: column;
+      gap: 0;
+
+      button {
+        display: flex;
+        padding: 0 5px;
+        height: 30px;
+      }
+    }
+    .logo {
+      @include view(auto, 90px, absolute, flex);
+    }
+  }
+}
+@media screen and (max-width: 424px) {
+  header {
+    nav {
+      height: 80px;
+
+      .wrapper {
+        row-gap: 10px;
+        flex-direction: column-reverse;
+      }
+    }
+
+    .wrapper {
+      flex-direction: column;
+      justify-content: center;
+
+      h1 {
+        padding-left: 100px;
+      }
+    }
+
+    .control {
+      max-width: 100%;
+      padding-left: 100px;
+      flex-direction: row;
+    }
+    ul {
+      width: 100%;
+      justify-content: space-around;
+    }
+
+    input {
+      @include view(100%, auto, relative, flex);
+    }
+  }
+}
+@media screen and (max-width: 424px) {
+  header {
+    .wrapper {
+      h1 {
+        font-size: 1rem;
+      }
+    }
   }
 }
 </style>
