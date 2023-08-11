@@ -11,7 +11,7 @@
       <div class="form-group">
         <label for="password">Password</label>
         <input type="password" id="password" placeholder="Make it secure!" v-model.trim="password" @input.prevent="validatePassword" required>
-        <span v-if="passwordError" class="error">{{ passwordError }}</span>
+        <p v-if="passwordError" class="error">{{ passwordError }}</p>
       </div>
       <button @click="login" >SIGN IN</button>
     </form>
@@ -51,13 +51,26 @@ export default {
       }
     },
     validatePassword() {
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+     // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
       if (!this.password.trim()) {
         this.passwordError = 'Password is required';
-      } else if (!passwordRegex.test(this.password)) {
-        this.passwordError = 'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one digit, and one special character';
       } else {
         this.passwordError = '';
+        if (this.password.length < 8) {
+          this.passwordError += ' * Password must contain at least 8 characters.';
+        }
+        if (!/[A-Z]/.test(this.password)) {
+          this.passwordError += '* Password must contain at least one uppercase letter.';
+        }
+        if (!/[a-z]/.test(this.password)) {
+          this.passwordError += ' * Password must contain at least one lowercase letter.';
+        }
+        if (!/\d/.test(this.password)) {
+          this.passwordError += ' * Password must contain at least one digit.';
+        }
+        if (!/[@$!%*?&]/.test(this.password)) {
+          this.passwordError += ' * Password must contain at least one special character.';
+        }
       }
     },
     login() {
