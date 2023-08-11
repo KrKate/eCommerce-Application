@@ -21,13 +21,20 @@
 <script lang="ts">
 export default {
   name: "AuthorizationView",
-  novalidate: "true",
   data() {
     return {
       email: '',
       password: '',
       emailError: '',
       passwordError: '',
+    }
+  },
+  created() {
+    const savedLogin = localStorage.getItem('login');
+    const savedPassword = localStorage.getItem('password');
+    if (savedLogin && savedPassword) {
+      this.email = savedLogin;
+      this.password = savedPassword;
     }
   },
   methods: {
@@ -52,7 +59,10 @@ export default {
       }
     },
     login() {
+      localStorage.setItem('login', this.email);
+      localStorage.setItem('password', this.password);
     }
+
   },
 }
 </script>
@@ -61,12 +71,11 @@ export default {
 @import '@/assets/styles/mixins';
 @import '@/assets/styles/colors';
 .login-page {
-  max-width: 400px;
+  width: 400px;
   margin: 0 auto;
   padding: 20px;
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   height: 100vh;
@@ -79,6 +88,7 @@ h1 {
 
 .form-group {
   display: flex;
+  flex-wrap: wrap;
   flex-direction: column;
   margin-bottom: 20px;
 }
@@ -105,6 +115,7 @@ button {
   color: white;
   border: none;
   cursor: pointer;
+  margin-bottom: 20px;
 }
 
 </style>
