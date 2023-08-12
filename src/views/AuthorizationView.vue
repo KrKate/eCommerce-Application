@@ -6,7 +6,7 @@
       <div class="form-group">
         <label for="email">Email</label>
         <input type="email" id="email" placeholder="user@example.com" v-model.trim="email" @input.prevent="validateEmail" required>
-        <span v-if="emailError" class="error">{{ emailError }}</span>
+        <p v-if="emailError" class="error">{{ emailError }}</p>
       </div>
       <div class="form-group">
         <label for="password">Password</label>
@@ -41,17 +41,35 @@ export default {
   },
   methods: {
     validateEmail() {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!this.email.trim()) {
-        this.emailError = 'Email is required';
-      } else if (!emailRegex.test(this.email)) {
-        this.emailError = 'Invalid email format';
-      } else {
-        this.emailError = '';
-      }
-    },
+    if (!this.password.trim()) {
+      this.emailError = 'Email is required';
+    } else {
+    this.emailError = '';
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.email)) {
+      this.emailError = ' * Email address must be properly formatted (e.g., user@example.com).';
+    }
+
+    if (this.email.trim() !== this.email) {
+      this.emailError += ' * Email address must not contain leading or trailing whitespace.';
+    }
+
+    if (!this.email.includes('@')) {
+      this.emailError += ' * Email address must contain a domain name (e.g., example.com).';
+    }
+
+    if (this.email.split('@').length !== 2) {
+      this.emailError += ' * Email address must contain an \'@\' symbol separating local part and domain name.';
+    }
+
+    const latinRegex = /^[a-zA-Z0-9@._-]+$/;
+    if (!latinRegex.test(this.email)) {
+      this.emailError += ' * The email address can only contain Latin characters.';
+    }
+  }
+  },
     validatePassword() {
-     // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
       if (!this.password.trim()) {
         this.passwordError = 'Password is required';
       } else {
@@ -97,9 +115,13 @@ export default {
   background-color: $app-gray;
   border-radius: 20px;
   margin: 150px auto 0 auto;
-  padding: 40px 60px;
-  height: 70%;
+  padding: 30px;
+  max-height: fit-content;
+  min-height: 60vh;
   max-width: 500px;
+  @media screen and (max-width: 500px) {
+    max-width: 300px;
+  }
 }
 
 h1 {
