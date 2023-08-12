@@ -1,102 +1,116 @@
 <template>
   <div class="login-page">
     <div class="container-forms">
-    <h1>Login</h1>
-    <form>
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" placeholder="user@example.com" v-model.trim="email" @input.prevent="validateEmail" required>
-        <p v-if="emailError" class="error">{{ emailError }}</p>
-      </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" placeholder="Make it secure!" v-model.trim="password" @input.prevent="validatePassword" required>
-        <p v-if="passwordError" class="error">{{ passwordError }}</p>
-      </div>
-      <button @click="login" >SIGN IN</button>
-    </form>
-    <p>Not registered yet? <RouterLink to="/registration">Register here</RouterLink></p>
+      <h1>Login</h1>
+      <form>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            placeholder="user@example.com"
+            v-model.trim="email"
+            @input.prevent="validateEmail"
+            required
+          />
+          <p v-if="emailError" class="error">{{ emailError }}</p>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="Make it secure!"
+            v-model.trim="password"
+            @input.prevent="validatePassword"
+            required
+          />
+          <p v-if="passwordError" class="error">{{ passwordError }}</p>
+        </div>
+        <button @click="login">SIGN IN</button>
+      </form>
+      <p class="registration-link">Not registered yet? <RouterLink to="/registration">Register here</RouterLink></p>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 export default {
-  name: "AuthorizationView",
+  name: 'AuthorizationView',
   data() {
     return {
       email: '',
       password: '',
       emailError: '',
-      passwordError: '',
+      passwordError: ''
     }
   },
   created() {
-    const savedLogin = localStorage.getItem('login');
-    const savedPassword = localStorage.getItem('password');
+    const savedLogin = localStorage.getItem('login')
+    const savedPassword = localStorage.getItem('password')
     if (savedLogin && savedPassword) {
-      this.email = savedLogin;
-      this.password = savedPassword;
+      this.email = savedLogin
+      this.password = savedPassword
     }
   },
   methods: {
     validateEmail() {
-    if (!this.password.trim()) {
-      this.emailError = 'Email is required';
-    } else {
-    this.emailError = '';
+      if (!this.email.trim()) {
+        this.emailError = 'Email is required'
+      } else {
+        this.emailError = ''
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(this.email)) {
-      this.emailError = ' * Email address must be properly formatted (e.g., user@example.com).';
-    }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(this.email)) {
+          this.emailError = ' * Email address must be properly formatted (e.g., user@example.com).'
+        }
 
-    if (this.email.trim() !== this.email) {
-      this.emailError += ' * Email address must not contain leading or trailing whitespace.';
-    }
+        if (this.email.trim() !== this.email) {
+          this.emailError += ' * Email address must not contain leading or trailing whitespace.'
+        }
 
-    if (!this.email.includes('@')) {
-      this.emailError += ' * Email address must contain a domain name (e.g., example.com).';
-    }
+        if (!this.email.includes('@')) {
+          this.emailError += ' * Email address must contain a domain name (e.g., example.com).'
+        }
 
-    if (this.email.split('@').length !== 2) {
-      this.emailError += ' * Email address must contain an \'@\' symbol separating local part and domain name.';
-    }
+        if (this.email.split('@').length !== 2) {
+          this.emailError +=
+            " * Email address must contain an '@' symbol separating local part and domain name."
+        }
 
-    const latinRegex = /^[a-zA-Z0-9@._-]+$/;
-    if (!latinRegex.test(this.email)) {
-      this.emailError += ' * The email address can only contain Latin characters.';
-    }
-  }
-  },
+        const latinRegex = /^[a-zA-Z0-9@._-]+$/
+        if (!latinRegex.test(this.email)) {
+          this.emailError += ' * The email address can only contain Latin characters.'
+        }
+      }
+    },
     validatePassword() {
       if (!this.password.trim()) {
-        this.passwordError = 'Password is required';
+        this.passwordError = 'Password is required'
       } else {
-        this.passwordError = '';
+        this.passwordError = ''
         if (this.password.length < 8) {
-          this.passwordError += ' * Password must contain at least 8 characters.';
+          this.passwordError += ' * Password must contain at least 8 characters.'
         }
         if (!/[A-Z]/.test(this.password)) {
-          this.passwordError += '* Password must contain at least one uppercase letter.';
+          this.passwordError += '* Password must contain at least one uppercase letter.'
         }
         if (!/[a-z]/.test(this.password)) {
-          this.passwordError += ' * Password must contain at least one lowercase letter.';
+          this.passwordError += ' * Password must contain at least one lowercase letter.'
         }
         if (!/\d/.test(this.password)) {
-          this.passwordError += ' * Password must contain at least one digit.';
+          this.passwordError += ' * Password must contain at least one digit.'
         }
         if (!/[@$!%*?&]/.test(this.password)) {
-          this.passwordError += ' * Password must contain at least one special character.';
+          this.passwordError += ' * Password must contain at least one special character.'
         }
       }
     },
     login() {
-      localStorage.setItem('login', this.email);
-      localStorage.setItem('password', this.password);
+      localStorage.setItem('login', this.email)
+      localStorage.setItem('password', this.password)
     }
-
-  },
+  }
 }
 </script>
 
@@ -163,14 +177,14 @@ button {
   border-radius: 8px;
   font-weight: 500;
   &:hover {
-  font-weight: 700;
-  &:active {
-    transform: translateY(-1px);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    font-weight: 700;
+    &:active {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    }
+  }
+  .registration-link {
+    margin: 0 auto;
   }
 }
-
-}
-
-
 </style>

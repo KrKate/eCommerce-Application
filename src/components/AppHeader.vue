@@ -1,42 +1,16 @@
 <template>
   <header>
     <div class="wrapper">
-      <router-link
-          to="/"
-          custom
-          v-slot="{ navigate }"
-      >
-        <h1
-            @click="navigate"
-        >
-          Pokemon market
-        </h1>
+      <router-link to="/" custom v-slot="{ navigate }">
+        <h1 @click="navigate">Pokemon market</h1>
       </router-link>
       <img src="@/assets/images/25.svg" alt="pikachu" class="logo" />
       <div class="control">
-        <router-link
-            to="/login"
-            custom
-            v-slot="{ navigate }"
-        >
-          <button
-              @click="navigate"
-              role="link"
-          >
-            Login
-          </button>
+        <router-link to="/login" custom v-slot="{ navigate }">
+          <button @click="navigate" role="link">Login</button>
         </router-link>
-        <router-link
-            to="/cart"
-            custom
-            v-slot="{ navigate }"
-        >
-          <button
-              @click="navigate"
-              role="link"
-          >
-            Cart
-          </button>
+        <router-link to="/cart" custom v-slot="{ navigate }">
+          <button @click="navigate" role="link">Cart</button>
         </router-link>
       </div>
     </div>
