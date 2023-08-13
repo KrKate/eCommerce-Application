@@ -35,6 +35,25 @@
 </template>
 
 <script lang="ts">
+enum EmailError {
+  REQUIRED = '* Email is required',
+  FORMAT = '* Email address must be properly formatted (e.g., user@example.com).',
+  WHITESPACE = '* Email address must not contain leading or trailing whitespace.',
+  DOMAIN = '* Email address must contain a domain name (e.g., example.com).',
+  SYMBOL = "* Email address must contain an '@' symbol separating local part and domain name.",
+  LATIN = '* The email address can only contain Latin characters.'
+}
+
+enum PasswordError {
+  REQUIRED = `* Password is required`,
+  LENGTH = '* Password must contain at least 8 characters.',
+  UPPERCASE = '* Password must contain at least one uppercase letter.',
+  LOWERCASE = '* Password must contain at least one lowercase letter.',
+  DIGIT = '* Password must contain at least one digit.',
+  SPECIAL_CHARACTER = '* Password must contain at least one special character.',
+  WHITESPACE = '* Password must not contain leading or trailing whitespace.'
+}
+
 export default {
   name: 'AuthorizationView',
   data() {
@@ -48,56 +67,55 @@ export default {
   methods: {
     validateEmail() {
       if (!this.email) {
-        this.emailError = 'Email is required'
+        this.emailError = EmailError.REQUIRED
       } else {
         this.emailError = ''
 
-        const emailRegex = /[^](@)(.+)$/
-        if (!emailRegex.test(this.email)) {
-          this.emailError = ' * Email address must be properly formatted (e.g., user@example.com).'
+        const formatEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!formatEmailRegex.test(this.email)) {
+          this.emailError = EmailError.FORMAT
         }
         const trimRegex = /^[^\s].+[^\s]$/
         if (!trimRegex.test(this.email)) {
-          this.emailError += ' * Email address must not contain leading or trailing whitespace.'
+          this.emailError += EmailError.WHITESPACE
         }
 
         if (!this.email.includes('@')) {
-          this.emailError += ' * Email address must contain a domain name (e.g., example.com).'
+          this.emailError += EmailError.DOMAIN
         }
 
         if (this.email.split('@').length !== 2) {
-          this.emailError +=
-            " * Email address must contain an '@' symbol separating local part and domain name."
+          this.emailError += EmailError.SYMBOL
         }
 
         const latinRegex = /^[a-zA-Z0-9@._-]+$/
         if (!latinRegex.test(this.email)) {
-          this.emailError += ' * The email address can only contain Latin characters.'
+          this.emailError += EmailError.LATIN
         }
       }
     },
     validatePassword() {
       if (!this.password) {
-        this.passwordError = 'Password is required'
+        this.passwordError = PasswordError.REQUIRED
       } else {
         this.passwordError = ''
         if (this.password.length < 8) {
-          this.passwordError += ' * Password must contain at least 8 characters.'
+          this.passwordError += PasswordError.LENGTH
         }
         if (!/[A-Z]/.test(this.password)) {
-          this.passwordError += '* Password must contain at least one uppercase letter.'
+          this.passwordError += PasswordError.UPPERCASE
         }
         if (!/[a-z]/.test(this.password)) {
-          this.passwordError += ' * Password must contain at least one lowercase letter.'
+          this.passwordError += PasswordError.LOWERCASE
         }
         if (!/\d/.test(this.password)) {
-          this.passwordError += ' * Password must contain at least one digit.'
+          this.passwordError += PasswordError.DIGIT
         }
         if (!/[@$!%*?&]/.test(this.password)) {
-          this.passwordError += ' * Password must contain at least one special character.'
+          this.passwordError += PasswordError.SPECIAL_CHARACTER
         }
         if (this.password.trim() !== this.password) {
-          this.passwordError += ' * Password must not contain leading or trailing whitespace.'
+          this.passwordError += PasswordError.WHITESPACE
         }
       }
     },
