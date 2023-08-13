@@ -9,7 +9,7 @@
             type="email"
             id="email"
             placeholder="user@example.com"
-            v-model.trim="email"
+            v-model="email"
             @input.prevent="validateEmail"
             required
           />
@@ -21,7 +21,7 @@
             type="password"
             id="password"
             placeholder="Make it secure!"
-            v-model.trim="password"
+            v-model="password"
             @input.prevent="validatePassword"
             required
           />
@@ -47,17 +47,17 @@ export default {
   },
   methods: {
     validateEmail() {
-      if (!this.email.trim()) {
+      if (!this.email) {
         this.emailError = 'Email is required'
       } else {
         this.emailError = ''
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        const emailRegex = /[^](@)(.+)$/
         if (!emailRegex.test(this.email)) {
           this.emailError = ' * Email address must be properly formatted (e.g., user@example.com).'
         }
-
-        if (this.email.trim() !== this.email) {
+        const trimRegex = /^[^\s].+[^\s]$/
+        if (!trimRegex.test(this.email)) {
           this.emailError += ' * Email address must not contain leading or trailing whitespace.'
         }
 
@@ -77,7 +77,7 @@ export default {
       }
     },
     validatePassword() {
-      if (!this.password.trim()) {
+      if (!this.password) {
         this.passwordError = 'Password is required'
       } else {
         this.passwordError = ''
@@ -95,6 +95,9 @@ export default {
         }
         if (!/[@$!%*?&]/.test(this.password)) {
           this.passwordError += ' * Password must contain at least one special character.'
+        }
+        if (this.password.trim() !== this.password) {
+          this.passwordError += ' * Password must not contain leading or trailing whitespace.'
         }
       }
     },
