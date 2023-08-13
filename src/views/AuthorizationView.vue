@@ -45,14 +45,6 @@ export default {
       passwordError: ''
     }
   },
-  created() {
-    const savedLogin = localStorage.getItem('login')
-    const savedPassword = localStorage.getItem('password')
-    if (savedLogin && savedPassword) {
-      this.email = savedLogin
-      this.password = savedPassword
-    }
-  },
   methods: {
     validateEmail() {
       if (!this.email.trim()) {
@@ -107,8 +99,7 @@ export default {
       }
     },
     login() {
-      localStorage.setItem('login', this.email)
-      localStorage.setItem('password', this.password)
+
     }
   }
 }
