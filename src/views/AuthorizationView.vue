@@ -3,7 +3,7 @@
     <div class="container-forms">
       <h1>Login</h1>
       <form @submit.prevent="login">
-        <div class="form-group" v-if="store.isLogin">
+        <div class="form-group" v-if="!store.isLogin">
           <label for="email">Email</label>
           <input
             type="email"
@@ -15,7 +15,7 @@
           />
           <p v-if="emailError" class="error">{{ emailError }}</p>
         </div>
-        <div class="form-group" v-if="store.isLogin">
+        <div class="form-group" v-if="!store.isLogin">
           <label for="password">Password</label>
           <input
             type="password"
@@ -27,10 +27,10 @@
           />
           <p v-if="passwordError" class="error">{{ passwordError }}</p>
         </div>
-        <button type="submit" v-if="store.isLogin">SIGN IN</button>
-        <button @click="logout" v-if="!store.isLogin">LOG OUT</button>
+        <button type="submit" v-if="!store.isLogin">SIGN IN</button>
+        <button @click="logout" v-if="store.isLogin">LOG OUT</button>
       </form>
-      <p class="registration-link" v-if="store.isLogin">
+      <p class="registration-link" v-if="!store.isLogin">
         Not registered yet? <RouterLink to="/registration">Register here</RouterLink>
       </p>
     </div>
@@ -126,8 +126,11 @@ export default {
     async login() {
       if (this.email && this.password) {
           await this.store.fetchToken()
-          await this.store.login(this.email, this.password)
-          this.store.changeLogin()
+          if (await this.store.login(this.email, this.password)) {
+            this.store.changeLogin()
+          } else {
+            alert('Invalid data')
+          }
       }
     },
     logout() {

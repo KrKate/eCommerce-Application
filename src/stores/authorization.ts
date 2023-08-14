@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
+import axios, {AxiosError} from 'axios'
 
 export type Customer = {
   customer: {
@@ -117,7 +117,6 @@ export const useUserStore = defineStore('user', {
           .then((data) => data.data)
         this.token = data.access_token
       } catch (error) {
-        alert(error)
         console.log(error)
       }
     },
@@ -138,9 +137,9 @@ export const useUserStore = defineStore('user', {
           )
           .then((data) => data.data)
         console.log(customerData)
-      } catch (error) {
-        alert(error)
-        console.log(error)
+        return true
+      } catch (error: AxiosError) {
+        return false
       }
     },
     changeLogin() {
