@@ -2,7 +2,7 @@
   <div class="login-page">
     <div class="container-forms">
       <h1>Login</h1>
-      <form>
+      <form @submit.prevent="login">
         <div class="form-group">
           <label for="email">Email</label>
           <input
@@ -27,15 +27,17 @@
           />
           <p v-if="passwordError" class="error">{{ passwordError }}</p>
         </div>
-        <button @click="login">SIGN IN</button>
+        <button type="submit">SIGN IN</button>
       </form>
-      <p class="registration-link">Not registered yet? <RouterLink to="/registration">Register here</RouterLink></p>
+      <p class="registration-link">
+        Not registered yet? <RouterLink to="/registration">Register here</RouterLink>
+      </p>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import {useUserStore} from "@/stores/authorization";
+import { useUserStore } from '@/stores/authorization'
 enum EmailError {
   REQUIRED = '* Email is required',
   FORMAT = '* Email address must be properly formatted (e.g., user@example.com).',
@@ -72,7 +74,7 @@ export default {
       } else {
         this.emailError = ''
 
-        const formatEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const formatEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
         if (!formatEmailRegex.test(this.email)) {
           this.emailError = EmailError.FORMAT
         }
@@ -120,10 +122,9 @@ export default {
         }
       }
     },
-    login() {
-
-    },
-    changeLogin() {
+    async login() {
+      await this.store.fetchToken()
+      await this.store.login()
       this.store.changeLogin()
     }
   }
@@ -169,6 +170,22 @@ h1 {
 label {
   display: block;
   margin-bottom: 5px;
+}
+
+#email:valid:not(:placeholder-shown),
+#email:focus:valid,
+#password:valid:not(:placeholder-shown),
+#password:focus:valid {
+  border: 3px solid green;
+  outline: none;
+}
+
+#email:invalid:not(:placeholder-shown),
+#email:focus:invalid,
+#password:invalid:not(:placeholder-shown),
+#password:focus:invalid {
+  border: 3px solid red;
+  outline: none;
 }
 
 input {

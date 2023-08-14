@@ -20,25 +20,48 @@ export const useUserStore = defineStore('user', {
   actions: {
     async fetchToken() {
       try {
-        const data: TokenResponse = await axios.post(
-          'https://auth.europe-west1.gcp.commercetools.com/oauth/token?grant_type=client_credentials',
-          {},
-          {
-            headers: {
-              Authorization: `Basic ${btoa(
-                `dfl2XWxHLbWwv8yU8bYwctWO:rsHEEwEvL3-cpCElTgirDd7Pep8HjTwW`
-              )}`
+        const data: TokenResponse = await axios
+          .post(
+            'https://auth.europe-west1.gcp.commercetools.com/oauth/token?grant_type=client_credentials',
+            {},
+            {
+              headers: {
+                Authorization: `Basic ${btoa(
+                  `dfl2XWxHLbWwv8yU8bYwctWO:rsHEEwEvL3-cpCElTgirDd7Pep8HjTwW`
+                )}`
+              }
             }
-          }
-        ).then(data => data.data)
-        this.token = data.access_token;
+          )
+          .then((data) => data.data)
+        this.token = data.access_token
+      } catch (error) {
+        alert(error)
+        console.log(error)
+      }
+    },
+    async login() {
+      try {
+        await axios
+          .post(
+            'https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/login',
+            JSON.stringify({
+              email: 'mail@mail.com',
+              password: '12345678'
+            }),
+            {
+              headers: {
+                Authorization: `Bearer ${this.token}`
+              }
+            }
+          )
+          .then((data) => console.log(data.data))
       } catch (error) {
         alert(error)
         console.log(error)
       }
     },
     changeLogin() {
-      this.isLogin = !this.isLogin;
+      this.isLogin = !this.isLogin
     }
   }
 })
