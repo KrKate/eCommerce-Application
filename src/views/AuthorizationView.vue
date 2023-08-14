@@ -14,7 +14,7 @@
             id="email"
             placeholder="user@example.com"
             v-model="email"
-            @input="validateEmail"
+            @input.prevent="validateEmail"
             required
           />
           <p v-if="emailErrors" class="error">
@@ -30,7 +30,7 @@
             id="password"
             placeholder="Make it secure!"
             v-model="password"
-            @input="validatePassword"
+            @input.prevent="validatePassword"
             required
           />
           <p v-if="passwordErrors.length" class="error">
@@ -103,7 +103,6 @@ export default {
       if(!this.validEmailDomain(this.email)) this.emailErrors.push(EmailError.DOMAIN)
       if (!this.validEmailSymbol(this.email)) this.emailErrors.push(EmailError.SYMBOL)
       if (!this.validEmailLatin(this.email)) this.emailErrors.push(EmailError.LATIN)
-      e.preventDefault();
     },
     validatePassword: function(e: Event) {
       this.passwordErrors = [];
@@ -114,7 +113,6 @@ export default {
       if(!this.validPasswordDigit(this.password)) this.passwordErrors.push(PasswordError.DIGIT)
       if(!this.validPasswordSpecial(this.password)) this.passwordErrors.push(PasswordError.SPECIAL_CHARACTER)
       if(this.validPasswordWhitespace(this.password)) this.passwordErrors.push(PasswordError.WHITESPACE)
-      e.preventDefault();
     },
 
     validEmailFormat:function(email: string) {
