@@ -3,6 +3,5 @@
 <template>
   <main>
     <p>Main page</p>
-    <HelloWorld />
   </main>
 </template>
