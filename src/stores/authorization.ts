@@ -121,14 +121,14 @@ export const useUserStore = defineStore('user', {
         console.log(error)
       }
     },
-    async login() {
+    async login(email: string, password: string) {
       try {
         const customerData: Customer = await axios
           .post(
             'https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/login',
             JSON.stringify({
-              email: 'mail@mail.com',
-              password: '12345678'
+              email: email,
+              password: password
             }),
             {
               headers: {

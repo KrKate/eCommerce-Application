@@ -28,7 +28,7 @@
           <p v-if="passwordError" class="error">{{ passwordError }}</p>
         </div>
         <button type="submit" v-if="store.isLogin">SIGN IN</button>
-        <button type="submit" v-if="!store.isLogin">LOG OUT</button>
+        <button @click="logout" v-if="!store.isLogin">LOG OUT</button>
       </form>
       <p class="registration-link" v-if="store.isLogin">
         Not registered yet? <RouterLink to="/registration">Register here</RouterLink>
@@ -124,13 +124,14 @@ export default {
       }
     },
     async login() {
-      if (this.store.isLogin) {
-        this.store.changeLogin()
-      } else {
-        await this.store.fetchToken()
-        await this.store.login()
-        this.store.changeLogin()
+      if (this.email && this.password) {
+          await this.store.fetchToken()
+          await this.store.login(this.email, this.password)
+          this.store.changeLogin()
       }
+    },
+    logout() {
+        this.store.changeLogin()
     }
   }
 }
