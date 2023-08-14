@@ -1,10 +1,97 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-type TokenResponse = {
+
+export type Customer = {
+  customer: {
+    id: string
+    version: number
+    versionModifiedAt: string
+    lastMessageSequenceNumber: number
+    createdAt: string
+    lastModifiedAt: string
+    lastModifiedBy: {
+      isPlatformClient: boolean
+      user: {
+        typeId: string
+        id: string
+      }
+    }
+    createdBy: {
+      isPlatformClient: boolean
+      user: {
+        typeId: string
+        id: string
+      }
+    }
+    email: string
+    firstName: string
+    lastName: string
+    middleName: string
+    title: string
+    salutation: string
+    password: string
+    addresses: []
+    shippingAddressIds: []
+    billingAddressIds: []
+    isEmailVerified: boolean
+    customerGroup: {
+      typeId: string
+      id: string
+    }
+    stores: []
+    authenticationMode: string
+  }
+}
+export type TokenResponse = {
   access_token: string
   token_type: string
   expires_in: number
   scope: string
+}
+
+export type CategoryResponse = {
+  limit: number
+  offset: number
+  count: number
+  total: number
+  results: Category[]
+}
+
+type Category = {
+  id: string
+  version: number
+  versionModifiedAt: string
+  lastMessageSequenceNumber: number
+  createdAt: string
+  lastModifiedAt: string
+  lastModifiedBy: {
+    isPlatformClient: boolean
+    user: {
+      typeId: string
+      id: string
+    }
+  }
+  createdBy: {
+    isPlatformClient: boolean
+    user: {
+      typeId: string
+      id: string
+    }
+  }
+  key: string
+  name: {
+    'en-US': string
+  }
+  slug: {
+    'en-US': string
+  }
+  description: {
+    'en-US': string
+  }
+  ancestors: []
+  orderHint: string
+  externalId: string
+  assets: []
 }
 
 export const useUserStore = defineStore('user', {
@@ -12,11 +99,6 @@ export const useUserStore = defineStore('user', {
     isLogin: false,
     token: ''
   }),
-  getters: {
-    getToken(state) {
-      return state.token
-    }
-  },
   actions: {
     async fetchToken() {
       try {
@@ -41,7 +123,7 @@ export const useUserStore = defineStore('user', {
     },
     async login() {
       try {
-        await axios
+        const customerData: Customer = await axios
           .post(
             'https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/login',
             JSON.stringify({
@@ -54,7 +136,8 @@ export const useUserStore = defineStore('user', {
               }
             }
           )
-          .then((data) => console.log(data.data))
+          .then((data) => data.data)
+        console.log(customerData)
       } catch (error) {
         alert(error)
         console.log(error)
