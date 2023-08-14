@@ -16,6 +16,7 @@
             v-model="email"
             @input.prevent="validateEmail"
             required
+            :class="{ 'invalid-input': emailErrors.length > 0 }"
           />
           <p v-if="emailErrors" class="error">
           <ul>
@@ -32,6 +33,7 @@
             v-model="password"
             @input.prevent="validatePassword"
             required
+            :class="{ 'invalid-input': passwordErrors.length > 0 }"
           />
           <p v-if="passwordErrors.length" class="error">
           <ul>
@@ -95,7 +97,7 @@ export default {
   methods: {
     checkForm: function() {
     },
-    validateEmail: function(e: Event) {
+    validateEmail: function() {
       this.emailErrors = [];
       if(!this.email) this.emailErrors.push(EmailError.REQUIRED)
       if(!this.validEmailFormat(this.email)) this.emailErrors.push(EmailError.FORMAT)
@@ -104,7 +106,7 @@ export default {
       if (!this.validEmailSymbol(this.email)) this.emailErrors.push(EmailError.SYMBOL)
       if (!this.validEmailLatin(this.email)) this.emailErrors.push(EmailError.LATIN)
     },
-    validatePassword: function(e: Event) {
+    validatePassword: function() {
       this.passwordErrors = [];
       if(!this.password) this.passwordErrors.push(PasswordError.REQUIRED)
       if(!this.validPasswordLength(this.password)) this.passwordErrors.push(PasswordError.LENGTH)
@@ -178,7 +180,9 @@ export default {
     max-width: 300px;
   }
 }
-
+.invalid-input {
+  border: 2px solid $app-red;
+} 
 h1 {
   @include pokemon-text($app-yelow, $app-dark-blue);
   text-align: center;
@@ -252,5 +256,6 @@ li {
       box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
     }
   }
+  
 }
 </style>
