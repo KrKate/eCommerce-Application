@@ -6,10 +6,8 @@
 
 <script>
 export default {
-  name: "CartView"
+  name: 'CartView'
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
