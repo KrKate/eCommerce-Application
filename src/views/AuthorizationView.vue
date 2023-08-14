@@ -3,7 +3,7 @@
     <div class="container-forms">
       <h1>Login</h1>
       <form @submit.prevent="login">
-        <div class="form-group">
+        <div class="form-group" v-if="store.isLogin">
           <label for="email">Email</label>
           <input
             type="email"
@@ -15,7 +15,7 @@
           />
           <p v-if="emailError" class="error">{{ emailError }}</p>
         </div>
-        <div class="form-group">
+        <div class="form-group" v-if="store.isLogin">
           <label for="password">Password</label>
           <input
             type="password"
@@ -27,9 +27,10 @@
           />
           <p v-if="passwordError" class="error">{{ passwordError }}</p>
         </div>
-        <button type="submit">SIGN IN</button>
+        <button type="submit" v-if="store.isLogin">SIGN IN</button>
+        <button type="submit" v-if="!store.isLogin">LOG OUT</button>
       </form>
-      <p class="registration-link">
+      <p class="registration-link" v-if="store.isLogin">
         Not registered yet? <RouterLink to="/registration">Register here</RouterLink>
       </p>
     </div>
@@ -123,9 +124,13 @@ export default {
       }
     },
     async login() {
-      await this.store.fetchToken()
-      await this.store.login()
-      this.store.changeLogin()
+      if (this.store.isLogin) {
+        this.store.changeLogin()
+      } else {
+        await this.store.fetchToken()
+        await this.store.login()
+        this.store.changeLogin()
+      }
     }
   }
 }

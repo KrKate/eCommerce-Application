@@ -6,10 +6,10 @@
       </router-link>
       <img src="@/assets/images/25.svg" alt="pikachu" class="logo" />
       <div class="control">
-        <router-link to="/login" custom v-slot="{ navigate }" v-if="!store.isLogin">
+        <router-link to="/login" custom v-slot="{ navigate }" v-if="store.isLogin">
           <button @click="navigate" role="link">Login</button>
         </router-link>
-        <router-link to="/login" custom v-slot="{ navigate }" v-if="store.isLogin">
+        <router-link to="/login" custom v-slot="{ navigate }" v-if="!store.isLogin">
           <button @click="navigate" role="link">User</button>
         </router-link>
         <router-link to="/cart" custom v-slot="{ navigate }">
