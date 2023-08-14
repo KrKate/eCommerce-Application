@@ -2,7 +2,11 @@
   <div class="login-page">
     <div class="container-forms">
       <h1>Login</h1>
-      <form>
+      <form
+      @submit="checkForm"
+      method="post"
+      novalidate="true"
+      >
         <div class="form-group">
           <label for="email">Email</label>
           <input
@@ -10,10 +14,14 @@
             id="email"
             placeholder="user@example.com"
             v-model="email"
-            @input.prevent="validateEmail"
+            @input="validateEmail"
             required
           />
-          <p v-if="emailError" class="error">{{ emailError }}</p>
+          <p v-if="emailErrors" class="error">
+          <ul>
+            <li v-for="error in emailErrors" :key="error">{{ error }}</li>
+          </ul>
+        </p>
         </div>
         <div class="form-group">
           <label for="password">Password</label>
@@ -22,12 +30,16 @@
             id="password"
             placeholder="Make it secure!"
             v-model="password"
-            @input.prevent="validatePassword"
+            @input="validatePassword"
             required
           />
-          <p v-if="passwordError" class="error">{{ passwordError }}</p>
+          <p v-if="passwordErrors.length" class="error">
+          <ul>
+            <li v-for="error in passwordErrors" :key="error">{{ error }}</li>
+          </ul>
+          </p>
         </div>
-        <button @click="login">SIGN IN</button>
+        <input type="submit" value="SIGN IN">
       </form>
       <p class="registration-link">Not registered yet? <RouterLink to="/registration">Register here</RouterLink></p>
     </div>
@@ -36,98 +48,104 @@
 
 <script lang="ts">
 enum EmailError {
-  REQUIRED = '* Email is required',
-  FORMAT = '* Email address must be properly formatted (e.g., user@example.com).',
-  WHITESPACE = '* Email address must not contain leading or trailing whitespace.',
-  DOMAIN = '* Email address must contain a domain name (e.g., example.com).',
-  SYMBOL = "* Email address must contain an '@' symbol separating local part and domain name.",
-  LATIN = '* The email address can only contain Latin characters.'
+  REQUIRED = 'Email is required',
+  FORMAT = 'Email address must be properly formatted (e.g., user@example.com).',
+  WHITESPACE = 'Email address must not contain leading or trailing whitespace.',
+  DOMAIN = 'Email address must contain a domain name (e.g., example.com).',
+  SYMBOL = "Email address must contain an '@' symbol separating local part and domain name.",
+  LATIN = 'The email address can only contain Latin characters.'
 }
 
 enum PasswordError {
-  REQUIRED = `* Password is required`,
-  LENGTH = '* Password must contain at least 8 characters.',
-  UPPERCASE = '* Password must contain at least one uppercase letter.',
-  LOWERCASE = '* Password must contain at least one lowercase letter.',
-  DIGIT = '* Password must contain at least one digit.',
-  SPECIAL_CHARACTER = '* Password must contain at least one special character.',
-  WHITESPACE = '* Password must not contain leading or trailing whitespace.'
+  REQUIRED = `Password is required`,
+  LENGTH = 'Password must contain at least 8 characters.',
+  UPPERCASE = 'Password must contain at least one uppercase letter.',
+  LOWERCASE = 'Password must contain at least one lowercase letter.',
+  DIGIT = 'Password must contain at least one digit.',
+  SPECIAL_CHARACTER = 'Password must contain at least one special character.',
+  WHITESPACE = 'Password must not contain leading or trailing whitespace.'
 }
 
-const formatEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-const trimRegex = /^[^\s].+[^\s]$/;
+const formatEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{1,}$/;
 const uppercaseRegex = /[A-Z]/;
 const lowercaseRegex = /[a-z]/;
 const digitRegex = /\d/;
 const latinRegex = /^[a-zA-Z0-9@._-]+$/;
 const specialRegex = /^(?=.*[!@#$%^&*()+=._-])/;
+const domainRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+
 
 export default {
   name: 'AuthorizationView',
   data() {
     return {
-      email: '',
-      password: '',
-      emailError: '',
-      passwordError: ''
+      email: null,
+      password: null,
+      emailErrors: [] as string[],
+      passwordErrors: [] as string[]
     }
   },
   methods: {
-    validateEmail() {
-      if (!this.email) {
-        this.emailError = EmailError.REQUIRED
-      } else {
-        this.emailError = ''
-
-        if (!formatEmailRegex.test(this.email)) {
-          this.emailError = EmailError.FORMAT
-        }
-
-        if (!trimRegex.test(this.email)) {
-          this.emailError += EmailError.WHITESPACE
-        }
-
-        if (!this.email.includes('@')) {
-          this.emailError += EmailError.DOMAIN
-        }
-
-        if (this.email.split('@').length !== 2) {
-          this.emailError += EmailError.SYMBOL
-        }
-
-        if (!latinRegex.test(this.email)) {
-          this.emailError += EmailError.LATIN
-        }
-      }
+    checkForm: function() {
     },
-    validatePassword() {
-      if (!this.password) {
-        this.passwordError = PasswordError.REQUIRED
-      } else {
-        this.passwordError = ''
-        if (this.password.length < 8) {
-          this.passwordError += PasswordError.LENGTH
-        }
-        if (!uppercaseRegex.test(this.password)) {
-          this.passwordError += PasswordError.UPPERCASE
-        }
-        if (!lowercaseRegex.test(this.password)) {
-          this.passwordError += PasswordError.LOWERCASE
-        }
-        if (!digitRegex.test(this.password)) {
-          this.passwordError += PasswordError.DIGIT
-        }
-        if (!specialRegex.test(this.password)) {
-          this.passwordError += PasswordError.SPECIAL_CHARACTER
-        }
-        if (this.password.trim() !== this.password) {
-          this.passwordError += PasswordError.WHITESPACE
-        }
-      }
+    validateEmail: function(e) {
+      this.emailErrors = [];
+      if(!this.email) this.emailErrors.push(EmailError.REQUIRED)
+      if(!this.validEmailFormat(this.email)) this.emailErrors.push(EmailError.FORMAT)
+      if(!this.validEmailWhitespace(this.email)) this.emailErrors.push(EmailError.WHITESPACE)
+      if(!this.validEmailDomain(this.email)) this.emailErrors.push(EmailError.DOMAIN)
+      if (!this.validEmailSymbol(this.email)) this.emailErrors.push(EmailError.SYMBOL)
+      if (!this.validEmailLatin(this.email)) this.emailErrors.push(EmailError.LATIN)
+      e.preventDefault();
     },
-    login() {
+    validatePassword: function(e) {
+      this.passwordErrors = [];
+      if(!this.password) this.passwordErrors.push(PasswordError.REQUIRED)
+      if(!this.validPasswordLength(this.password)) this.passwordErrors.push(PasswordError.LENGTH)
+      if(!this.validPasswordUppercase(this.password)) this.passwordErrors.push(PasswordError.UPPERCASE)
+      if(!this.validPasswordLowercase(this.password)) this.passwordErrors.push(PasswordError.LOWERCASE)
+      if(!this.validPasswordDigit(this.password)) this.passwordErrors.push(PasswordError.DIGIT)
+      if(!this.validPasswordSpecial(this.password)) this.passwordErrors.push(PasswordError.SPECIAL_CHARACTER)
+      if(this.validPasswordWhitespace(this.password)) this.passwordErrors.push(PasswordError.WHITESPACE)
+      e.preventDefault();
+    },
 
+    validEmailFormat:function(email) {
+     return formatEmailRegex.test(email);
+    },
+    validEmailWhitespace:function(email) {
+      return email.trim() !== email
+    },
+    validEmailDomain:function(email) {
+      return domainRegex.test(email)
+    },
+    validEmailSymbol: function(email) {
+       return email.includes('@')
+    },
+    validEmailLatin: function(email) {
+      return latinRegex.test(email)
+    },
+
+
+    validPasswordLength: function(password) {
+      return password.length < 8
+    },
+    validPasswordUppercase:function(password) {
+      return uppercaseRegex.test(password)
+    },
+    validPasswordLowercase:function(password) {
+      return lowercaseRegex.test(password)
+    },
+    validPasswordDigit:function(password){
+      return digitRegex.test(password)
+    },
+    validPasswordSpecial:function(password) {
+      return specialRegex.test(password)
+    },
+    validPasswordWhitespace:function(password) {
+      return password.trim() !== password
     }
+
   }
 }
 </script>
