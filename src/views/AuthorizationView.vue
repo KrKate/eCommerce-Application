@@ -79,8 +79,8 @@ export default {
   name: 'AuthorizationView',
   data() {
     return {
-      email: null,
-      password: null,
+      email: '',
+      password: '',
       emailErrors: [] as string[],
       passwordErrors: [] as string[]
     }
@@ -88,17 +88,17 @@ export default {
   methods: {
     checkForm: function() {
     },
-    validateEmail: function(e) {
+    validateEmail: function(e: Event) {
       this.emailErrors = [];
       if(!this.email) this.emailErrors.push(EmailError.REQUIRED)
       if(!this.validEmailFormat(this.email)) this.emailErrors.push(EmailError.FORMAT)
-      if(!this.validEmailWhitespace(this.email)) this.emailErrors.push(EmailError.WHITESPACE)
+      if(this.validEmailWhitespace(this.email)) this.emailErrors.push(EmailError.WHITESPACE)
       if(!this.validEmailDomain(this.email)) this.emailErrors.push(EmailError.DOMAIN)
       if (!this.validEmailSymbol(this.email)) this.emailErrors.push(EmailError.SYMBOL)
       if (!this.validEmailLatin(this.email)) this.emailErrors.push(EmailError.LATIN)
       e.preventDefault();
     },
-    validatePassword: function(e) {
+    validatePassword: function(e: Event) {
       this.passwordErrors = [];
       if(!this.password) this.passwordErrors.push(PasswordError.REQUIRED)
       if(!this.validPasswordLength(this.password)) this.passwordErrors.push(PasswordError.LENGTH)
@@ -110,39 +110,39 @@ export default {
       e.preventDefault();
     },
 
-    validEmailFormat:function(email) {
+    validEmailFormat:function(email: string) {
      return formatEmailRegex.test(email);
     },
-    validEmailWhitespace:function(email) {
+    validEmailWhitespace:function(email: string) {
       return email.trim() !== email
     },
-    validEmailDomain:function(email) {
+    validEmailDomain:function(email: string) {
       return domainRegex.test(email)
     },
-    validEmailSymbol: function(email) {
+    validEmailSymbol: function(email: string) {
        return email.includes('@')
     },
-    validEmailLatin: function(email) {
+    validEmailLatin: function(email: string) {
       return latinRegex.test(email)
     },
 
 
-    validPasswordLength: function(password) {
+    validPasswordLength: function(password: string) {
       return password.length < 8
     },
-    validPasswordUppercase:function(password) {
+    validPasswordUppercase:function(password: string) {
       return uppercaseRegex.test(password)
     },
-    validPasswordLowercase:function(password) {
+    validPasswordLowercase:function(password: string) {
       return lowercaseRegex.test(password)
     },
-    validPasswordDigit:function(password){
+    validPasswordDigit:function(password: string){
       return digitRegex.test(password)
     },
-    validPasswordSpecial:function(password) {
+    validPasswordSpecial:function(password: string) {
       return specialRegex.test(password)
     },
-    validPasswordWhitespace:function(password) {
+    validPasswordWhitespace:function(password: string) {
       return password.trim() !== password
     }
 
