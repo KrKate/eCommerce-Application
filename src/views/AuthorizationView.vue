@@ -3,14 +3,14 @@
     <div class="container-forms">
       <h1>Login</h1>
       <form
-      @submit="checkForm"
       method="post"
       novalidate="true"
+      ref="log"
       >
         <div class="form-group">
           <label for="email">Email</label>
           <input
-            type="email"
+            type="text"
             id="email"
             placeholder="user@example.com"
             v-model="email"
@@ -39,7 +39,9 @@
           </ul>
           </p>
         </div>
-        <input type="submit" value="SIGN IN">
+        <div class="signUpConainer">
+           <input class='signUp' type="submit" value="SIGN IN" :disabled="!formIsValid">
+        </div>
       </form>
       <p class="registration-link">Not registered yet? <RouterLink to="/registration">Register here</RouterLink></p>
     </div>
@@ -66,13 +68,13 @@ enum PasswordError {
   WHITESPACE = 'Password must not contain leading or trailing whitespace.'
 }
 
-const formatEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{1,}$/;
+const formatEmailRegex = /^[a-zA-Z0-9._%+-\s]+@[a-zA-Z0-9.-\s]+\.[a-zA-Z\s]{1,}$/;
 const uppercaseRegex = /[A-Z]/;
 const lowercaseRegex = /[a-z]/;
 const digitRegex = /\d/;
-const latinRegex = /^[a-zA-Z0-9@._-]+$/;
-const specialRegex = /^(?=.*[!@#$%^&*()+=._-])/;
-const domainRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+const latinRegex = /^[a-zA-Z0-9@._-\s]+$/;
+const specialRegex =  /^(?=.*[!@#$%^&*()+=._-])/;
+const domainRegex = /^\s*[^\s@]+@[^\s@]+\.[^\s@]{2,}\s?$/
 
 
 export default {
@@ -83,6 +85,11 @@ export default {
       password: '',
       emailErrors: [] as string[],
       passwordErrors: [] as string[]
+    }
+  },
+  computed: {
+    formIsValid: function() {
+      return this.emailErrors.length === 0 && this.passwordErrors.length === 0  && this.email && this.password;
     }
   },
   methods: {
@@ -128,7 +135,7 @@ export default {
 
 
     validPasswordLength: function(password: string) {
-      return password.length < 8
+      return password.length >= 8
     },
     validPasswordUppercase:function(password: string) {
       return uppercaseRegex.test(password)
@@ -165,7 +172,7 @@ export default {
   background-color: $app-gray;
   border-radius: 20px;
   margin: 150px auto 0 auto;
-  padding: 30px;
+  padding: 15px 30px;
   max-height: fit-content;
   min-height: 60vh;
   max-width: 500px;
@@ -183,7 +190,7 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 label {
@@ -196,13 +203,40 @@ input {
   padding: 10px;
   border-radius: 8px;
 }
-
+.registration-link {
+    text-align: center;
+  }
 .error {
   color: red;
   font-size: 12px;
+  text-align: left;
 }
 
-button {
+ul {
+  padding: 5px 0px 0px 20px;
+  text-align: left;
+}
+
+li {
+  list-style-type: none;
+&::before {
+  content: "✖";
+  margin-right: 5px;
+}
+}
+
+.signUpConainer {
+  display: flex;
+  justify-content: center;
+}
+  .signUp:disabled {
+    background-color: whitesmoke;
+    color: $app-red;
+    width: 50%;
+    cursor: default;
+  }
+
+  .signUp  {
   width: 100%;
   padding: 10px;
   background-color: $app-red;
@@ -212,15 +246,13 @@ button {
   margin-bottom: 20px;
   border-radius: 8px;
   font-weight: 500;
+  transition: all 2s ease;
   &:hover {
     font-weight: 700;
     &:active {
       transform: translateY(-1px);
       box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
     }
-  }
-  .registration-link {
-    margin: 0 auto;
   }
 }
 </style>
