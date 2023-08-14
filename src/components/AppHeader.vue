@@ -6,12 +6,12 @@
       </router-link>
       <img src="@/assets/images/25.svg" alt="pikachu" class="logo" />
       <div class="control">
-        <router-link to="/login" custom v-slot="{ navigate }" v-if="store.isLogin">
+        <router-link to="/login" custom v-slot="{ navigate }" v-if="!store.isLogin">
           <button @click="navigate" role="link">Login</button>
         </router-link>
-        <router-link to="/login" custom v-slot="{ navigate }" v-if="!store.isLogin">
-          <button @click="navigate" role="link">User</button>
-        </router-link>
+        <button @click="store.changeLogin()" v-if="store.isLogin" id="logout">
+          Logout <img src="@/assets/icons/logout.webp" alt="logout" id="logout-img" />
+        </button>
         <router-link to="/cart" custom v-slot="{ navigate }">
           <button @click="navigate" role="link">Cart</button>
         </router-link>
@@ -144,6 +144,24 @@ header {
     padding: 10px 10px;
     color: $app-black;
     border: 1px solid $app-white;
+  }
+}
+
+#logout {
+  position: relative;
+}
+
+#logout-img {
+  position: absolute;
+  top: -16px;
+  left: 20px;
+  height: 80px;
+
+  &:hover {
+    z-index: 100;
+    transition: 0.2s;
+    top: 0;
+    opacity: 0;
   }
 }
 
