@@ -153,8 +153,8 @@ header {
 
 #logout-img {
   position: absolute;
-  top: -16px;
-  left: 20px;
+  top: -5px;
+  left: 30px;
   height: 80px;
 
   &:hover {
@@ -197,6 +197,10 @@ header {
     input {
       @include view(40%, auto, relative, flex);
     }
+  }
+  #logout-img {
+    top: -17px;
+    left: 20px;
   }
 }
 
@@ -242,6 +246,11 @@ header {
       padding: 5px 10px;
     }
   }
+  #logout-img {
+    top: -14px;
+    left: 15px;
+    height: 60px;
+  }
 }
 
 @media screen and (max-width: 580px) {
@@ -269,6 +278,9 @@ header {
     .logo {
       @include view(auto, 90px, absolute, flex);
     }
+  }
+  #logout-img {
+    display: none;
   }
 }
 @media screen and (max-width: 424px) {
