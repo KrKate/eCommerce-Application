@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import axios, {AxiosError} from 'axios'
+import axios from 'axios'
 
 export type Customer = {
   customer: {
@@ -97,7 +97,10 @@ type Category = {
 export const useUserStore = defineStore('user', {
   state: () => ({
     isLogin: false,
-    token: ''
+    token: '',
+    firstName: '',
+    lastName: '',
+    email: ''
   }),
   actions: {
     async fetchToken() {
@@ -138,7 +141,7 @@ export const useUserStore = defineStore('user', {
           .then((data) => data.data)
         console.log(customerData)
         return true
-      } catch (error: AxiosError) {
+      } catch (error) {
         return false
       }
     },
