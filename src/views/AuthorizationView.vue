@@ -54,6 +54,14 @@ enum PasswordError {
   WHITESPACE = '* Password must not contain leading or trailing whitespace.'
 }
 
+const formatEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+const trimRegex = /^[^\s].+[^\s]$/;
+const uppercaseRegex = /[A-Z]/;
+const lowercaseRegex = /[a-z]/;
+const digitRegex = /\d/;
+const latinRegex = /^[a-zA-Z0-9@._-]+$/;
+const specialRegex = /^(?=.*[!@#$%^&*()+=._-])/;
+
 export default {
   name: 'AuthorizationView',
   data() {
@@ -71,11 +79,10 @@ export default {
       } else {
         this.emailError = ''
 
-        const formatEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!formatEmailRegex.test(this.email)) {
           this.emailError = EmailError.FORMAT
         }
-        const trimRegex = /^[^\s].+[^\s]$/
+
         if (!trimRegex.test(this.email)) {
           this.emailError += EmailError.WHITESPACE
         }
@@ -88,7 +95,6 @@ export default {
           this.emailError += EmailError.SYMBOL
         }
 
-        const latinRegex = /^[a-zA-Z0-9@._-]+$/
         if (!latinRegex.test(this.email)) {
           this.emailError += EmailError.LATIN
         }
@@ -102,16 +108,16 @@ export default {
         if (this.password.length < 8) {
           this.passwordError += PasswordError.LENGTH
         }
-        if (!/[A-Z]/.test(this.password)) {
+        if (!uppercaseRegex.test(this.password)) {
           this.passwordError += PasswordError.UPPERCASE
         }
-        if (!/[a-z]/.test(this.password)) {
+        if (!lowercaseRegex.test(this.password)) {
           this.passwordError += PasswordError.LOWERCASE
         }
-        if (!/\d/.test(this.password)) {
+        if (!digitRegex.test(this.password)) {
           this.passwordError += PasswordError.DIGIT
         }
-        if (!/[@$!%*?&]/.test(this.password)) {
+        if (!specialRegex.test(this.password)) {
           this.passwordError += PasswordError.SPECIAL_CHARACTER
         }
         if (this.password.trim() !== this.password) {
