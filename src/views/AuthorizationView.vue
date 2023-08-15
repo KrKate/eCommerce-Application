@@ -1,7 +1,8 @@
 <template>
   <div class="login-page">
     <div class="container-forms">
-      <h1>Login</h1>
+      <h2 v-if="!store.isLogin">Login</h2>
+      <h2 v-if="store.isLogin">Successfully logged!</h2>
       <form
       method="post"
       novalidate="true"
@@ -40,9 +41,12 @@
             </ul>
           </p>
         </div>
-        <div class="signUpContainer">
-          <input class='signUp' type="submit" value="SIGN IN" :disabled="!formIsValid" v-if="!store.isLogin">
-          <input class='signUp' @click="logout" value="LOG OUT" :disabled="!formIsValid" v-if="store.isLogin">
+        <div class="signUpContainer" v-if="!store.isLogin">
+          <input class='signUp' type="submit" value="SIGN IN" :disabled="!formIsValid" >
+        </div>
+        <div class="logout" v-if="store.isLogin">
+          <img src="@/assets/gif/login_success.gif" alt="login_success">
+          <h2>Redirecting...</h2>
         </div>
       </form>
       <p class="registration-link" v-if="!store.isLogin">
@@ -54,6 +58,7 @@
 
 <script lang="ts">
 import { useUserStore } from '@/stores/authorization'
+import router from "@/router";
 enum EmailError {
   REQUIRED = 'Email is required',
   FORMAT = 'Email address must be properly formatted (e.g., user@example.com).',
@@ -158,14 +163,12 @@ export default {
         await this.store.fetchToken()
         if (await this.store.login(this.email, this.password)) {
           this.store.changeLogin()
+          setTimeout(() => router.push('/'), 2000)
         } else {
           alert('Invalid data')
         }
       }
     },
-    logout() {
-      this.store.changeLogin()
-    }
   }
 }
 </script>
@@ -196,9 +199,11 @@ export default {
 .invalid-input {
   border: 2px solid $app-red;
 }
-h1 {
+ h2{
   @include pokemon-text($app-yelow, $app-dark-blue);
+   -webkit-text-stroke: 1px $app-light-blue;
   text-align: center;
+   font-size: 2rem;
 }
 
 .form-group {
@@ -269,6 +274,12 @@ li {
       box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
     }
   }
-
 }
+
+  .logout {
+    img {
+      display: flex;
+      margin: 0 auto;
+    }
+  }
 </style>
