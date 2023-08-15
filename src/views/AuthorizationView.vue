@@ -3,25 +3,26 @@
     <img
       src="@/assets/images/psyduck.svg"
       alt="error"
-      :id="emailErrors.length || passwordErrors.length ? 'show' : 'error'"
+      :id="emailErrors.length || passwordErrors.length || isCorrectData ? 'show' : 'error'"
     />
     <div
-      v-if="emailErrors.length || passwordErrors.length"
-      :class="emailErrors.length || passwordErrors.length ? 'showClip' : 'hideClip'"
+      v-if="emailErrors.length || passwordErrors.length || isCorrectData"
+      :class="emailErrors.length || passwordErrors.length || isCorrectData ? 'showClip' : 'hideClip'"
     ></div>
     <div
-      v-if="emailErrors.length || passwordErrors.length"
-      :class="emailErrors.length || passwordErrors.length ? 'showClip1' : 'hideClip1'"
+      v-if="emailErrors.length || passwordErrors.length || isCorrectData"
+      :class="emailErrors.length || passwordErrors.length || isCorrectData ? 'showClip1' : 'hideClip1'"
     ></div>
     <div
-      v-if="emailErrors.length || passwordErrors.length"
+      v-if="emailErrors.length || passwordErrors.length || isCorrectData"
       :class="
-        emailErrors.length || passwordErrors.length ? 'show-error-message' : 'hide-error-message'
+        emailErrors.length || passwordErrors.length || isCorrectData ? 'show-error-message' : 'hide-error-message'
       "
     >
       <ul>
         <li v-for="error in passwordErrors" :key="error">{{ error }}</li>
         <li v-for="error in emailErrors" :key="error">{{ error }}</li>
+        <li v-if="isCorrectData">Wrong login or password!</li>
       </ul>
     </div>
     <div class="container-forms">
@@ -113,6 +114,7 @@ export default {
       password: '',
       emailErrors: [] as string[],
       passwordErrors: [] as string[],
+      isCorrectData: false,
       store: useUserStore()
     }
   },
@@ -191,7 +193,8 @@ export default {
           this.store.changeLogin()
           setTimeout(() => router.push('/'), 2000)
         } else {
-          alert('Invalid data')
+          this.isCorrectData = true
+          setTimeout(() => this.isCorrectData = false, 6000)
         }
       }
     }
