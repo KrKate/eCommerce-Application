@@ -63,6 +63,18 @@
             required
             :class="{ 'invalid-input': passwordErrors.length > 0 }"
           />
+          <img
+            src="@/assets/icons/eye.png"
+            class="password-toggle"
+            @click="
+              () => {
+                $refs.password.type = $refs.password.type === 'password' ? 'text' : 'password';
+                this.isShowPassword = !this.isShowPassword
+              }
+            "
+            v-if="password.length"
+          />
+          <div class="crossed" v-if="isShowPassword"></div>
           <div class="clear-cross" v-if="password.length" @click="$refs.password.value = ''">
             &#x2715;
           </div>
@@ -83,8 +95,10 @@
 </template>
 
 <script lang="ts">
-import { useUserStore } from '@/stores/authorization'
+
+import {useUserStore} from '@/stores/authorization'
 import router from '@/router'
+
 enum EmailError {
   REQUIRED = 'Email is required',
   FORMAT = 'Email address must be properly formatted (e.g., user@example.com).',
@@ -121,16 +135,17 @@ export default {
       emailErrors: [] as string[],
       passwordErrors: [] as string[],
       isCorrectData: false,
+      isShowPassword: false,
       store: useUserStore()
     }
   },
   computed: {
     formIsValid: function () {
       return (
-        this.emailErrors.length === 0 &&
-        this.passwordErrors.length === 0 &&
-        this.email &&
-        this.password
+          this.emailErrors.length === 0 &&
+          this.passwordErrors.length === 0 &&
+          this.email &&
+          this.password
       )
     }
   },
@@ -362,6 +377,27 @@ h2 {
   flex-wrap: wrap;
   flex-direction: column;
   margin: 15px auto;
+
+  .crossed {
+    position: absolute;
+    width: 15px;
+    right: 35px;
+    top: 50px;
+    transform: rotate(-45deg);
+    border: 1px solid black;
+  }
+
+  .password-toggle {
+    height: 15px;
+    position: absolute;
+    right: 35px;
+    z-index: 1;
+    top: 43px;
+
+    &:hover {
+      transform: scale(1.2);
+    }
+  }
 }
 
 label {
@@ -373,6 +409,11 @@ input {
   width: 100%;
   padding: 10px;
   border-radius: 8px;
+
+  &::-ms-reveal,
+  &::-ms-clear {
+    display: none;
+  }
 }
 
 .clear-cross {
