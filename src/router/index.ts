@@ -4,6 +4,7 @@ import NotFoundView from '../views/NotFoundView.vue'
 import CatalogView from '../views/CatalogView.vue'
 import CartView from '../views/CartView.vue'
 import RegistrationView from '../views/RegistrationView.vue'
+import {useUserStore} from "@/stores/authorization";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -31,7 +32,10 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/AuthorizationView.vue')
+      component: () => import('../views/AuthorizationView.vue'),
+      beforeEnter: () => {
+        return !useUserStore().isLogin
+      }
     },
     { path: '/:pathMatch(.*)*', name: '404', component: NotFoundView },
     {
