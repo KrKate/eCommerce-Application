@@ -7,16 +7,22 @@
     />
     <div
       v-if="emailErrors.length || passwordErrors.length || isCorrectData"
-      :class="emailErrors.length || passwordErrors.length || isCorrectData ? 'showClip' : 'hideClip'"
-    ></div>
-    <div
-      v-if="emailErrors.length || passwordErrors.length || isCorrectData"
-      :class="emailErrors.length || passwordErrors.length || isCorrectData ? 'showClip1' : 'hideClip1'"
+      :class="
+        emailErrors.length || passwordErrors.length || isCorrectData ? 'showClip' : 'hideClip'
+      "
     ></div>
     <div
       v-if="emailErrors.length || passwordErrors.length || isCorrectData"
       :class="
-        emailErrors.length || passwordErrors.length || isCorrectData ? 'show-error-message' : 'hide-error-message'
+        emailErrors.length || passwordErrors.length || isCorrectData ? 'showClip1' : 'hideClip1'
+      "
+    ></div>
+    <div
+      v-if="emailErrors.length || passwordErrors.length || isCorrectData"
+      :class="
+        emailErrors.length || passwordErrors.length || isCorrectData
+          ? 'show-error-message'
+          : 'hide-error-message'
       "
     >
       <ul>
@@ -194,7 +200,7 @@ export default {
           setTimeout(() => router.push('/'), 2000)
         } else {
           this.isCorrectData = true
-          setTimeout(() => this.isCorrectData = false, 6000)
+          setTimeout(() => (this.isCorrectData = false), 6000)
         }
       }
     }

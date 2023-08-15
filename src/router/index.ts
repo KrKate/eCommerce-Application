@@ -34,7 +34,7 @@ const router = createRouter({
       name: 'login',
       component: () => import('../views/AuthorizationView.vue'),
       beforeEnter: () => {
-        return !useUserStore().isLogin
+          return !useUserStore().isLogin
       }
     },
     { path: '/:pathMatch(.*)*', name: '404', component: NotFoundView },
