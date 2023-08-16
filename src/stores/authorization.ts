@@ -94,12 +94,32 @@ type Category = {
   assets: []
 }
 
+type PasswordFlowResponse = {
+  access_token: string
+  expires_in: number
+  token_type: string
+  scope: string
+  refresh_token: string
+}
+
+type SiteCookie = {
+  firstName: string
+  lastName: string
+  email: string
+  id: string
+  accessToken: string
+  refreshToken: string
+}
+
 export const useUserStore = defineStore('user', {
   state: () => ({
     isLogin: false,
     token: '',
+    refreshToken: '',
+    expires: 0,
     firstName: '',
     lastName: '',
+    id: '',
     email: ''
   }),
   actions: {
@@ -139,13 +159,73 @@ export const useUserStore = defineStore('user', {
             }
           )
           .then((data) => data.data)
-        console.log(customerData)
+        this.firstName = customerData.customer.firstName
+        this.lastName = customerData.customer.lastName
+        this.email = customerData.customer.email
+        this.id = customerData.customer.id
+        const cookie: SiteCookie = {
+          firstName: this.firstName,
+          lastName: this.lastName,
+          email: this.email,
+          id: this.id,
+          accessToken: this.token,
+          refreshToken: this.refreshToken
+        }
+        this.setCookie(cookie)
         return true
       } catch (error) {
         return false
       }
     },
+    async getTokens(email: string, password: string) {
+      try {
+        const userData: PasswordFlowResponse = await axios
+          .post(
+            `https://auth.europe-west1.gcp.commercetools.com/oauth/ecommerce_app_sloths/customers/token?grant_type=password&username=${email}&password=${password}`,
+            {},
+            {
+              headers: {
+                Authorization: `Basic ${btoa(
+                  `dfl2XWxHLbWwv8yU8bYwctWO:rsHEEwEvL3-cpCElTgirDd7Pep8HjTwW`
+                )}`
+              }
+            }
+          )
+          .then((data) => data.data)
+        this.token = userData.access_token
+        this.refreshToken = userData.refresh_token
+        this.expires = userData.expires_in
+        return true
+      } catch (error) {
+        return false
+      }
+    },
+    setCookie(cookie: SiteCookie) {
+      document.cookie = `pokemonStore=${encodeURI(JSON.stringify(cookie))};max-age=${this.expires}`
+    },
+    readCookie() {
+      const cookies = document.cookie.split(';')
+      const siteData = cookies.filter(value => value.includes('pokemonStore='))
+      if (siteData.length) {
+        const data: SiteCookie = JSON.parse(decodeURI(siteData[0].replace('pokemonStore=', '')))
+        this.firstName = data.firstName;
+        this.lastName = data.lastName;
+        this.token = data.accessToken;
+        this.email = data.email;
+        this.id = data.id;
+        this.refreshToken = data.refreshToken;
+        this.isLogin = true;
+      }
+    },
+    clearCookie(){
+      const cookies = document.cookie.split(';')
+      const siteData = cookies.filter(value => value.includes('pokemonStore='))
+      if (siteData.length) {
+        document.cookie = `pokemonStore=;max-age=0`
+      }
+    },
     changeLogin() {
+      if (this.isLogin) this.clearCookie()
       this.isLogin = !this.isLogin
     }
   }
