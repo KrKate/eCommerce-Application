@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-import {type Customer, type PasswordFlowResponse, type SiteCookie, type TokenResponse} from "@/stores/types";
+import type { Customer, PasswordFlowResponse, SiteCookie, TokenResponse} from "@/stores/types";
 
 export const useUserStore = defineStore('user', {
   state: () => ({
