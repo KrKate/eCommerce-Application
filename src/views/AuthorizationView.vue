@@ -68,7 +68,7 @@
             class="password-toggle"
             @click="
               () => {
-                $refs.password.type = $refs.password.type === 'password' ? 'text' : 'password';
+                $refs.password.type = $refs.password.type === 'password' ? 'text' : 'password'
                 this.isShowPassword = !this.isShowPassword
               }
             "
@@ -95,8 +95,7 @@
 </template>
 
 <script lang="ts">
-
-import {useUserStore} from '@/stores/authorization'
+import { useUserStore } from '@/stores/authorization'
 import router from '@/router'
 
 enum EmailError {
@@ -142,10 +141,10 @@ export default {
   computed: {
     formIsValid: function () {
       return (
-          this.emailErrors.length === 0 &&
-          this.passwordErrors.length === 0 &&
-          this.email &&
-          this.password
+        this.emailErrors.length === 0 &&
+        this.passwordErrors.length === 0 &&
+        this.email &&
+        this.password
       )
     }
   },
@@ -210,9 +209,14 @@ export default {
     async login() {
       if (this.email && this.password) {
         await this.store.fetchToken()
-        if (await this.store.login(this.email, this.password)) {
-          this.store.changeLogin()
-          setTimeout(() => router.push('/'), 2000)
+        if (await this.store.getTokens(this.email, this.password)) {
+          if (await this.store.login(this.email, this.password)) {
+            this.store.changeLogin()
+            setTimeout(() => router.push('/'), 2000)
+          } else {
+            this.isCorrectData = true
+            setTimeout(() => (this.isCorrectData = false), 6000)
+          }
         } else {
           this.isCorrectData = true
           setTimeout(() => (this.isCorrectData = false), 6000)
