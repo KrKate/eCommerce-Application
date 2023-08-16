@@ -34,6 +34,10 @@ const router = createRouter({
       name: 'login',
       component: () => import('../views/AuthorizationView.vue'),
       beforeEnter: () => {
+          if (useUserStore().isLogin) {
+            router.push('/')
+            return false
+          }
           return !useUserStore().isLogin
       }
     },
