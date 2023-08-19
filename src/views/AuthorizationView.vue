@@ -56,8 +56,7 @@ enum EmailError {
   FORMAT = 'Email address must be properly formatted (e.g., user@example.com).',
   WHITESPACE = 'Email address must not contain leading or trailing whitespace.',
   DOMAIN = 'Email address must contain a domain name (e.g., example.com).',
-  SYMBOL = "Email address must contain an '@' symbol separating local part and domain name.",
-  LATIN = 'The email address can only contain Latin characters.'
+  SYMBOL = "Email address must contain an '@' symbol separating local part and domain name."
 }
 
 enum PasswordError {
@@ -70,11 +69,10 @@ enum PasswordError {
   WHITESPACE = 'Password must not contain leading or trailing whitespace.'
 }
 
-const formatEmailRegex = /^[a-zA-Z0-9._%+-\s]+@[a-zA-Z0-9.-\s]+\.[a-zA-Z\s]{1,}$/;
+const formatEmailRegex = /^[a-zA-Z0-9._%|/+\-@\\s]+@[a-zA-Z0-9.-\s]+\.[a-zA-Z\s]{1,}$/;
 const uppercaseRegex = /[A-Z]/;
 const lowercaseRegex = /[a-z]/;
 const digitRegex = /\d/;
-const latinRegex = /^[a-zA-Z0-9@._-\s]+$/;
 const specialRegex =  /^(?=.*[!@#$%^&*()+=._-])/;
 const domainRegex = /^\s*[^\s@]+@[^\s@]+\.[^\s@]{2,}\s?$/
 
@@ -104,7 +102,6 @@ export default {
       if(this.validEmailWhitespace(this.email)) this.emailErrors.push(EmailError.WHITESPACE)
       if(!this.validEmailDomain(this.email)) this.emailErrors.push(EmailError.DOMAIN)
       if (!this.validEmailSymbol(this.email)) this.emailErrors.push(EmailError.SYMBOL)
-      if (!this.validEmailLatin(this.email)) this.emailErrors.push(EmailError.LATIN)
     },
     validatePassword: function() {
       this.passwordErrors = [];
@@ -129,9 +126,7 @@ export default {
     validEmailSymbol: function(email: string) {
        return email.includes('@')
     },
-    validEmailLatin: function(email: string) {
-      return latinRegex.test(email)
-    },
+
 
 
     validPasswordLength: function(password: string) {
@@ -256,6 +251,6 @@ li {
       box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
     }
   }
-  
+
 }
 </style>
