@@ -6,9 +6,12 @@
       </router-link>
       <img src="@/assets/images/25.svg" alt="pikachu" class="logo" />
       <div class="control">
-        <router-link to="/login" custom v-slot="{ navigate }">
+        <router-link to="/login" custom v-slot="{ navigate }" v-if="!store.isLogin">
           <button @click="navigate" role="link">Login</button>
         </router-link>
+        <button @click="store.changeLogin()" v-if="store.isLogin" id="logout">
+          Logout <img src="@/assets/icons/logout.webp" alt="logout" id="logout-img" />
+        </button>
         <router-link to="/cart" custom v-slot="{ navigate }">
           <button @click="navigate" role="link">Cart</button>
         </router-link>
@@ -28,8 +31,14 @@
 </template>
 
 <script lang="ts">
+import { useUserStore } from '@/stores/authorization'
 export default {
-  name: 'AppHeader'
+  name: 'AppHeader',
+  data() {
+    return {
+      store: useUserStore()
+    }
+  }
 }
 </script>
 
@@ -138,6 +147,24 @@ header {
   }
 }
 
+#logout {
+  position: relative;
+}
+
+#logout-img {
+  position: absolute;
+  top: -5px;
+  left: 30px;
+  height: 80px;
+
+  &:hover {
+    z-index: 100;
+    transition: 0.2s;
+    top: 0;
+    opacity: 0;
+  }
+}
+
 @media screen and (max-width: 1023px) {
   header {
     .wrapper {
@@ -170,6 +197,10 @@ header {
     input {
       @include view(40%, auto, relative, flex);
     }
+  }
+  #logout-img {
+    top: -17px;
+    left: 20px;
   }
 }
 
@@ -215,6 +246,11 @@ header {
       padding: 5px 10px;
     }
   }
+  #logout-img {
+    top: -14px;
+    left: 15px;
+    height: 60px;
+  }
 }
 
 @media screen and (max-width: 580px) {
@@ -242,6 +278,9 @@ header {
     .logo {
       @include view(auto, 90px, absolute, flex);
     }
+  }
+  #logout-img {
+    display: none;
   }
 }
 @media screen and (max-width: 424px) {
