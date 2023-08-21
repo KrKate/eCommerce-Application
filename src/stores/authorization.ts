@@ -103,7 +103,7 @@ export const useUserStore = defineStore('user', {
                     Authorization: `Bearer ${this.token}`
                   }
                 }
-            ).then(data => console.log(data))
+            )
         return true
       } catch (error) {
         console.log(error)
