@@ -6,9 +6,9 @@
       @submit.prevent="
         signIn({
           email: this.email,
+          password: this.password,
           firstName: this.firstName,
-          lastName: this.lastName,
-          password: this.password
+          lastName: this.lastName
         })
       "
     >
@@ -111,8 +111,9 @@
         />
       </div>
       <div v-if="postalCodeError" class="error">{{ postalCodeError }}</div>
-
-      <button type="submit">Register</button>
+      <div class="registerContainer">
+        <input class="register" type="submit" value="Register" :disabled="!formIsValid" />
+      </div>
     </form>
   </div>
 </template>
@@ -125,18 +126,6 @@ const formatEmailRegex = /^[a-zA-Z0-9._%+-\s]+@[a-zA-Z0-9.-\s]+\.[a-zA-Z\s]{2,}$
 const formatPasswordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/
 const nameRegex = /^[a-zA-Z]+$/
 const cityRegex = /^[a-zA-Z]+$/
-
-// enum CountryCodeRegex {
-//   DE = '/^{5}$/',
-// BY = '/^{6}$/',
-// RU = '/^{6}$/',
-// KZ = '/^{6}$/',
-// FR = '/^{2}[ ]?\d{3}$/',
-// GB = '/^([A-Z]){1}([0-9][0-9]|[0-9]|[A-Z][0-9][A-Z]|[A-Z][0-9][0-9]|[A-Z][0-9]|[0-9][A-Z]){1}([ ])?([0-9][A-z][A-z]){1}$/i',
-// ES = '/^(?:0[1-9]|[1-4]\d|5[0-2])\d{3}$/',
-// IT = '/^{5}$/',
-// PL = '/^{2}-\d{3}$/'
-// }
 
 export default {
   name: 'AuthorizationView',
@@ -246,8 +235,41 @@ export default {
       }
     },
     validatePostalCode: function () {
-      if (this.country === 'Germany') {
-        console.log('DE')
+      const countryCode = this.country
+      const postalCode = this.postalCode
+      let regex
+      switch (countryCode) {
+        case 'Germany':
+          regex = /^[0-9]{5}$/
+          break
+        case 'Belarus':
+        case 'Russia':
+        case 'Kazakhstan':
+          regex = /^[0-9]{6}$/
+          break
+        case 'France':
+          regex = /^[0-9]{2}\s?[0-9]{3}$/
+          break
+        case 'United Kingdom':
+          regex =
+            /^([A-Z]){1}([0-9][0-9]|[0-9]|[A-Z][0-9][A-Z]|[A-Z][0-9][0-9]|[A-Z][0-9]|[0-9][A-Z]){1}([ ])?([0-9][A-z][A-z]){1}$/i
+          break
+        case 'Spain':
+          regex = /^(?:0[1-9]|[1-4]\d|5[0-2])\d{3}$/
+          break
+        case 'Italy':
+          regex = /^[0-9]{5}$/
+          break
+        case 'Poland':
+          regex = /^[0-9]{2}-[0-9]{3}$/
+          break
+        default:
+          regex = /.*/
+      }
+      if (regex.test(postalCode)) {
+        this.postalCodeError = ''
+      } else {
+        this.postalCodeError = `Invalid postal code for ${this.country}`
       }
     },
     async signIn(user: UserRegistrationInfo) {
@@ -280,13 +302,11 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  //height: 100vh;
   position: relative;
 }
 
 form {
   display: flex;
-  margin: auto;
   font-size: 1rem;
   font-weight: 700;
   font-style: italic;
@@ -327,7 +347,7 @@ select {
   display: flex;
 }
 
-button {
+.register {
   width: 100%;
   padding: 10px;
   background-color: $app-red;
@@ -345,6 +365,13 @@ button {
       box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
     }
   }
+}
+
+.register:disabled {
+  background-color: whitesmoke;
+  color: $app-red;
+  width: 50%;
+  cursor: default;
 }
 .error {
   color: red;
