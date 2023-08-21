@@ -88,6 +88,7 @@ export const useUserStore = defineStore('user', {
         this.expires = userData.expires_in
         return true
       } catch (error) {
+        console.log(error)
         return false
       }
     },
@@ -103,7 +104,6 @@ export const useUserStore = defineStore('user', {
                   }
                 }
             ).then(data => console.log(data))
-        console.log('ok')
         return true
       } catch (error) {
         console.log(error)

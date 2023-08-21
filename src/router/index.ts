@@ -41,12 +41,19 @@ const router = createRouter({
           return !useUserStore().isLogin
       }
     },
-    { path: '/:pathMatch(.*)*', name: '404', component: NotFoundView },
     {
       path: '/registration',
       name: 'Registration',
-      component: RegistrationView
-    }
+      component: RegistrationView,
+      beforeEnter: () => {
+        if (useUserStore().isLogin) {
+          router.push('/')
+          return false
+        }
+        return !useUserStore().isLogin
+      }
+    },
+    { path: '/:pathMatch(.*)*', name: '404', component: NotFoundView }
   ]
 })
 
