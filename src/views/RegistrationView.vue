@@ -75,15 +75,15 @@
       <div class="registration-item">
   <label for="country">Country:</label>
   <select id="country" required v-model="country">
-    <option value="DE">Germany</option>
-    <option value="BY">Belarus</option>
-    <option value="RU">Russia</option>
-    <option value="KZ">Kazakhstan</option>
-    <option value="FR">France</option>
-    <option value="GB">United Kingdom</option>
-    <option value="ES">Spain</option>
-    <option value="IT">Italy</option>
-    <option value="PL">Poland</option>
+    <option value="Germany">Germany</option>
+    <option value="Belarus">Belarus</option>
+    <option value="Russia">Russia</option>
+    <option value="Kazakhstan">Kazakhstan</option>
+    <option value="France">France</option>
+    <option value="United Kingdom">United Kingdom</option>
+    <option value="Spain">Spain</option>
+    <option value="Italy">Italy</option>
+    <option value="Poland">Poland</option>
   </select>
 </div>
 
@@ -119,19 +119,6 @@ const formatEmailRegex = /^[a-zA-Z0-9._%+-\s]+@[a-zA-Z0-9.-\s]+\.[a-zA-Z\s]{2,}$
 const formatPasswordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/
 const nameRegex = /^[a-zA-Z]+$/
 const cityRegex = /^[a-zA-Z]+$/
-
-// enum CountryCodeRegex {
-//   DE = '/^{5}$/',
-  // BY = '/^{6}$/',
-  // RU = '/^{6}$/',
-  // KZ = '/^{6}$/',
-  // FR = '/^{2}[ ]?\d{3}$/',
-  // GB = '/^([A-Z]){1}([0-9][0-9]|[0-9]|[A-Z][0-9][A-Z]|[A-Z][0-9][0-9]|[A-Z][0-9]|[0-9][A-Z]){1}([ ])?([0-9][A-z][A-z]){1}$/i',
-  // ES = '/^(?:0[1-9]|[1-4]\d|5[0-2])\d{3}$/',
-  // IT = '/^{5}$/',
-  // PL = '/^{2}-\d{3}$/'
-// }
-
 
 export default {
   name: 'AuthorizationView',
@@ -236,13 +223,42 @@ export default {
       }
     },
     validatePostalCode: function () {
-      if (this.country === "Germany") {
-        console.log('DE')
+      const countryCode = this.country;
+      const postalCode = this.postalCode;  let regex;
+  switch (countryCode) {
+    case 'Germany':
+      regex = /^[0-9]{5}$/;
+      break;
+    case 'Belarus':
+    case 'Russia':
+    case 'Kazakhstan':
+      regex = /^[0-9]{6}$/;
+      break;
+    case 'France':
+      regex = /^[0-9]{2}\s?[0-9]{3}$/;
+      break;
+    case 'United Kingdom':
+      regex = /^([A-Z]){1}([0-9][0-9]|[0-9]|[A-Z][0-9][A-Z]|[A-Z][0-9][0-9]|[A-Z][0-9]|[0-9][A-Z]){1}([ ])?([0-9][A-z][A-z]){1}$/i;
+      break;
+    case 'Spain':
+      regex = /^(?:0[1-9]|[1-4]\d|5[0-2])\d{3}$/;
+      break;
+    case 'Italy':
+      regex = /^[0-9]{5}$/;
+      break;
+    case 'Poland':
+      regex = /^[0-9]{2}-[0-9]{3}$/;
+      break;    default:regex = /.*/;
+  }
+  if (regex.test(postalCode)) {
+    this.postalCodeError = '';
+  } else {
+    this.postalCodeError = `Invalid postal code for ${this.country}`;
+  }
 
       }
-      }
   },
- 
+
   }
 
 
@@ -260,7 +276,6 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  //height: 100vh;
   position: relative;
 }
 
