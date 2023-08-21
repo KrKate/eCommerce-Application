@@ -21,6 +21,7 @@
           placeholder="user@example.com"
           v-model="email"
           @input.prevent="validateEmail"
+          :class="{ 'invalid-input': emailError }"
         />
       </div>
       <div v-if="emailError" class="error">{{ emailError }}</div>
@@ -33,6 +34,7 @@
           required
           v-model="password"
           @input.prevent="validatePassword"
+          :class="{ 'invalid-input': passwordError }"
         />
       </div>
       <div v-if="passwordError" class="error">{{ passwordError }}</div>
@@ -45,6 +47,7 @@
           required
           v-model="firstName"
           @input.prevent="validateFirstName"
+          :class="{ 'invalid-input': firstNameError }"
         />
       </div>
       <div v-if="firstNameError" class="error">{{ firstNameError }}</div>
@@ -57,6 +60,7 @@
           required
           v-model="lastName"
           @input.prevent="validateLastName"
+          :class="{ 'invalid-input': lastNameError }"
         />
       </div>
       <div v-if="lastNameError" class="error">{{ lastNameError }}</div>
@@ -69,34 +73,49 @@
           required
           v-model="dateOfBirth"
           @input.prevent="validateDateOfBirth"
+          :class="{ 'invalid-input': dateError }"
         />
       </div>
       <div v-if="dateError" class="error">{{ dateError }}</div>
 
       <div class="registration-item">
         <label for="street">Street:</label>
-        <input type="text" id="street" required v-model="street" @input.prevent="validateStreet" />
+        <input
+          type="text"
+          id="street"
+          required
+          v-model="street"
+          @input.prevent="validateStreet"
+          :class="{ 'invalid-input': streetError }"
+        />
       </div>
       <div v-if="streetError" class="error">{{ streetError }}</div>
 
       <div class="registration-item">
         <label for="country">Country:</label>
         <select id="country" required v-model="country">
-          <option value="DE">Germany</option>
-          <option value="BY">Belarus</option>
-          <option value="RU">Russia</option>
-          <option value="KZ">Kazakhstan</option>
-          <option value="FR">France</option>
-          <option value="GB">United Kingdom</option>
-          <option value="ES">Spain</option>
-          <option value="IT">Italy</option>
-          <option value="PL">Poland</option>
+          <option value="Germany">Germany</option>
+          <option value="Belarus">Belarus</option>
+          <option value="Russia">Russia</option>
+          <option value="Kazakhstan">Kazakhstan</option>
+          <option value="France">France</option>
+          <option value="United Kingdom">United Kingdom</option>
+          <option value="Spain">Spain</option>
+          <option value="Italy">Italy</option>
+          <option value="Poland">Poland</option>
         </select>
       </div>
 
       <div class="registration-item">
         <label for="city">City:</label>
-        <input type="text" id="city" required v-model="city" @input.prevent="validateCity" />
+        <input
+          type="text"
+          id="city"
+          required
+          v-model="city"
+          @input.prevent="validateCity"
+          :class="{ 'invalid-input': cityError }"
+        />
       </div>
       <div v-if="cityError" class="error">{{ cityError }}</div>
 
@@ -108,6 +127,7 @@
           required
           v-model="postalCode"
           @input.prevent="validatePostalCode"
+          :class="{ 'invalid-input': postalCodeError }"
         />
       </div>
       <div v-if="postalCodeError" class="error">{{ postalCodeError }}</div>
@@ -124,8 +144,8 @@ import { useUserStore } from '@/stores/authorization'
 import router from '@/router'
 const formatEmailRegex = /^[a-zA-Z0-9._%+-\s]+@[a-zA-Z0-9.-\s]+\.[a-zA-Z\s]{2,}$/
 const formatPasswordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/
-const nameRegex = /^[a-zA-Z]+$/
-const cityRegex = /^[a-zA-Z]+$/
+const nameRegex = /^[a-zA-Zа-яА-Я]+$/
+const cityRegex = /^[a-zA-Zа-яА-Я]+$/
 
 export default {
   name: 'AuthorizationView',
@@ -316,10 +336,10 @@ form {
   background-color: $app-gray;
   z-index: 100;
   border-radius: 20px;
-  margin: 200px auto 0 auto;
+  margin: 200px auto 20px auto;
   padding: 15px 30px;
   max-height: fit-content;
-  min-height: 50vh;
+  min-height: 0;
   max-width: 800px;
 }
 
@@ -342,9 +362,12 @@ select {
     display: none;
   }
 }
-
 .registration-item {
   display: flex;
+}
+.registerContainer {
+  display: flex;
+  justify-content: center;
 }
 
 .register {
@@ -358,6 +381,7 @@ select {
   border-radius: 8px;
   font-weight: 500;
   transition: all 2s ease;
+
   &:hover {
     font-weight: 700;
     &:active {
@@ -370,6 +394,7 @@ select {
 .register:disabled {
   background-color: whitesmoke;
   color: $app-red;
+  flex-grow: 0;
   width: 50%;
   cursor: default;
 }
@@ -381,5 +406,9 @@ select {
     content: '✖';
     margin-right: 5px;
   }
+}
+.invalid-input {
+  border: 2px solid $app-red;
+  box-shadow: 0 0 1rem $app-red;
 }
 </style>
