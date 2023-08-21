@@ -96,29 +96,6 @@
 
 <script lang="ts">
 
-enum EmailError {
-  REQUIRED = 'Email is required',
-  FORMAT = 'Email address must be properly formatted (e.g., user@example.com).',
-  WHITESPACE = 'Email address must not contain leading or trailing whitespace.',
-  DOMAIN = 'Email address must contain a domain name (e.g., example.com).',
-  SYMBOL = "Email address must contain an '@' symbol separating local part and domain name."
-}
-
-enum PasswordError {
-  REQUIRED = `Password is required`,
-  LENGTH = 'Password must contain at least 8 characters.',
-  UPPERCASE = 'Password must contain at least one uppercase letter.',
-  LOWERCASE = 'Password must contain at least one lowercase letter.',
-  DIGIT = 'Password must contain at least one digit.',
-  SPECIAL_CHARACTER = 'Password must contain at least one special character.',
-  WHITESPACE = 'Password must not contain leading or trailing whitespace.'
-}
-
-const formatEmailRegex = /^[a-zA-Z0-9._%|/+\-@\\s]+@[a-zA-Z0-9.-\s]+\.[a-zA-Z\s]{1,}$/;
-const uppercaseRegex = /[A-Z]/;
-const lowercaseRegex = /[a-z]/;
-const digitRegex = /\d/;
-const specialRegex =  /^(?=.*[!@#$%^&*()+=._-])/;
 
 import { useUserStore } from '@/stores/authorization'
 import router from '@/router'
