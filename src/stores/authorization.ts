@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-import type { Customer, PasswordFlowResponse, SiteCookie, TokenResponse} from "@/stores/types";
+import type {Customer, PasswordFlowResponse, SiteCookie, TokenResponse, UserRegistrationInfo} from "@/stores/types";
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -88,6 +88,25 @@ export const useUserStore = defineStore('user', {
         this.expires = userData.expires_in
         return true
       } catch (error) {
+        return false
+      }
+    },
+    async signup(user: UserRegistrationInfo) {
+      try {
+        await axios
+            .post(
+                `https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/signup`,
+                JSON.stringify(user),
+                {
+                  headers: {
+                    Authorization: `Bearer ${this.token}`
+                  }
+                }
+            ).then(data => console.log(data))
+        console.log('ok')
+        return true
+      } catch (error) {
+        console.log(error)
         return false
       }
     },
