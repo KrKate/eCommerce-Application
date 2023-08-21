@@ -1,6 +1,6 @@
 <template>
   <div class="registration-page">
-    <form>
+    <form method="post" novalidate="true" ref="reg">
       <div class="registration-item">
         <label for="email">Email:</label>
         <input type="email"
@@ -108,8 +108,9 @@
         >
       </div>
       <div v-if="postalCodeError" class="error">{{ postalCodeError }}</div>
-
-      <button type="submit">Register</button>
+      <div class="registerContainer">
+          <input class="register" type="submit" value="Register" :disabled="!formIsValid" />
+        </div>
     </form>
   </div>
 </template>
@@ -323,7 +324,7 @@ select {
   display: flex;
 }
 
-button {
+.register {
   width: 100%;
   padding: 10px;
   background-color: $app-red;
@@ -342,6 +343,13 @@ button {
     }
   }
 }
+
+.register:disabled {
+  background-color: whitesmoke;
+  color: $app-red;
+  width: 50%;
+  cursor: default;
+}
 .error {
   color: red;
   font-size: 12px;
@@ -351,4 +359,6 @@ button {
     margin-right: 5px;
   }
 }
+
+
 </style>
