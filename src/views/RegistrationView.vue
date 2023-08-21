@@ -1,133 +1,147 @@
 <template>
   <div class="registration-page">
-    <form method="post" novalidate="true" ref="reg">
+    <form
+      novalidate="true"
+      ref="reg"
+      @submit.prevent="
+        signIn({
+          email: this.email,
+          password: this.password,
+          firstName: this.firstName,
+          lastName: this.lastName
+        })
+      "
+    >
       <div class="registration-item">
         <label for="email">Email:</label>
-        <input type="email"
-               id="email"
-               required
-               placeholder="user@example.com"
-               v-model="email"
-               @input.prevent="validateEmail"
-               :class="{ 'invalid-input': emailError }"
-        >
+        <input
+          type="email"
+          id="email"
+          required
+          placeholder="user@example.com"
+          v-model="email"
+          @input.prevent="validateEmail"
+          :class="{ 'invalid-input': emailError }"
+        />
       </div>
-        <div v-if="emailError" class="error">{{ emailError }}</div>
+      <div v-if="emailError" class="error">{{ emailError }}</div>
 
       <div class="registration-item">
         <label for="password">Password:</label>
-        <input type="password"
-               id="password"
-               required
-               v-model="password"
-               @input.prevent="validatePassword"
-               :class="{ 'invalid-input': passwordError }"
-        >
+        <input
+          type="password"
+          id="password"
+          required
+          v-model="password"
+          @input.prevent="validatePassword"
+          :class="{ 'invalid-input': passwordError }"
+        />
       </div>
-        <div v-if="passwordError" class="error">{{ passwordError }}</div>
-
+      <div v-if="passwordError" class="error">{{ passwordError }}</div>
 
       <div class="registration-item">
         <label for="firstName">First Name:</label>
-        <input type="text"
-               id="firstName"
-               required
-               v-model="firstName"
-               @input.prevent="validateFirstName"
-               :class="{ 'invalid-input': firstNameError }"
-        >
+        <input
+          type="text"
+          id="firstName"
+          required
+          v-model="firstName"
+          @input.prevent="validateFirstName"
+          :class="{ 'invalid-input': firstNameError }"
+        />
       </div>
-        <div v-if="firstNameError" class="error">{{ firstNameError }}</div>
-
+      <div v-if="firstNameError" class="error">{{ firstNameError }}</div>
 
       <div class="registration-item">
         <label for="lastName">Last Name:</label>
-        <input type="text"
-               id="lastName"
-               required
-               v-model="lastName"
-               @input.prevent="validateLastName"
-               :class="{ 'invalid-input': lastNameError }"
-        >
+        <input
+          type="text"
+          id="lastName"
+          required
+          v-model="lastName"
+          @input.prevent="validateLastName"
+          :class="{ 'invalid-input': lastNameError }"
+        />
       </div>
-        <div v-if="lastNameError" class="error">{{ lastNameError }}</div>
+      <div v-if="lastNameError" class="error">{{ lastNameError }}</div>
 
       <div class="registration-item">
         <label for="date">Date of Birth:</label>
-        <input type="date"
-                id="date"
-                required
-                v-model="dateOfBirth"
-               @input.prevent="validateDateOfBirth"
-               :class="{ 'invalid-input': dateError }"
-
-        >
+        <input
+          type="date"
+          id="date"
+          required
+          v-model="dateOfBirth"
+          @input.prevent="validateDateOfBirth"
+          :class="{ 'invalid-input': dateError }"
+        />
       </div>
-        <div v-if="dateError" class="error">{{ dateError }}</div>
-
+      <div v-if="dateError" class="error">{{ dateError }}</div>
 
       <div class="registration-item">
         <label for="street">Street:</label>
-        <input type="text"
-               id="street"
-               required
-               v-model="street"
-               @input.prevent="validateStreet"
-               :class="{ 'invalid-input': streetError }"
-        >
+        <input
+          type="text"
+          id="street"
+          required
+          v-model="street"
+          @input.prevent="validateStreet"
+          :class="{ 'invalid-input': streetError }"
+        />
       </div>
       <div v-if="streetError" class="error">{{ streetError }}</div>
 
       <div class="registration-item">
-  <label for="country">Country:</label>
-  <select id="country"
-         required
-         v-model="country"
-         >
-    <option value="Germany">Germany</option>
-    <option value="Belarus">Belarus</option>
-    <option value="Russia">Russia</option>
-    <option value="Kazakhstan">Kazakhstan</option>
-    <option value="France">France</option>
-    <option value="United Kingdom">United Kingdom</option>
-    <option value="Spain">Spain</option>
-    <option value="Italy">Italy</option>
-    <option value="Poland">Poland</option>
-  </select>
-</div>
-
+        <label for="country">Country:</label>
+        <select id="country" required v-model="country">
+          <option value="Germany">Germany</option>
+          <option value="Belarus">Belarus</option>
+          <option value="Russia">Russia</option>
+          <option value="Kazakhstan">Kazakhstan</option>
+          <option value="France">France</option>
+          <option value="United Kingdom">United Kingdom</option>
+          <option value="Spain">Spain</option>
+          <option value="Italy">Italy</option>
+          <option value="Poland">Poland</option>
+        </select>
+      </div>
 
       <div class="registration-item">
         <label for="city">City:</label>
-        <input type="text"
-               id="city"
-               required
-               v-model="city"
-               @input.prevent="validateCity"
-               :class="{ 'invalid-input': cityError }"
-        >
+        <input
+          type="text"
+          id="city"
+          required
+          v-model="city"
+          @input.prevent="validateCity"
+          :class="{ 'invalid-input': cityError }"
+        />
       </div>
       <div v-if="cityError" class="error">{{ cityError }}</div>
 
       <div class="registration-item">
         <label for="postalCode">Postal Code:</label>
-        <input type="text"
-               id="postalCode"
-               required
-               v-model="postalCode"
-               @input.prevent="validatePostalCode"
-               :class="{ 'invalid-input': postalCodeError }"
-        >
+        <input
+          type="text"
+          id="postalCode"
+          required
+          v-model="postalCode"
+          @input.prevent="validatePostalCode"
+          :class="{ 'invalid-input': postalCodeError }"
+        />
       </div>
       <div v-if="postalCodeError" class="error">{{ postalCodeError }}</div>
       <div class="registerContainer">
-          <input class="register" type="submit" value="Register" :disabled="!formIsValid" />
-        </div>
+        <input class="register" type="submit" value="Register" :disabled="!formIsValid" />
+      </div>
     </form>
   </div>
 </template>
 
 <script lang="ts">
+import { UserRegistrationInfo } from '@/stores/types'
+import { useUserStore } from '@/stores/authorization'
+import router from '@/router'
 const formatEmailRegex = /^[a-zA-Z0-9._%+-\s]+@[a-zA-Z0-9.-\s]+\.[a-zA-Z\s]{2,}$/
 const formatPasswordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/
 const nameRegex = /^[a-zA-Zа-яА-Я]+$/
@@ -141,7 +155,7 @@ export default {
       password: '',
       firstName: '',
       lastName: '',
-      dateOfBirth:'',
+      dateOfBirth: '',
       street: '',
       city: '',
       postalCode: '',
@@ -154,7 +168,9 @@ export default {
       streetError: '',
       cityError: '',
       postalCodeError: '',
-      countryError: ''
+      countryError: '',
+      isCorrectData: false,
+      store: useUserStore()
     }
   },
   computed: {
@@ -191,37 +207,40 @@ export default {
     },
     validatePassword: function () {
       if (!this.password.match(formatPasswordRegex)) {
-        this.passwordError = 'Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, and 1 number'
+        this.passwordError =
+          'Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, and 1 number'
       } else {
         this.passwordError = ''
       }
     },
     validateFirstName: function () {
       if (!this.firstName.match(nameRegex)) {
-        this.firstNameError = 'Must contain at least one character and no special characters or numbers'
+        this.firstNameError =
+          'Must contain at least one character and no special characters or numbers'
       } else {
         this.firstNameError = ''
       }
     },
     validateLastName: function () {
       if (!this.lastName.match(nameRegex)) {
-        this.lastNameError = 'Must contain at least one character and no special characters or numbers'
+        this.lastNameError =
+          'Must contain at least one character and no special characters or numbers'
       } else {
         this.lastNameError = ''
       }
     },
-    validateDateOfBirth: function() {
-      const today = new Date();
-      const selectedDate = new Date(this.dateOfBirth);
-      const ageDifference = today.getFullYear() - selectedDate.getFullYear();
+    validateDateOfBirth: function () {
+      const today = new Date()
+      const selectedDate = new Date(this.dateOfBirth)
+      const ageDifference = today.getFullYear() - selectedDate.getFullYear()
 
       if (ageDifference < 13) {
-        this.dateError = "You must be at least 13 years old.";
-     } else {
-       this.dateError = "";
-    }
+        this.dateError = 'You must be at least 13 years old.'
+      } else {
+        this.dateError = ''
+      }
     },
-    validateStreet: function() {
+    validateStreet: function () {
       if (this.street.length === 0) {
         this.streetError = 'Must contain at least one character'
       } else {
@@ -236,49 +255,63 @@ export default {
       }
     },
     validatePostalCode: function () {
-      const countryCode = this.country;
-      const postalCode = this.postalCode;  let regex;
-  switch (countryCode) {
-    case 'Germany':
-      regex = /^[0-9]{5}$/;
-      break;
-    case 'Belarus':
-    case 'Russia':
-    case 'Kazakhstan':
-      regex = /^[0-9]{6}$/;
-      break;
-    case 'France':
-      regex = /^[0-9]{2}\s?[0-9]{3}$/;
-      break;
-    case 'United Kingdom':
-      regex = /^([A-Z]){1}([0-9][0-9]|[0-9]|[A-Z][0-9][A-Z]|[A-Z][0-9][0-9]|[A-Z][0-9]|[0-9][A-Z]){1}([ ])?([0-9][A-z][A-z]){1}$/i;
-      break;
-    case 'Spain':
-      regex = /^(?:0[1-9]|[1-4]\d|5[0-2])\d{3}$/;
-      break;
-    case 'Italy':
-      regex = /^[0-9]{5}$/;
-      break;
-    case 'Poland':
-      regex = /^[0-9]{2}-[0-9]{3}$/;
-      break;    default:regex = /.*/;
-  }
-  if (regex.test(postalCode)) {
-    this.postalCodeError = '';
-  } else {
-    this.postalCodeError = `Invalid postal code for ${this.country}`;
-  }
-
+      const countryCode = this.country
+      const postalCode = this.postalCode
+      let regex
+      switch (countryCode) {
+        case 'Germany':
+          regex = /^[0-9]{5}$/
+          break
+        case 'Belarus':
+        case 'Russia':
+        case 'Kazakhstan':
+          regex = /^[0-9]{6}$/
+          break
+        case 'France':
+          regex = /^[0-9]{2}\s?[0-9]{3}$/
+          break
+        case 'United Kingdom':
+          regex =
+            /^([A-Z]){1}([0-9][0-9]|[0-9]|[A-Z][0-9][A-Z]|[A-Z][0-9][0-9]|[A-Z][0-9]|[0-9][A-Z]){1}([ ])?([0-9][A-z][A-z]){1}$/i
+          break
+        case 'Spain':
+          regex = /^(?:0[1-9]|[1-4]\d|5[0-2])\d{3}$/
+          break
+        case 'Italy':
+          regex = /^[0-9]{5}$/
+          break
+        case 'Poland':
+          regex = /^[0-9]{2}-[0-9]{3}$/
+          break
+        default:
+          regex = /.*/
       }
-  },
-
+      if (regex.test(postalCode)) {
+        this.postalCodeError = ''
+      } else {
+        this.postalCodeError = `Invalid postal code for ${this.country}`
+      }
+    },
+    async signIn(user: UserRegistrationInfo) {
+      await this.store.fetchToken()
+      if (await this.store.signup(user)) {
+        if (await this.store.getTokens(user.email, user.password)) {
+          if (await this.store.login(user.email, user.password)) {
+            this.store.changeLogin()
+            setTimeout(() => router.push('/'), 2000)
+          } else {
+            this.isCorrectData = true
+            setTimeout(() => (this.isCorrectData = false), 6000)
+          }
+        } else {
+          this.isCorrectData = true
+          setTimeout(() => (this.isCorrectData = false), 6000)
+        }
+      }
+    }
   }
-
-
-
-
+}
 </script>
-
 
 <style scoped lang="scss">
 @import '@/assets/styles/mixins';
@@ -294,7 +327,6 @@ export default {
 
 form {
   display: flex;
-  margin: auto;
   font-size: 1rem;
   font-weight: 700;
   font-style: italic;
@@ -307,10 +339,9 @@ form {
   margin: 200px auto 20px auto;
   padding: 15px 30px;
   max-height: fit-content;
-  min-height: 0vh;
+  min-height: 0;
   max-width: 800px;
 }
-
 
 label {
   display: block;
@@ -338,7 +369,6 @@ select {
   display: flex;
   justify-content: center;
 }
-
 
 .register {
   width: 100%;
@@ -381,5 +411,4 @@ select {
   border: 2px solid $app-red;
   box-shadow: 0 0 1rem $app-red;
 }
-
 </style>
