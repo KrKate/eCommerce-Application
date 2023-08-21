@@ -341,6 +341,7 @@ form {
   max-height: fit-content;
   min-height: 0;
   max-width: 800px;
+
 }
 
 label {
