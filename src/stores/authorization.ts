@@ -76,14 +76,9 @@ export const useUserStore = defineStore('user', {
     },
     async getTokens(email: string, password: string) {
       try {
-        console.log(
-          `https://auth.europe-west1.gcp.commercetools.com/oauth/ecommerce_app_sloths/customers/token?grant_type=password&username=${email}&password=${encodeURI(
-            password
-          )}`
-        )
         const userData: PasswordFlowResponse = await axios
           .post(
-            `https://auth.europe-west1.gcp.commercetools.com/oauth/ecommerce_app_sloths/customers/token?grant_type=password&username=${email}&password=${encodeURI(
+            `https://auth.europe-west1.gcp.commercetools.com/oauth/ecommerce_app_sloths/customers/token?grant_type=password&username=${email}&password=${encodeURIComponent(
               password
             )}`,
             {},
@@ -106,7 +101,6 @@ export const useUserStore = defineStore('user', {
       }
     },
     async signup(user: UserRegistrationInfo) {
-      user.password = encodeURI(user.password)
       try {
         await axios.post(
           `https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/signup`,
