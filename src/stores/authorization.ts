@@ -1,6 +1,12 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-import type {Customer, PasswordFlowResponse, SiteCookie, TokenResponse, UserRegistrationInfo} from "@/stores/types";
+import type {
+  Customer,
+  PasswordFlowResponse,
+  SiteCookie,
+  TokenResponse,
+  UserRegistrationInfo
+} from '@/stores/types'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -70,9 +76,16 @@ export const useUserStore = defineStore('user', {
     },
     async getTokens(email: string, password: string) {
       try {
+        console.log(
+          `https://auth.europe-west1.gcp.commercetools.com/oauth/ecommerce_app_sloths/customers/token?grant_type=password&username=${email}&password=${encodeURI(
+            password
+          )}`
+        )
         const userData: PasswordFlowResponse = await axios
           .post(
-            `https://auth.europe-west1.gcp.commercetools.com/oauth/ecommerce_app_sloths/customers/token?grant_type=password&username=${email}&password=${password}`,
+            `https://auth.europe-west1.gcp.commercetools.com/oauth/ecommerce_app_sloths/customers/token?grant_type=password&username=${email}&password=${encodeURI(
+              password
+            )}`,
             {},
             {
               headers: {
@@ -93,17 +106,17 @@ export const useUserStore = defineStore('user', {
       }
     },
     async signup(user: UserRegistrationInfo) {
+      user.password = encodeURI(user.password)
       try {
-        await axios
-            .post(
-                `https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/signup`,
-                JSON.stringify(user),
-                {
-                  headers: {
-                    Authorization: `Bearer ${this.token}`
-                  }
-                }
-            )
+        await axios.post(
+          `https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/signup`,
+          JSON.stringify(user),
+          {
+            headers: {
+              Authorization: `Bearer ${this.token}`
+            }
+          }
+        )
         return true
       } catch (error) {
         console.log(error)
@@ -115,21 +128,21 @@ export const useUserStore = defineStore('user', {
     },
     readCookie() {
       const cookies = document.cookie.split(';')
-      const siteData = cookies.filter(value => value.includes('pokemonStore='))
+      const siteData = cookies.filter((value) => value.includes('pokemonStore='))
       if (siteData.length) {
         const data: SiteCookie = JSON.parse(decodeURI(siteData[0].replace('pokemonStore=', '')))
-        this.firstName = data.firstName;
-        this.lastName = data.lastName;
-        this.token = data.accessToken;
-        this.email = data.email;
-        this.id = data.id;
-        this.refreshToken = data.refreshToken;
-        this.isLogin = true;
+        this.firstName = data.firstName
+        this.lastName = data.lastName
+        this.token = data.accessToken
+        this.email = data.email
+        this.id = data.id
+        this.refreshToken = data.refreshToken
+        this.isLogin = true
       }
     },
-    clearCookie(){
+    clearCookie() {
       const cookies = document.cookie.split(';')
-      const siteData = cookies.filter(value => value.includes('pokemonStore='))
+      const siteData = cookies.filter((value) => value.includes('pokemonStore='))
       if (siteData.length) {
         document.cookie = `pokemonStore=;max-age=0`
       }
