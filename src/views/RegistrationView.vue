@@ -1,7 +1,7 @@
 <template>
   <div class="registration-page">
     <form
-      novalidate="true"
+      :novalidate="true"
       ref="reg"
       @submit.prevent="
         signIn({
@@ -12,6 +12,7 @@
         })
       "
     >
+      <h2>{{store.isLogin ? 'Successful registration!' : 'Registration' }}</h2>
       <div class="registration-item">
         <label for="email">Email:</label>
         <input
@@ -134,6 +135,9 @@
       <div class="registerContainer">
         <input class="register" type="submit" value="Register" :disabled="!formIsValid" />
       </div>
+      <p class="login-link" v-if="!store.isLogin">
+        Already have an account? <RouterLink to="/login">Login</RouterLink>
+      </p>
     </form>
   </div>
 </template>
@@ -142,7 +146,7 @@
 import { UserRegistrationInfo } from '@/stores/types'
 import { useUserStore } from '@/stores/authorization'
 import router from '@/router'
-const formatEmailRegex = /^[a-zA-Z0-9._%+-\s]+@[a-zA-Z0-9.-\s]+\.[a-zA-Z\s]{2,}$/
+const formatEmailRegex = /^[a-zA-Z0-9._%+\-\s]+@[a-zA-Z0-9.\-\s]+\.[a-zA-Z\s]{2,}$/
 const formatPasswordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/
 const nameRegex = /^[a-zA-Zа-яА-Я]+$/
 const cityRegex = /^[a-zA-Zа-яА-Я]+$/
@@ -331,16 +335,25 @@ form {
   font-weight: 700;
   font-style: italic;
   flex-direction: column;
-  align-items: left;
   gap: 10px;
   background-color: $app-gray;
-  z-index: 100;
   border-radius: 20px;
   margin: 200px auto 20px auto;
   padding: 15px 30px;
   max-height: fit-content;
-  min-height: 0;
-  max-width: 800px;
+  max-width: 500px;
+
+  h2 {
+    @include pokemon-text($app-yellow, $app-dark-blue);
+    -webkit-text-stroke: 1px $app-light-blue;
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+
+  .login-link {
+    text-align: center;
+  }
 }
 
 label {
@@ -374,15 +387,16 @@ select {
   width: 100%;
   padding: 10px;
   background-color: $app-red;
-  color: white;
+  color: $app-white;
   border: none;
   cursor: pointer;
-  margin-bottom: 20px;
   border-radius: 8px;
   font-weight: 500;
+  font-size: 0.8rem;
   transition: all 2s ease;
+  text-transform: uppercase;
 
-  &:hover {
+  &:hover:not(:disabled) {
     font-weight: 700;
     &:active {
       transform: translateY(-1px);

@@ -86,7 +86,7 @@
           <h2>Redirecting...</h2>
         </div>
       </form>
-      <p class="registration-link" v-if="!store.isLogin">
+      <p class="login-link" v-if="!store.isLogin">
         Not registered yet? <RouterLink to="/registration">Register here</RouterLink>
       </p>
     </div>
@@ -97,7 +97,7 @@
 import { useUserStore } from '@/stores/authorization'
 import router from '@/router'
 import { EmailError, PasswordError } from '@/global/constatnts'
-const formatEmailRegex = /^[a-zA-Z0-9._%+-\s]+@[a-zA-Z0-9.-\s]+\.[a-zA-Z\s]+$/
+const formatEmailRegex = /^[a-zA-Z0-9._%+\-\s]+@[a-zA-Z0-9.\-\s]+\.[a-zA-Z\s]+$/
 const uppercaseRegex = /[A-Z]/
 const lowercaseRegex = /[a-z]/
 const digitRegex = /\d/
@@ -385,7 +385,7 @@ input {
   }
 }
 
-.registration-link {
+.login-link {
   text-align: center;
 }
 
@@ -429,10 +429,11 @@ li {
   cursor: pointer;
   margin-bottom: 20px;
   border-radius: 8px;
+  font-size: 0.8rem;
   font-weight: 500;
   transition: all 2s ease;
 
-  &:hover {
+  &:hover:not(:disabled) {
     font-weight: 700;
 
     &:active {
@@ -440,6 +441,14 @@ li {
       box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
     }
   }
+}
+
+.signUp:disabled {
+  background-color: whitesmoke;
+  color: $app-red;
+  flex-grow: 0;
+  width: 50%;
+  cursor: default;
 }
 
 .logout {
