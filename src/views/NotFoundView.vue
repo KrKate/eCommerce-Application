@@ -25,9 +25,7 @@ export default {
 <style scoped lang="scss">
 @import '@/assets/styles/mixins';
 main {
-  position: relative;
-  display: flex;
-  height: 100vh;
+  @include view(auto, 100vh, relative, flex);
   padding-top: 160px;
 }
 img {
@@ -49,52 +47,40 @@ img {
 }
 
 #letter_1 {
-  animation: fly1 4s forwards;
-  animation-delay: 4s;
+  @include letters(fly1);
 }
 #letter_2 {
-  animation: fly2 4s forwards;
-  animation-delay: 4s;
+  @include letters(fly2);
 }
 #letter_3 {
-  animation: fly3 4s forwards;
-  animation-delay: 4s;
+  @include letters(fly3);
 }
 #letter_4 {
-  animation: fly4 4s forwards;
-  animation-delay: 4s;
+  @include letters(fly4);
 }
 #letter_5 {
-  animation: fly5 4s forwards;
-  animation-delay: 4s;
+  @include letters(fly5);
 }
 #letter_6 {
-  animation: fly6 4s forwards;
-  animation-delay: 4s;
+  @include letters(fly6);
 }
 #letter_7 {
-  animation: fly7 4s forwards;
-  animation-delay: 4s;
+  @include letters(fly7);
 }
 #letter_8 {
-  animation: fly8 4s forwards;
-  animation-delay: 4s;
+  @include letters(fly8);
 }
 #letter_9 {
-  animation: fly9 4s forwards;
-  animation-delay: 4s;
+  @include letters(fly9);
 }
 #letter_10 {
-  animation: fly10 4s forwards;
-  animation-delay: 4s;
+  @include letters(fly10);
 }
 #letter_11 {
-  animation: fly11 4s forwards;
-  animation-delay: 4s;
+  @include letters(fly11);
 }
 #letter_12 {
-  animation: fly12 4s forwards;
-  animation-delay: 4s;
+  @include letters(fly12);
 }
 @keyframes shake {
   10%,
