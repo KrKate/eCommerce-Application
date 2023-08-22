@@ -71,7 +71,7 @@ header {
     justify-content: space-between;
 
     h1 {
-      @include pokemon-text($app-yelow, $app-dark-blue);
+      @include pokemon-text($app-yellow, $app-dark-blue);
       @include view(auto, auto, relative, flex);
       font-size: 2.5rem;
       -webkit-text-stroke: 1px $app-light-blue;
@@ -90,7 +90,7 @@ header {
       gap: 15px;
 
       button {
-        @include pokemon-text($app-yelow, $app-light-blue);
+        @include pokemon-text($app-yellow, $app-light-blue);
         letter-spacing: 5px;
         font-size: 2rem;
         display: flex;
@@ -101,7 +101,7 @@ header {
       }
 
       button:hover {
-        @include pokemon-text($app-light-blue, $app-yelow);
+        @include pokemon-text($app-light-blue, $app-yellow);
         cursor: pointer;
       }
     }

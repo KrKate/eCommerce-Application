@@ -347,7 +347,7 @@ export default {
   box-shadow: 0 0 1rem $app-red;
 }
 h2 {
-  @include pokemon-text($app-yelow, $app-dark-blue);
+  @include pokemon-text($app-yellow, $app-dark-blue);
   -webkit-text-stroke: 1px $app-light-blue;
   text-align: center;
   font-size: 2rem;
