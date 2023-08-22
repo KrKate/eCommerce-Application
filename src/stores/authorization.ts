@@ -1,6 +1,12 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-import type {Customer, PasswordFlowResponse, SiteCookie, TokenResponse, UserRegistrationInfo} from "@/stores/types";
+import type {
+  Customer,
+  PasswordFlowResponse,
+  SiteCookie,
+  TokenResponse,
+  UserRegistrationInfo
+} from '@/stores/types'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -10,6 +16,7 @@ export const useUserStore = defineStore('user', {
     expires: 0,
     firstName: '',
     lastName: '',
+    isLoading: false,
     id: '',
     email: ''
   }),
@@ -94,16 +101,15 @@ export const useUserStore = defineStore('user', {
     },
     async signup(user: UserRegistrationInfo) {
       try {
-        await axios
-            .post(
-                `https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/signup`,
-                JSON.stringify(user),
-                {
-                  headers: {
-                    Authorization: `Bearer ${this.token}`
-                  }
-                }
-            )
+        await axios.post(
+          `https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/signup`,
+          JSON.stringify(user),
+          {
+            headers: {
+              Authorization: `Bearer ${this.token}`
+            }
+          }
+        )
         return true
       } catch (error) {
         console.log(error)
@@ -115,21 +121,21 @@ export const useUserStore = defineStore('user', {
     },
     readCookie() {
       const cookies = document.cookie.split(';')
-      const siteData = cookies.filter(value => value.includes('pokemonStore='))
+      const siteData = cookies.filter((value) => value.includes('pokemonStore='))
       if (siteData.length) {
         const data: SiteCookie = JSON.parse(decodeURI(siteData[0].replace('pokemonStore=', '')))
-        this.firstName = data.firstName;
-        this.lastName = data.lastName;
-        this.token = data.accessToken;
-        this.email = data.email;
-        this.id = data.id;
-        this.refreshToken = data.refreshToken;
-        this.isLogin = true;
+        this.firstName = data.firstName
+        this.lastName = data.lastName
+        this.token = data.accessToken
+        this.email = data.email
+        this.id = data.id
+        this.refreshToken = data.refreshToken
+        this.isLogin = true
       }
     },
-    clearCookie(){
+    clearCookie() {
       const cookies = document.cookie.split(';')
-      const siteData = cookies.filter(value => value.includes('pokemonStore='))
+      const siteData = cookies.filter((value) => value.includes('pokemonStore='))
       if (siteData.length) {
         document.cookie = `pokemonStore=;max-age=0`
       }

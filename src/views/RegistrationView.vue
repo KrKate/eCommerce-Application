@@ -12,8 +12,8 @@
         })
       "
     >
-      <h2>{{store.isLogin ? 'Successful registration!' : 'Registration' }}</h2>
-      <div class="registration-item">
+      <h2>{{ store.isLogin ? 'Successful registration!' : 'Registration' }}</h2>
+      <div class="registration-item" v-if="!store.isLogin">
         <label for="email">Email:</label>
         <input
           type="email"
@@ -27,7 +27,7 @@
       </div>
       <div v-if="emailError" class="error">{{ emailError }}</div>
 
-      <div class="registration-item">
+      <div class="registration-item" v-if="!store.isLogin">
         <label for="password">Password:</label>
         <input
           type="password"
@@ -40,7 +40,7 @@
       </div>
       <div v-if="passwordError" class="error">{{ passwordError }}</div>
 
-      <div class="registration-item">
+      <div class="registration-item" v-if="!store.isLogin">
         <label for="firstName">First Name:</label>
         <input
           type="text"
@@ -53,7 +53,7 @@
       </div>
       <div v-if="firstNameError" class="error">{{ firstNameError }}</div>
 
-      <div class="registration-item">
+      <div class="registration-item" v-if="!store.isLogin">
         <label for="lastName">Last Name:</label>
         <input
           type="text"
@@ -66,7 +66,7 @@
       </div>
       <div v-if="lastNameError" class="error">{{ lastNameError }}</div>
 
-      <div class="registration-item">
+      <div class="registration-item" v-if="!store.isLogin">
         <label for="date">Date of Birth:</label>
         <input
           type="date"
@@ -79,7 +79,7 @@
       </div>
       <div v-if="dateError" class="error">{{ dateError }}</div>
 
-      <div class="registration-item">
+      <div class="registration-item" v-if="!store.isLogin">
         <label for="street">Street:</label>
         <input
           type="text"
@@ -92,7 +92,7 @@
       </div>
       <div v-if="streetError" class="error">{{ streetError }}</div>
 
-      <div class="registration-item">
+      <div class="registration-item" v-if="!store.isLogin">
         <label for="country">Country:</label>
         <select id="country" required v-model="country">
           <option value="Germany">Germany</option>
@@ -107,7 +107,7 @@
         </select>
       </div>
 
-      <div class="registration-item">
+      <div class="registration-item" v-if="!store.isLogin">
         <label for="city">City:</label>
         <input
           type="text"
@@ -120,7 +120,7 @@
       </div>
       <div v-if="cityError" class="error">{{ cityError }}</div>
 
-      <div class="registration-item">
+      <div class="registration-item" v-if="!store.isLogin">
         <label for="postalCode">Postal Code:</label>
         <input
           type="text"
@@ -132,12 +132,16 @@
         />
       </div>
       <div v-if="postalCodeError" class="error">{{ postalCodeError }}</div>
-      <div class="registerContainer">
+      <div class="registerContainer" v-if="!store.isLogin">
         <input class="register" type="submit" value="Register" :disabled="!formIsValid" />
       </div>
       <p class="login-link" v-if="!store.isLogin">
         Already have an account? <RouterLink to="/login">Login</RouterLink>
       </p>
+      <div class="logout" v-if="store.isLogin">
+        <img src="@/assets/gif/login_success.gif" alt="login_success" />
+        <h2>Redirecting...</h2>
+      </div>
     </form>
   </div>
 </template>
@@ -297,6 +301,7 @@ export default {
       }
     },
     async signIn(user: UserRegistrationInfo) {
+      this.store.isLoading = true
       await this.store.fetchToken()
       if (await this.store.signup(user)) {
         if (await this.store.getTokens(user.email, user.password)) {
@@ -312,6 +317,7 @@ export default {
           setTimeout(() => (this.isCorrectData = false), 6000)
         }
       }
+      this.store.isLoading = false
     }
   }
 }

@@ -31,7 +31,7 @@
       </ul>
     </div>
     <div class="container-forms">
-      <h2>{{store.isLogin ? 'Successfully logged!' : 'Login' }}</h2>
+      <h2>{{ store.isLogin ? 'Successfully logged!' : 'Login' }}</h2>
       <form method="post" :novalidate="true" ref="log" @submit.prevent="login">
         <div class="form-group" v-if="!store.isLogin">
           <label for="email">Email</label>
@@ -181,6 +181,7 @@ export default {
       return password.trim() !== password
     },
     async login() {
+      this.store.isLoading = true
       if (this.email && this.password) {
         await this.store.fetchToken()
         if (await this.store.getTokens(this.email, this.password)) {
@@ -196,6 +197,7 @@ export default {
           setTimeout(() => (this.isCorrectData = false), 6000)
         }
       }
+      this.store.isLoading = false
     }
   }
 }
