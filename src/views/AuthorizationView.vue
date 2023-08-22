@@ -26,15 +26,13 @@
       "
     >
       <ul>
-        <li v-for="error in passwordErrors" :key="error">{{ error }}</li>
-        <li v-for="error in emailErrors" :key="error">{{ error }}</li>
+        <li v-for="error in [...emailErrors, ...passwordErrors]" :key="error">{{ error }}</li>
         <li v-if="isCorrectData">Wrong login or password!</li>
       </ul>
     </div>
     <div class="container-forms">
-      <h2 v-if="!store.isLogin">Login</h2>
-      <h2 v-if="store.isLogin">Successfully logged!</h2>
-      <form method="post" novalidate="true" ref="log" @submit.prevent="login">
+      <h2>{{store.isLogin ? 'Successfully logged!' : 'Login' }}</h2>
+      <form method="post" :novalidate="true" ref="log" @submit.prevent="login">
         <div class="form-group" v-if="!store.isLogin">
           <label for="email">Email</label>
           <input
@@ -56,7 +54,7 @@
           <input
             type="password"
             id="password"
-            placeholder="Make it secure!"
+            placeholder="Enter your password!"
             v-model="password"
             @input.prevent="validatePassword"
             ref="password"
@@ -73,6 +71,7 @@
               }
             "
             v-if="password.length"
+            alt="show-password"
           />
           <div class="crossed" v-if="isShowPassword"></div>
           <div class="clear-cross" v-if="password.length" @click="$refs.password.value = ''">
@@ -95,12 +94,10 @@
 </template>
 
 <script lang="ts">
-
-
 import { useUserStore } from '@/stores/authorization'
 import router from '@/router'
-import {EmailError, PasswordError} from "@/global/constatnts";
-const formatEmailRegex = /^[a-zA-Z0-9._%+-\s]+@[a-zA-Z0-9.-\s]+\.[a-zA-Z\s]{1,}$/
+import { EmailError, PasswordError } from '@/global/constatnts'
+const formatEmailRegex = /^[a-zA-Z0-9._%+-\s]+@[a-zA-Z0-9.-\s]+\.[a-zA-Z\s]+$/
 const uppercaseRegex = /[A-Z]/
 const lowercaseRegex = /[a-z]/
 const digitRegex = /\d/
@@ -165,7 +162,6 @@ export default {
     validEmailSymbol: function (email: string) {
       return email.includes('@')
     },
-
     validPasswordLength: function (password: string) {
       return password.length >= 8
     },
@@ -208,24 +204,24 @@ export default {
 <style scoped lang="scss">
 @import '@/assets/styles/mixins';
 @import '@/assets/styles/colors';
+
 .login-page {
-  width: 100%;
-  display: flex;
+  @include view(100%, 100vh, relative, flex);
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  position: relative;
 }
+
 .container-forms {
   background-color: $app-gray;
-  z-index: 100;
   border-radius: 20px;
   margin: 150px auto 0 auto;
   padding: 15px 30px;
   max-height: fit-content;
-  min-height: 50vh;
   max-width: 500px;
+  min-height: 50vh;
+  z-index: 100;
+
   @media screen and (max-width: 500px) {
     max-width: 300px;
   }
@@ -258,7 +254,7 @@ export default {
   bottom: 58%;
   margin: 0 auto;
   overflow: hidden;
-  animation: showDiv1 4s forwards;
+  animation: showMessage 4s forwards;
   min-width: 640px;
 }
 
@@ -266,24 +262,12 @@ export default {
   position: absolute;
   z-index: 600;
   height: 0;
-  background-color: white;
+  background-color: $app-white;
   border-radius: 60px;
   padding: 0;
   border: none;
   bottom: 58%;
   left: 20%;
-}
-
-@keyframes showDiv1 {
-  0% {
-    opacity: 0;
-  }
-  60% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
 }
 
 .hideClip {
@@ -292,7 +276,7 @@ export default {
   clip-path: polygon(37% 12%, 9% 15%, 93% 111%);
   z-index: 605;
   left: 53%;
-  background-color: white;
+  background-color: $app-white;
 }
 
 .hideClip1 {
@@ -301,7 +285,7 @@ export default {
   clip-path: polygon(45% 20%, 5% 20%, 92% 110%);
   z-index: 604;
   left: 53%;
-  background-color: black;
+  background-color: $app-black;
 }
 
 .showClip {
@@ -313,7 +297,7 @@ export default {
   height: 100px;
   z-index: 605;
   left: 53%;
-  background-color: white;
+  background-color: $app-white;
   animation: showDiv 4s forwards;
 }
 
@@ -326,26 +310,15 @@ export default {
   height: 100px;
   z-index: 604;
   left: 53%;
-  background-color: black;
+  background-color: $app-black;
   animation: showDiv 5s forwards;
-}
-
-@keyframes showDiv {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
 }
 
 .invalid-input {
   border: 2px solid $app-red;
   box-shadow: 0 0 1rem $app-red;
 }
+
 h2 {
   @include pokemon-text($app-yellow, $app-dark-blue);
   -webkit-text-stroke: 1px $app-light-blue;
@@ -366,7 +339,7 @@ h2 {
     right: 35px;
     top: 50px;
     transform: rotate(-45deg);
-    border: 1px solid black;
+    border: 1px solid $app-black;
   }
 
   .password-toggle {
@@ -417,7 +390,7 @@ input {
 }
 
 .error {
-  color: red;
+  color: $app-red;
   font-size: 12px;
   text-align: left;
 }
@@ -439,8 +412,9 @@ li {
   display: flex;
   justify-content: center;
 }
+
 .signUp:disabled {
-  background-color: whitesmoke;
+  background-color: $app-gray;
   color: $app-red;
   width: 50%;
   cursor: default;
@@ -450,27 +424,51 @@ li {
   width: 100%;
   padding: 10px;
   background-color: $app-red;
-  color: white;
+  color: $app-white;
   border: none;
   cursor: pointer;
   margin-bottom: 20px;
   border-radius: 8px;
   font-weight: 500;
   transition: all 2s ease;
+
   &:hover {
     font-weight: 700;
+
     &:active {
       transform: translateY(-1px);
       box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
     }
   }
-
 }
 
 .logout {
   img {
     display: flex;
     margin: 0 auto;
+  }
+}
+
+@keyframes showMessage {
+  0% {
+    opacity: 0;
+  }
+  60% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes showDiv {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }
 
@@ -491,10 +489,11 @@ li {
     max-height: 200px;
     left: 64%;
   }
+
   .show-error-message {
     border-radius: 60px;
     padding: 5px 20px;
-    border: 3px solid black;
+    border: 3px solid $app-black;
     font-size: 0.8rem;
     width: 80vw;
     min-width: 300px;
@@ -508,15 +507,17 @@ li {
     top: 79%;
     transform: rotate(180deg);
   }
+
   .show-error-message {
     border-radius: 60px;
     padding: 5px 20px;
-    border: 3px solid black;
+    border: 3px solid $app-black;
     font-size: 0.6rem;
     width: 95vw;
     min-width: 300px;
     bottom: 55%;
   }
+
   .showClip {
     position: absolute;
     top: 38%;
@@ -527,9 +528,10 @@ li {
     z-index: 605;
     left: 53%;
     background-color: white;
-    animation: showDiv-82752b24 4s forwards;
+    animation: showDiv 4s forwards;
   }
-  .showClip1[data-v-82752b24] {
+
+  .showClip1 {
     position: absolute;
     top: 38%;
     opacity: 1;
@@ -543,12 +545,11 @@ li {
   .show-error-message {
     border-radius: 60px;
     padding: 10px 10px;
-    border: 3px solid black;
+    border: 3px solid $app-black;
     font-size: 0.6rem;
     width: 95vw;
     min-width: 300px;
     bottom: 55%;
   }
-
 }
 </style>
