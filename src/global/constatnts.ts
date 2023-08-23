@@ -17,6 +17,14 @@ export enum PasswordError {
   WHITESPACE = 'Password must not contain leading or trailing whitespace.'
 }
 
+export enum StaticErrors {
+  ONLY_LETTERS = 'Must contain at least one character and no special characters or numbers',
+  AGE = 'You must be at least 13 years old.',
+  POSTAL_CODE = 'Must follow the format for the country',
+  STREET = 'Must contain at least one character',
+  EMAIL_USED = 'This e-mail address is already registered in the system.'
+}
+
 export enum Countries {
   Belarus = 'Belarus',
   Italy = 'Italy',

@@ -1,4 +1,4 @@
-import { EmailError, PasswordError } from '@/global/constatnts'
+import { Countries, EmailError, PasswordError } from '@/global/constatnts'
 
 export default class Validator {
   public errorsEmail: EmailError[] = []
@@ -9,6 +9,11 @@ export default class Validator {
   private hasLowercase = new RegExp(/[a-z]/)
   private hasDigit = new RegExp(/\d/)
   private hasSpecial = new RegExp(/^(?=.*[!@#$%^&*()+=._-])/)
+  private onlyLetters = new RegExp(/^[a-zA-Zа-яА-Я]+$/)
+  private postalCodeUSSR = new RegExp(/^\d{6}$/)
+  private postalCodeGerFrItSp = new RegExp(/^\d{5}$/)
+  private postalCodeUK = new RegExp(/^[a-zA-Z]{1,2}[0-9][a-zA-Z0-9]? ?[0-9][a-zA-Z]{2}$/)
+  private postalCodePoland = new RegExp(/^\d{2}[- ]?\d{3}$/)
 
   public validateEmail(email: string) {
     this.errorsEmail = []
@@ -27,5 +32,43 @@ export default class Validator {
     if (!this.hasDigit.test(password)) this.errorsPassword.push(PasswordError.DIGIT)
     if (!this.hasSpecial.test(password)) this.errorsPassword.push(PasswordError.SPECIAL_CHARACTER)
     if (password.trim() !== password) this.errorsPassword.push(PasswordError.WHITESPACE)
+  }
+  validateOnlyLetters(str: string) {
+    return this.onlyLetters.test(str)
+  }
+
+  validateAge(dateOfBirth: string) {
+    return new Date().getFullYear() - new Date(dateOfBirth).getFullYear() >= 13
+  }
+
+  validateStreet(street: string) {
+    return street.length > 0
+  }
+
+  validatePostalCode(country: string, code: string) {
+    if (
+      [<string>Countries.Russia, <string>Countries.Belarus, <string>Countries.Kazakhstan].indexOf(
+        country
+      ) >= 0
+    ) {
+      return this.postalCodeUSSR.test(code)
+    }
+    if (
+      [
+        <string>Countries.Germany,
+        <string>Countries.France,
+        <string>Countries.Italy,
+        <string>Countries.Spain
+      ].indexOf(country) >= 0
+    ) {
+      return this.postalCodeGerFrItSp.test(code)
+    }
+    if (country === Countries.UnitedKingdom) {
+      return this.postalCodeUK.test(code)
+    }
+    if (country === Countries.Poland) {
+      return this.postalCodePoland.test(code)
+    }
+    return true
   }
 }

@@ -22,11 +22,14 @@
           placeholder="user@example.com"
           v-model="email"
           @input.prevent="validateEmail"
-          :class="{ 'invalid-input': emailError }"
+          :class="{ 'invalid-input': emailErrors.length }"
         />
+        <div v-if="emailErrors.length" class="error">
+          <ul>
+            <li v-for="error in emailErrors" :key="error">{{ error }}</li>
+          </ul>
+        </div>
       </div>
-      <div v-if="emailError" class="error">{{ emailError }}</div>
-
       <div class="registration-item" v-if="!store.isLogin">
         <label for="password">Password:</label>
         <input
@@ -35,11 +38,14 @@
           required
           v-model="password"
           @input.prevent="validatePassword"
-          :class="{ 'invalid-input': passwordError }"
+          :class="{ 'invalid-input': passwordErrors.length }"
         />
+        <div v-if="passwordErrors.length" class="error">
+          <ul>
+            <li v-for="error in passwordErrors" :key="error">{{ error }}</li>
+          </ul>
+        </div>
       </div>
-      <div v-if="passwordError" class="error">{{ passwordError }}</div>
-
       <div class="registration-item" v-if="!store.isLogin">
         <label for="firstName">First Name:</label>
         <input
@@ -48,11 +54,14 @@
           required
           v-model="firstName"
           @input.prevent="validateFirstName"
-          :class="{ 'invalid-input': firstNameError }"
+          :class="{ 'invalid-input': firstNameError.length }"
         />
+        <div v-if="firstNameError.length" class="error">
+          <ul>
+            <li v-for="error in firstNameError" :key="error">{{ error }}</li>
+          </ul>
+        </div>
       </div>
-      <div v-if="firstNameError" class="error">{{ firstNameError }}</div>
-
       <div class="registration-item" v-if="!store.isLogin">
         <label for="lastName">Last Name:</label>
         <input
@@ -61,11 +70,14 @@
           required
           v-model="lastName"
           @input.prevent="validateLastName"
-          :class="{ 'invalid-input': lastNameError }"
+          :class="{ 'invalid-input': lastNameError.length }"
         />
+        <div v-if="lastNameError.length" class="error">
+          <ul>
+            <li v-for="error in lastNameError" :key="error">{{ error }}</li>
+          </ul>
+        </div>
       </div>
-      <div v-if="lastNameError" class="error">{{ lastNameError }}</div>
-
       <div class="registration-item" v-if="!store.isLogin">
         <label for="date">Date of Birth:</label>
         <input
@@ -74,11 +86,14 @@
           required
           v-model="dateOfBirth"
           @input.prevent="validateDateOfBirth"
-          :class="{ 'invalid-input': dateError }"
+          :class="{ 'invalid-input': dateError.length }"
         />
+        <div v-if="dateError.length" class="error">
+          <ul>
+            <li v-for="error in dateError" :key="error">{{ error }}</li>
+          </ul>
+        </div>
       </div>
-      <div v-if="dateError" class="error">{{ dateError }}</div>
-
       <div class="registration-item" v-if="!store.isLogin">
         <label for="street">Street:</label>
         <input
@@ -87,26 +102,22 @@
           required
           v-model="street"
           @input.prevent="validateStreet"
-          :class="{ 'invalid-input': streetError }"
+          :class="{ 'invalid-input': streetError.length }"
         />
+        <div v-if="streetError.length" class="error">
+          <ul>
+            <li v-for="error in streetError" :key="error">{{ error }}</li>
+          </ul>
+        </div>
       </div>
-      <div v-if="streetError" class="error">{{ streetError }}</div>
-
       <div class="registration-item" v-if="!store.isLogin">
         <label for="country">Country:</label>
         <select id="country" required v-model="country">
-          <option value="Germany">Germany</option>
-          <option value="Belarus">Belarus</option>
-          <option value="Russia">Russia</option>
-          <option value="Kazakhstan">Kazakhstan</option>
-          <option value="France">France</option>
-          <option value="United Kingdom">United Kingdom</option>
-          <option value="Spain">Spain</option>
-          <option value="Italy">Italy</option>
-          <option value="Poland">Poland</option>
+          <option v-for="item in countries" v-bind:value="item" v-bind:key="item">
+            {{ item }}
+          </option>
         </select>
       </div>
-
       <div class="registration-item" v-if="!store.isLogin">
         <label for="city">City:</label>
         <input
@@ -115,11 +126,14 @@
           required
           v-model="city"
           @input.prevent="validateCity"
-          :class="{ 'invalid-input': cityError }"
+          :class="{ 'invalid-input': cityError.length }"
         />
+        <div v-if="cityError.length" class="error">
+          <ul>
+            <li v-for="error in cityError" :key="error">{{ error }}</li>
+          </ul>
+        </div>
       </div>
-      <div v-if="cityError" class="error">{{ cityError }}</div>
-
       <div class="registration-item" v-if="!store.isLogin">
         <label for="postalCode">Postal Code:</label>
         <input
@@ -128,10 +142,14 @@
           required
           v-model="postalCode"
           @input.prevent="validatePostalCode"
-          :class="{ 'invalid-input': postalCodeError }"
+          :class="{ 'invalid-input': postalCodeError.length }"
         />
+        <div v-if="postalCodeError.length" class="error">
+          <ul>
+            <li v-for="error in postalCodeError" :key="error">{{ error }}</li>
+          </ul>
+        </div>
       </div>
-      <div v-if="postalCodeError" class="error">{{ postalCodeError }}</div>
       <div class="registerContainer" v-if="!store.isLogin">
         <input class="register" type="submit" value="Register" :disabled="!formIsValid" />
       </div>
@@ -150,11 +168,9 @@
 import { UserRegistrationInfo } from '@/stores/types'
 import { useUserStore } from '@/stores/authorization'
 import router from '@/router'
-const formatEmailRegex = /^[a-zA-Z0-9._%+\-\s]+@[a-zA-Z0-9.\-\s]+\.[a-zA-Z\s]{2,}$/
-const formatPasswordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/
-const nameRegex = /^[a-zA-Zа-яА-Я]+$/
-const cityRegex = /^[a-zA-Zа-яА-Я]+$/
-
+import { Countries, StaticErrors } from '@/global/constatnts'
+import Validator from '@/services/validator'
+const validator = new Validator()
 export default {
   name: 'AuthorizationView',
   data() {
@@ -168,15 +184,16 @@ export default {
       city: '',
       postalCode: '',
       country: '',
-      emailError: '',
-      passwordError: '',
-      firstNameError: '',
-      lastNameError: '',
+      emailErrors: [],
+      passwordErrors: [],
+      firstNameError: [],
+      lastNameError: [],
       dateError: '',
-      streetError: '',
-      cityError: '',
-      postalCodeError: '',
-      countryError: '',
+      streetError: [],
+      cityError: [],
+      postalCodeError: [],
+      countryError: [],
+      countries: Countries,
       isCorrectData: false,
       store: useUserStore()
     }
@@ -184,8 +201,8 @@ export default {
   computed: {
     formIsValid: function () {
       return (
-        this.emailError.length === 0 &&
-        this.passwordError.length === 0 &&
+        this.emailErrors.length === 0 &&
+        this.passwordErrors.length === 0 &&
         this.firstNameError.length === 0 &&
         this.lastNameError.length === 0 &&
         this.dateError.length === 0 &&
@@ -207,116 +224,56 @@ export default {
   },
   methods: {
     validateEmail: function () {
-      if (!this.email.match(formatEmailRegex)) {
-        this.emailError = 'Invalid email format'
-      } else {
-        this.emailError = ''
-      }
+      validator.validateEmail(this.email)
+      this.emailErrors = validator.errorsEmail
     },
     validatePassword: function () {
-      if (!this.password.match(formatPasswordRegex)) {
-        this.passwordError =
-          'Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, and 1 number'
-      } else {
-        this.passwordError = ''
-      }
+      validator.validatePassword(this.password)
+      this.passwordErrors = validator.errorsPassword
     },
     validateFirstName: function () {
-      if (!this.firstName.match(nameRegex)) {
-        this.firstNameError =
-          'Must contain at least one character and no special characters or numbers'
-      } else {
-        this.firstNameError = ''
-      }
+      this.firstNameError = []
+      if (!validator.validateOnlyLetters(this.firstName))
+        this.firstNameError = [StaticErrors.ONLY_LETTERS]
     },
     validateLastName: function () {
-      if (!this.lastName.match(nameRegex)) {
-        this.lastNameError =
-          'Must contain at least one character and no special characters or numbers'
-      } else {
-        this.lastNameError = ''
-      }
+      this.lastNameError = []
+      if (!validator.validateOnlyLetters(this.lastName))
+        this.lastNameError = [StaticErrors.ONLY_LETTERS]
     },
     validateDateOfBirth: function () {
-      const today = new Date()
-      const selectedDate = new Date(this.dateOfBirth)
-      const ageDifference = today.getFullYear() - selectedDate.getFullYear()
-
-      if (ageDifference < 13) {
-        this.dateError = 'You must be at least 13 years old.'
-      } else {
-        this.dateError = ''
-      }
+      this.dateError = []
+      if (!validator.validateAge(this.dateOfBirth)) this.dateError = [StaticErrors.AGE]
     },
     validateStreet: function () {
-      if (this.street.length === 0) {
-        this.streetError = 'Must contain at least one character'
-      } else {
-        this.streetError = ''
-      }
+      this.streetError = []
+      if (!validator.validateStreet(this.street)) this.streetError = [StaticErrors.STREET]
     },
     validateCity: function () {
-      if (!this.city.match(cityRegex)) {
-        this.cityError = 'Must contain at least one character and no special characters or numbers'
-      } else {
-        this.cityError = ''
-      }
+      this.cityError = []
+      if (!validator.validateOnlyLetters(this.city)) this.cityError = [StaticErrors.ONLY_LETTERS]
     },
     validatePostalCode: function () {
-      const countryCode = this.country
-      const postalCode = this.postalCode
-      let regex
-      switch (countryCode) {
-        case 'Germany':
-          regex = /^[0-9]{5}$/
-          break
-        case 'Belarus':
-        case 'Russia':
-        case 'Kazakhstan':
-          regex = /^[0-9]{6}$/
-          break
-        case 'France':
-          regex = /^[0-9]{2}\s?[0-9]{3}$/
-          break
-        case 'United Kingdom':
-          regex =
-            /^([A-Z]){1}([0-9][0-9]|[0-9]|[A-Z][0-9][A-Z]|[A-Z][0-9][0-9]|[A-Z][0-9]|[0-9][A-Z]){1}([ ])?([0-9][A-z][A-z]){1}$/i
-          break
-        case 'Spain':
-          regex = /^(?:0[1-9]|[1-4]\d|5[0-2])\d{3}$/
-          break
-        case 'Italy':
-          regex = /^[0-9]{5}$/
-          break
-        case 'Poland':
-          regex = /^[0-9]{2}-[0-9]{3}$/
-          break
-        default:
-          regex = /.*/
-      }
-      if (regex.test(postalCode)) {
-        this.postalCodeError = ''
-      } else {
-        this.postalCodeError = `Invalid postal code for ${this.country}`
-      }
+      this.postalCodeError = []
+      if (!validator.validatePostalCode(this.country, this.postalCode))
+        this.postalCodeError = [StaticErrors.POSTAL_CODE]
     },
     async signIn(user: UserRegistrationInfo) {
       this.store.isLoading = true
       await this.store.fetchToken()
-      if (await this.store.signup(user)) {
-        if (await this.store.getTokens(user.email, user.password)) {
-          if (await this.store.login(user.email, user.password)) {
-            this.store.changeLogin()
-            setTimeout(() => router.push('/'), 2000)
-          } else {
-            this.isCorrectData = true
-            setTimeout(() => (this.isCorrectData = false), 6000)
+        if (await this.store.signup(user)) {
+          if (await this.store.getTokens(user.email, user.password)) {
+            if (await this.store.login(user.email, user.password)) {
+              this.store.changeLogin()
+              setTimeout(() => router.push('/'), 2000)
+            } else {
+              this.isCorrectData = true
+              setTimeout(() => (this.isCorrectData = false), 6000)
+            }
           }
         } else {
-          this.isCorrectData = true
-          setTimeout(() => (this.isCorrectData = false), 6000)
+            this.emailErrors.push(StaticErrors.EMAIL_USED)
         }
-      }
       this.store.isLoading = false
     }
   }
@@ -326,28 +283,26 @@ export default {
 <style scoped lang="scss">
 @import '@/assets/styles/mixins';
 @import '@/assets/styles/colors';
+
 .registration-page {
-  width: 100%;
-  display: flex;
+  @include view(100%, auto, relative, flex);
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  position: relative;
 }
 
 form {
   display: flex;
   font-size: 1rem;
-  font-weight: 700;
-  font-style: italic;
-  flex-direction: column;
-  gap: 10px;
+  gap: 5px;
   background-color: $app-gray;
   border-radius: 20px;
+  flex-wrap: wrap;
+  justify-content: space-between;
   margin: 200px auto 20px auto;
   padding: 15px 30px;
   max-height: fit-content;
-  max-width: 500px;
+  width: 500px;
 
   h2 {
     @include pokemon-text($app-yellow, $app-dark-blue);
@@ -355,78 +310,109 @@ form {
     text-align: center;
     font-size: 2rem;
     margin-bottom: 10px;
+    width: 100%;
   }
 
   .login-link {
     text-align: center;
+    width: 100%;
+  }
+
+  .logout {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+
+    img {
+      display: flex;
+      margin: 0 auto;
+    }
   }
 }
 
 label {
   display: block;
   margin-bottom: 5px;
-  padding-right: 10px;
-  flex-shrink: 0;
 }
 
 input,
 select {
   padding: 5px;
+  max-height: 30px;
   border-radius: 8px;
   font-size: 1rem;
   flex-grow: 1;
+  display: flex;
+  width: 100%;
 
   &::-ms-reveal,
   &::-ms-clear {
     display: none;
   }
 }
+
 .registration-item {
   display: flex;
+  flex-direction: column;
+  width: 47%;
 }
+
 .registerContainer {
   display: flex;
-  justify-content: center;
-}
-
-.register {
   width: 100%;
-  padding: 10px;
-  background-color: $app-red;
-  color: $app-white;
-  border: none;
-  cursor: pointer;
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 0.8rem;
-  transition: all 2s ease;
-  text-transform: uppercase;
+  margin: 10px auto;
+  justify-content: center;
 
-  &:hover:not(:disabled) {
-    font-weight: 700;
-    &:active {
-      transform: translateY(-1px);
-      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  .register {
+    width: 100%;
+    justify-content: center;
+    max-height: 50px;
+    padding: 10px;
+    background-color: $app-red;
+    color: $app-white;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.8rem;
+    transition: all 2s ease;
+    text-transform: uppercase;
+
+    &:disabled {
+      opacity: 0.5;
+      flex-grow: 0;
+      width: 50%;
+      cursor: default;
+    }
+
+    &:hover:not(:disabled) {
+      font-weight: 700;
+
+      &:active {
+        transform: translateY(-1px);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+      }
     }
   }
 }
 
-.register:disabled {
-  background-color: whitesmoke;
-  color: $app-red;
-  flex-grow: 0;
-  width: 50%;
-  cursor: default;
-}
 .error {
-  color: red;
-  font-size: 12px;
-  text-align: left;
-  &::before {
-    content: '✖';
-    margin-right: 5px;
+  ul {
+    text-align: left;
+    color: $app-red;
+    padding: 5px;
+    font-size: 0.6rem;
+  }
+
+  li {
+    list-style-type: none;
+    &::before {
+      content: '✖';
+      margin-right: 5px;
+    }
   }
 }
+
 .invalid-input {
   border: 2px solid $app-red;
   box-shadow: 0 0 1rem $app-red;
