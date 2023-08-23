@@ -94,25 +94,30 @@
           </ul>
         </div>
       </div>
+      <div class="separator">
+        <span>
+           Shipping Address
+        </span>
+      </div>
       <div class="registration-item" v-if="!store.isLogin">
         <label for="street">Street:</label>
         <input
           type="text"
           id="street"
           required
-          v-model="street"
-          @input.prevent="validateStreet"
-          :class="{ 'invalid-input': streetError.length }"
+          v-model="shippingStreet"
+          @input.prevent="validateShippingStreet"
+          :class="{ 'invalid-input': shippingStreetError.length }"
         />
-        <div v-if="streetError.length" class="error">
+        <div v-if="shippingStreetError.length" class="error">
           <ul>
-            <li v-for="error in streetError" :key="error">{{ error }}</li>
+            <li v-for="error in shippingStreetError" :key="error">{{ error }}</li>
           </ul>
         </div>
       </div>
       <div class="registration-item" v-if="!store.isLogin">
         <label for="country">Country:</label>
-        <select id="country" required v-model="country">
+        <select id="country" required v-model="shippingCountry">
           <option v-for="item in countries" v-bind:value="item" v-bind:key="item">
             {{ item }}
           </option>
@@ -124,13 +129,13 @@
           type="text"
           id="city"
           required
-          v-model="city"
-          @input.prevent="validateCity"
-          :class="{ 'invalid-input': cityError.length }"
+          v-model="shippingCity"
+          @input.prevent="validateShippingCity"
+          :class="{ 'invalid-input': shippingCityError.length }"
         />
-        <div v-if="cityError.length" class="error">
+        <div v-if="shippingCityError.length" class="error">
           <ul>
-            <li v-for="error in cityError" :key="error">{{ error }}</li>
+            <li v-for="error in shippingCityError" :key="error">{{ error }}</li>
           </ul>
         </div>
       </div>
@@ -140,16 +145,82 @@
           type="text"
           id="postalCode"
           required
-          v-model="postalCode"
-          @input.prevent="validatePostalCode"
-          :class="{ 'invalid-input': postalCodeError.length }"
+          v-model="shippingPostalCode"
+          @input.prevent="validateShippingPostalCode"
+          :class="{ 'invalid-input': shippingPostalCodeError.length }"
+          :disabled="!shippingCountry"
         />
-        <div v-if="postalCodeError.length" class="error">
+        <div v-if="shippingPostalCodeError.length" class="error">
           <ul>
-            <li v-for="error in postalCodeError" :key="error">{{ error }}</li>
+            <li v-for="error in shippingPostalCodeError" :key="error">{{ error }}</li>
           </ul>
         </div>
       </div>
+
+<div class="separator">
+  <span>
+    Billing Address
+  </span>
+</div>
+      <div class="registration-item" v-if="!store.isLogin">
+        <label for="street">Street:</label>
+        <input
+          type="text"
+          id="street"
+          required
+          v-model="billingStreet"
+          @input.prevent="validateBillingStreet"
+          :class="{ 'invalid-input': billingStreetError.length }"
+        />
+        <div v-if="billingStreetError.length" class="error">
+          <ul>
+            <li v-for="error in billingStreetError" :key="error">{{ error }}</li>
+          </ul>
+        </div>
+      </div>
+      <div class="registration-item" v-if="!store.isLogin">
+        <label for="country">Country:</label>
+        <select id="country" required v-model="billingCountry">
+          <option v-for="item in countries" v-bind:value="item" v-bind:key="item">
+            {{ item }}
+          </option>
+        </select>
+      </div>
+      <div class="registration-item" v-if="!store.isLogin">
+        <label for="city">City:</label>
+        <input
+          type="text"
+          id="city"
+          required
+          v-model="billingCity"
+          @input.prevent="validateBillingCity"
+          :class="{ 'invalid-input': billingCityError.length }"
+        />
+        <div v-if="billingCityError.length" class="error">
+          <ul>
+            <li v-for="error in billingCityError" :key="error">{{ error }}</li>
+          </ul>
+        </div>
+      </div>
+      <div class="registration-item" v-if="!store.isLogin">
+        <label for="postalCode">Postal Code:</label>
+        <input
+          type="text"
+          id="postalCode"
+          required
+          v-model="billingPostalCode"
+          @input.prevent="validateBillingPostalCode"
+          :class="{ 'invalid-input': billingPostalCodeError.length }"
+          :disabled="!billingCountry"
+        />
+        <div v-if="billingPostalCodeError.length" class="error">
+          <ul>
+            <li v-for="error in billingPostalCodeError" :key="error">{{ error }}</li>
+          </ul>
+        </div>
+      </div>
+
+
       <div class="registerContainer" v-if="!store.isLogin">
         <input class="register" type="submit" value="Register" :disabled="!formIsValid" />
       </div>
@@ -180,18 +251,25 @@ export default {
       firstName: '',
       lastName: '',
       dateOfBirth: '',
-      street: '',
-      city: '',
-      postalCode: '',
-      country: '',
+      shippingStreet: '',
+      billingStreet: '',
+      shippingCity: '',
+      billingCity: '',
+      shippingPostalCode: '',
+      billingPostalCode: '',
+      shippingCountry: '',
+      billingCountry: '',
       emailErrors: [],
       passwordErrors: [],
       firstNameError: [],
       lastNameError: [],
       dateError: '',
-      streetError: [],
-      cityError: [],
-      postalCodeError: [],
+      shippingStreetError: [],
+      billingStreetError: [],
+      shippingCityError: [],
+      billingCityError: [],
+      shippingPostalCodeError: [],
+      billingPostalCodeError: [],
       countryError: [],
       countries: Countries,
       isCorrectData: false,
@@ -206,19 +284,26 @@ export default {
         this.firstNameError.length === 0 &&
         this.lastNameError.length === 0 &&
         this.dateError.length === 0 &&
-        this.streetError.length === 0 &&
-        this.cityError.length === 0 &&
-        this.postalCodeError.length === 0 &&
+        this.shippingStreetError.length === 0 &&
+        this.billingStreetError.length === 0 &&
+        this.shippingCityError.length === 0 &&
+        this.billingCityError.length === 0 &&
+        this.shippingPostalCodeError.length === 0 &&
+        this.billingPostalCodeError.length === 0 &&
         this.countryError.length === 0 &&
         this.email &&
         this.password &&
         this.firstName &&
         this.lastName &&
         this.dateOfBirth &&
-        this.street &&
-        this.city &&
-        this.postalCode &&
-        this.country
+        this.shippingStreet &&
+        this.billingStreet &&
+        this.shippingCity &&
+        this.billingCity &&
+        this.shippingPostalCode &&
+        this.billingPostalCode &&
+        this.shippingCountry &&
+        this.billingCountry
       )
     }
   },
@@ -245,18 +330,31 @@ export default {
       this.dateError = []
       if (!validator.validateAge(this.dateOfBirth)) this.dateError = [StaticErrors.AGE]
     },
-    validateStreet: function () {
-      this.streetError = []
-      if (!validator.validateStreet(this.street)) this.streetError = [StaticErrors.STREET]
+    validateShippingStreet: function () {
+      this.shippingStreetError = []
+      if (!validator.validateStreet(this.shippingStreet)) this.shippingStreetError = [StaticErrors.STREET]
     },
-    validateCity: function () {
-      this.cityError = []
-      if (!validator.validateOnlyLetters(this.city)) this.cityError = [StaticErrors.ONLY_LETTERS]
+    validateBillingStreet: function () {
+      this.billingStreetError = []
+      if (!validator.validateStreet(this.billingStreet)) this.billingStreetError = [StaticErrors.STREET]
     },
-    validatePostalCode: function () {
-      this.postalCodeError = []
-      if (!validator.validatePostalCode(this.country, this.postalCode))
-        this.postalCodeError = [StaticErrors.POSTAL_CODE]
+    validateShippingCity: function () {
+      this.shippingCityError = []
+      if (!validator.validateOnlyLetters(this.shippingCity)) this.shippingCityError = [StaticErrors.ONLY_LETTERS]
+    },
+    validateBillingCity: function () {
+      this.billingCityError = []
+      if (!validator.validateOnlyLetters(this.billingCity)) this.billingCityError = [StaticErrors.ONLY_LETTERS]
+    },
+    validateShippingPostalCode: function () {
+      this.shippingPostalCodeError = []
+      if (!validator.validatePostalCode(this.shippingCountry, this.shippingPostalCode))
+        this.shippingPostalCodeError = [StaticErrors.POSTAL_CODE]
+    },
+    validateBillingPostalCode:  function () {
+      this.billingPostalCodeError = []
+      if (!validator.validatePostalCode(this.billingCountry, this.billingPostalCode))
+        this.billingPostalCodeError = [StaticErrors.POSTAL_CODE]
     },
     async signIn(user: UserRegistrationInfo) {
       this.store.isLoading = true
@@ -417,4 +515,19 @@ select {
   border: 2px solid $app-red;
   box-shadow: 0 0 1rem $app-red;
 }
+
+.separator {
+  width: 100%; 
+  height: 20px; 
+  border-bottom: 1px solid $app-dark-blue;
+  text-align: center;
+  margin: 10px 0;
+}
+
+span {
+  font-size: 1.2rem;
+  background-color: $app-gray; 
+  padding: 0 10px;
+}
+
 </style>
