@@ -16,3 +16,15 @@ export enum PasswordError {
   SPECIAL_CHARACTER = 'Password must contain at least one special character.',
   WHITESPACE = 'Password must not contain leading or trailing whitespace.'
 }
+
+export enum Countries {
+  Belarus = 'Belarus',
+  Italy = 'Italy',
+  France = 'France',
+  Germany = 'Germany',
+  Kazakhstan = 'Kazakhstan',
+  Poland = 'Poland',
+  Russia = 'Russia',
+  Spain = 'Spain',
+  UnitedKingdom = 'United Kingdom'
+}
