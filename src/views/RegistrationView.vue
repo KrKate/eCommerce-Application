@@ -157,6 +157,15 @@
         </div>
       </div>
 
+<div class="check-item">
+  <input 
+    class="check"
+    type="checkbox"
+    id="saveDefaultShippingAddress"
+    />
+  <label for="saveDefaultShippingAddress">Save as default shipping address</label>
+</div>
+
 <div class="separator">
   <span>
     Billing Address
@@ -220,6 +229,14 @@
         </div>
       </div>
 
+<div class="check-item">
+  <input 
+    class="check"
+    type="checkbox"
+    id="saveDefaultBillingAddress"
+    />
+  <label for="saveDefaultBillingAddress">Save as default billing address</label>
+</div>
 
       <div class="registerContainer" v-if="!store.isLogin">
         <input class="register" type="submit" value="Register" :disabled="!formIsValid" />
@@ -528,6 +545,18 @@ span {
   font-size: 1.2rem;
   background-color: $app-gray; 
   padding: 0 10px;
+}
+
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px 0;
+}
+
+.check {
+  width: 20px;
+  height: 20px;
 }
 
 </style>
