@@ -166,6 +166,18 @@
   <label for="saveDefaultShippingAddress">Save as default shipping address</label>
 </div>
 
+<div class="check-item">
+  <input
+    class="check"
+    type="checkbox"
+    id="also"
+    @change="copyShippingToBilling"
+    v-model="also"
+
+    />
+  <label for="also">This is also my billing address</label>
+</div>
+
 <div class="separator">
   <span>
     Billing Address
@@ -263,6 +275,7 @@ export default {
   name: 'AuthorizationView',
   data() {
     return {
+      also: false, 
       email: '',
       password: '',
       firstName: '',
@@ -325,6 +338,14 @@ export default {
     }
   },
   methods: {
+    copyShippingToBilling() {
+    if (this.also) {
+      this.billingStreet = this.shippingStreet;
+      this.billingCountry = this.shippingCountry;
+      this.billingCity = this.shippingCity;
+      this.billingPostalCode = this.shippingPostalCode
+    }
+  },
     validateEmail: function () {
       validator.validateEmail(this.email)
       this.emailErrors = validator.errorsEmail
