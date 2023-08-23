@@ -1,38 +1,17 @@
 <template>
   <div class="login-page">
-    <img
-      src="@/assets/images/psyduck.svg"
-      alt="error"
-      :id="emailErrors.length || passwordErrors.length || isCorrectData ? 'show' : 'error'"
-    />
-    <div
-      v-if="emailErrors.length || passwordErrors.length || isCorrectData"
-      :class="
-        emailErrors.length || passwordErrors.length || isCorrectData ? 'showClip' : 'hideClip'
-      "
-    ></div>
-    <div
-      v-if="emailErrors.length || passwordErrors.length || isCorrectData"
-      :class="
-        emailErrors.length || passwordErrors.length || isCorrectData ? 'showClip1' : 'hideClip1'
-      "
-    ></div>
-    <div
-      v-if="emailErrors.length || passwordErrors.length || isCorrectData"
-      :class="
-        emailErrors.length || passwordErrors.length || isCorrectData
-          ? 'show-error-message'
-          : 'hide-error-message'
-      "
-    >
-      <ul>
+    <img src="@/assets/images/psyduck.svg" alt="error" :id="isShowErrors ? 'show' : 'error'" />
+    <div v-if="isShowErrors" :class="isShowErrors ? 'showClip' : 'hideClip'"></div>
+    <div v-if="isShowErrors" :class="isShowErrors ? 'showClip1' : 'hideClip1'"></div>
+    <div v-if="isShowErrors" :class="isShowErrors ? 'show-error-message' : 'hide-error-message'">
+      <ul v-if="isShowErrors">
         <li v-for="error in [...emailErrors, ...passwordErrors]" :key="error">{{ error }}</li>
         <li v-if="isCorrectData">Wrong login or password!</li>
       </ul>
     </div>
     <div class="container-forms">
       <h2>{{ store.isLogin ? 'Successfully logged!' : 'Login' }}</h2>
-      <form method="post" :novalidate="true" ref="log" @submit.prevent="login">
+      <form :novalidate="true" @submit.prevent="login">
         <div class="form-group" v-if="!store.isLogin">
           <label for="email">Email</label>
           <input
@@ -42,7 +21,6 @@
             placeholder="user@example.com"
             v-model="email"
             @input.prevent="validateEmail"
-            required
             :class="{ 'invalid-input': emailErrors.length > 0 }"
           />
           <div class="clear-cross" v-if="email.length" @click="$refs.email.value = ''">
@@ -58,7 +36,6 @@
             v-model="password"
             @input.prevent="validatePassword"
             ref="password"
-            required
             :class="{ 'invalid-input': passwordErrors.length > 0 }"
           />
           <img
@@ -79,7 +56,19 @@
           </div>
         </div>
         <div class="signUpContainer" v-if="!store.isLogin">
-          <input class="signUp" type="submit" value="SIGN IN" :disabled="!formIsValid" />
+          <input
+            class="signUp"
+            type="submit"
+            value="SIGN IN"
+            :disabled="
+              !(
+                !this.emailErrors.length &&
+                !this.passwordErrors.length &&
+                this.email &&
+                this.password
+              )
+            "
+          />
         </div>
         <div class="logout" v-if="store.isLogin">
           <img src="@/assets/gif/login_success.gif" alt="login_success" />
@@ -96,13 +85,9 @@
 <script lang="ts">
 import { useUserStore } from '@/stores/authorization'
 import router from '@/router'
-import { EmailError, PasswordError } from '@/global/constatnts'
-const formatEmailRegex = /^[a-zA-Z0-9._%+\-\s]+@[a-zA-Z0-9.\-\s]+\.[a-zA-Z\s]+$/
-const uppercaseRegex = /[A-Z]/
-const lowercaseRegex = /[a-z]/
-const digitRegex = /\d/
-const specialRegex = /^(?=.*[!@#$%^&*()+=._-])/
-const domainRegex = /^\s*[^\s@]+@[^\s@]+\.[^\s@]{2,}\s?$/
+import Validator from '@/services/validator'
+
+const validator = new Validator()
 
 export default {
   name: 'AuthorizationView',
@@ -110,75 +95,48 @@ export default {
     return {
       email: '',
       password: '',
-      emailErrors: [] as string[],
-      passwordErrors: [] as string[],
+      emailErrors: [],
+      passwordErrors: [],
       isCorrectData: false,
+      isEmailChanged: false,
+      isPasswordChanged: false,
+      isFormValid: false,
       isShowPassword: false,
       store: useUserStore()
     }
   },
   computed: {
-    formIsValid: function () {
+    isShowErrors() {
       return (
-        this.emailErrors.length === 0 &&
-        this.passwordErrors.length === 0 &&
-        this.email &&
-        this.password
+        (!this.isFormValid &&
+          ((this.isEmailChanged && this.emailErrors.length > 0) ||
+            (this.isPasswordChanged && this.passwordErrors.length > 0))) ||
+        this.isCorrectData
       )
     }
   },
   methods: {
-    validateEmail: function () {
-      this.emailErrors = []
-      if (!this.email) this.emailErrors.push(EmailError.REQUIRED)
-      if (!this.validEmailFormat(this.email)) this.emailErrors.push(EmailError.FORMAT)
-      if (this.validEmailWhitespace(this.email)) this.emailErrors.push(EmailError.WHITESPACE)
-      if (!this.validEmailDomain(this.email)) this.emailErrors.push(EmailError.DOMAIN)
-      if (!this.validEmailSymbol(this.email)) this.emailErrors.push(EmailError.SYMBOL)
+    validateEmail() {
+      if (!this.isEmailChanged) this.isEmailChanged = true
+      validator.validateEmail(this.email)
+      this.emailErrors = validator.errorsEmail
+      this.isFormValid =
+        this.emailErrors.length === 0 &&
+        this.passwordErrors.length === 0 &&
+        !!this.email &&
+        !!this.password
+      return this.emailErrors.length === 0
     },
-    validatePassword: function () {
-      this.passwordErrors = []
-      if (!this.password) this.passwordErrors.push(PasswordError.REQUIRED)
-      if (!this.validPasswordLength(this.password)) this.passwordErrors.push(PasswordError.LENGTH)
-      if (!this.validPasswordUppercase(this.password))
-        this.passwordErrors.push(PasswordError.UPPERCASE)
-      if (!this.validPasswordLowercase(this.password))
-        this.passwordErrors.push(PasswordError.LOWERCASE)
-      if (!this.validPasswordDigit(this.password)) this.passwordErrors.push(PasswordError.DIGIT)
-      if (!this.validPasswordSpecial(this.password))
-        this.passwordErrors.push(PasswordError.SPECIAL_CHARACTER)
-      if (this.validPasswordWhitespace(this.password))
-        this.passwordErrors.push(PasswordError.WHITESPACE)
-    },
-    validEmailFormat: function (email: string) {
-      return formatEmailRegex.test(email)
-    },
-    validEmailWhitespace: function (email: string) {
-      return email.trim() !== email
-    },
-    validEmailDomain: function (email: string) {
-      return domainRegex.test(email)
-    },
-    validEmailSymbol: function (email: string) {
-      return email.includes('@')
-    },
-    validPasswordLength: function (password: string) {
-      return password.length >= 8
-    },
-    validPasswordUppercase: function (password: string) {
-      return uppercaseRegex.test(password)
-    },
-    validPasswordLowercase: function (password: string) {
-      return lowercaseRegex.test(password)
-    },
-    validPasswordDigit: function (password: string) {
-      return digitRegex.test(password)
-    },
-    validPasswordSpecial: function (password: string) {
-      return specialRegex.test(password)
-    },
-    validPasswordWhitespace: function (password: string) {
-      return password.trim() !== password
+    validatePassword() {
+      if (!this.isPasswordChanged) this.isPasswordChanged = true
+      validator.validatePassword(this.password)
+      this.passwordErrors = validator.errorsPassword
+      this.isFormValid =
+        this.emailErrors.length === 0 &&
+        this.passwordErrors.length === 0 &&
+        !!this.email &&
+        !!this.password
+      return this.passwordErrors.length === 0
     },
     async login() {
       this.store.isLoading = true
@@ -415,13 +373,6 @@ li {
   justify-content: center;
 }
 
-.signUp:disabled {
-  background-color: $app-gray;
-  color: $app-red;
-  width: 50%;
-  cursor: default;
-}
-
 .signUp {
   width: 100%;
   padding: 10px;
@@ -435,6 +386,13 @@ li {
   font-weight: 500;
   transition: all 2s ease;
 
+  &:disabled {
+    opacity: 0.5;
+    width: 50%;
+    cursor: default;
+    flex-grow: 0;
+  }
+
   &:hover:not(:disabled) {
     font-weight: 700;
 
@@ -443,14 +401,6 @@ li {
       box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
     }
   }
-}
-
-.signUp:disabled {
-  background-color: whitesmoke;
-  color: $app-red;
-  flex-grow: 0;
-  width: 50%;
-  cursor: default;
 }
 
 .logout {
