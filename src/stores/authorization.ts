@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import type {
-  Customer,
+  Customer, CustomerInfo,
   PasswordFlowResponse,
   SiteCookie,
   TokenResponse,
@@ -40,6 +40,24 @@ export const useUserStore = defineStore('user', {
         this.token = data.access_token
       } catch (error) {
         console.log(error)
+      }
+    },
+    async getMyCustomerDetails() {
+      try {
+        const customerInfo: CustomerInfo = await axios
+            .get(
+                'https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me',
+                {
+                  headers: {
+                    Authorization: `Bearer ${this.token}`,
+                    "Content-Type": "application/json"
+                  }
+                }
+            )
+            .then((data) => data.data)
+        return customerInfo
+      } catch (error) {
+        return {}
       }
     },
     async login(email: string, password: string) {
