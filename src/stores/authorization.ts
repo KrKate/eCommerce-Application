@@ -7,6 +7,7 @@ import type {
   TokenResponse,
   UserRegistrationInfo
 } from '@/stores/types'
+import router from "@/router";
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -142,6 +143,7 @@ export const useUserStore = defineStore('user', {
     changeLogin() {
       if (this.isLogin) this.clearCookie()
       this.isLogin = !this.isLogin
+      router.push('/')
     }
   }
 })
