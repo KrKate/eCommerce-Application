@@ -19,5 +19,5 @@ module.exports = {
     "eol-last": ["error", "always"],
     "max-lines-per-function": ["error", { "max": 40 }]
   },
-  ignorePatterns: ["**/*.test.*"]
+  ignorePatterns: ["**/*.test.*", ".eslintrc.cjs"]
 }
