@@ -1,44 +1,47 @@
 export type Customer = {
-  customer: {
-    id: string
-    version: number
-    versionModifiedAt: string
-    lastMessageSequenceNumber: number
-    createdAt: string
-    lastModifiedAt: string
-    lastModifiedBy: {
-      isPlatformClient: boolean
-      user: {
-        typeId: string
-        id: string
-      }
-    }
-    createdBy: {
-      isPlatformClient: boolean
-      user: {
-        typeId: string
-        id: string
-      }
-    }
-    email: string
-    firstName: string
-    lastName: string
-    middleName: string
-    title: string
-    salutation: string
-    password: string
-    addresses: []
-    shippingAddressIds: []
-    billingAddressIds: []
-    isEmailVerified: boolean
-    customerGroup: {
+  customer: CustomerInfo
+}
+
+export type CustomerInfo = {
+  id: string
+  version: number
+  versionModifiedAt: string
+  lastMessageSequenceNumber: number
+  createdAt: string
+  lastModifiedAt: string
+  lastModifiedBy: {
+    isPlatformClient: boolean
+    user: {
       typeId: string
       id: string
     }
-    stores: []
-    authenticationMode: string
   }
+  createdBy: {
+    isPlatformClient: boolean
+    user: {
+      typeId: string
+      id: string
+    }
+  }
+  email: string
+  firstName: string
+  lastName: string
+  middleName: string
+  title: string
+  salutation: string
+  password: string
+  addresses: []
+  shippingAddressIds: []
+  billingAddressIds: []
+  isEmailVerified: boolean
+  customerGroup: {
+    typeId: string
+    id: string
+  }
+  stores: []
+  authenticationMode: string
 }
+
 export type TokenResponse = {
   access_token: string
   token_type: string
