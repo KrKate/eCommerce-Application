@@ -95,9 +95,7 @@
         </div>
       </div>
       <div class="separator">
-        <span>
-           Shipping Address
-        </span>
+        <span> Shipping Address </span>
       </div>
       <div class="registration-item" v-if="!store.isLogin">
         <label for="street">Street:</label>
@@ -157,32 +155,25 @@
         </div>
       </div>
 
-<div class="check-item">
-  <input 
-    class="check"
-    type="checkbox"
-    id="saveDefaultShippingAddress"
-    />
-  <label for="saveDefaultShippingAddress">Save as default shipping address</label>
-</div>
+      <div class="check-item">
+        <input class="check" type="checkbox" id="saveDefaultShippingAddress" />
+        <label for="saveDefaultShippingAddress">Save as default shipping address</label>
+      </div>
 
-<div class="check-item">
-  <input
-    class="check"
-    type="checkbox"
-    id="also"
-    @change="copyShippingToBilling"
-    v-model="also"
+      <div class="check-item">
+        <input
+          class="check"
+          type="checkbox"
+          id="also"
+          @change="copyShippingToBilling"
+          v-model="also"
+        />
+        <label for="also">This is also my billing address</label>
+      </div>
 
-    />
-  <label for="also">This is also my billing address</label>
-</div>
-
-<div class="separator">
-  <span>
-    Billing Address
-  </span>
-</div>
+      <div class="separator">
+        <span> Billing Address </span>
+      </div>
       <div class="registration-item" v-if="!store.isLogin">
         <label for="street">Street:</label>
         <input
@@ -241,14 +232,10 @@
         </div>
       </div>
 
-<div class="check-item">
-  <input 
-    class="check"
-    type="checkbox"
-    id="saveDefaultBillingAddress"
-    />
-  <label for="saveDefaultBillingAddress">Save as default billing address</label>
-</div>
+      <div class="check-item">
+        <input class="check" type="checkbox" id="saveDefaultBillingAddress" />
+        <label for="saveDefaultBillingAddress">Save as default billing address</label>
+      </div>
 
       <div class="registerContainer" v-if="!store.isLogin">
         <input class="register" type="submit" value="Register" :disabled="!formIsValid" />
@@ -275,7 +262,7 @@ export default {
   name: 'AuthorizationView',
   data() {
     return {
-      also: false, 
+      also: false,
       email: '',
       password: '',
       firstName: '',
@@ -339,13 +326,13 @@ export default {
   },
   methods: {
     copyShippingToBilling() {
-    if (this.also) {
-      this.billingStreet = this.shippingStreet;
-      this.billingCountry = this.shippingCountry;
-      this.billingCity = this.shippingCity;
-      this.billingPostalCode = this.shippingPostalCode
-    }
-  },
+      if (this.also) {
+        this.billingStreet = this.shippingStreet
+        this.billingCountry = this.shippingCountry
+        this.billingCity = this.shippingCity
+        this.billingPostalCode = this.shippingPostalCode
+      }
+    },
     validateEmail: function () {
       validator.validateEmail(this.email)
       this.emailErrors = validator.errorsEmail
@@ -370,26 +357,30 @@ export default {
     },
     validateShippingStreet: function () {
       this.shippingStreetError = []
-      if (!validator.validateStreet(this.shippingStreet)) this.shippingStreetError = [StaticErrors.STREET]
+      if (!validator.validateStreet(this.shippingStreet))
+        this.shippingStreetError = [StaticErrors.STREET]
     },
     validateBillingStreet: function () {
       this.billingStreetError = []
-      if (!validator.validateStreet(this.billingStreet)) this.billingStreetError = [StaticErrors.STREET]
+      if (!validator.validateStreet(this.billingStreet))
+        this.billingStreetError = [StaticErrors.STREET]
     },
     validateShippingCity: function () {
       this.shippingCityError = []
-      if (!validator.validateOnlyLetters(this.shippingCity)) this.shippingCityError = [StaticErrors.ONLY_LETTERS]
+      if (!validator.validateOnlyLetters(this.shippingCity))
+        this.shippingCityError = [StaticErrors.ONLY_LETTERS]
     },
     validateBillingCity: function () {
       this.billingCityError = []
-      if (!validator.validateOnlyLetters(this.billingCity)) this.billingCityError = [StaticErrors.ONLY_LETTERS]
+      if (!validator.validateOnlyLetters(this.billingCity))
+        this.billingCityError = [StaticErrors.ONLY_LETTERS]
     },
     validateShippingPostalCode: function () {
       this.shippingPostalCodeError = []
       if (!validator.validatePostalCode(this.shippingCountry, this.shippingPostalCode))
         this.shippingPostalCodeError = [StaticErrors.POSTAL_CODE]
     },
-    validateBillingPostalCode:  function () {
+    validateBillingPostalCode: function () {
       this.billingPostalCodeError = []
       if (!validator.validatePostalCode(this.billingCountry, this.billingPostalCode))
         this.billingPostalCodeError = [StaticErrors.POSTAL_CODE]
@@ -397,19 +388,19 @@ export default {
     async signIn(user: UserRegistrationInfo) {
       this.store.isLoading = true
       await this.store.fetchToken()
-        if (await this.store.signup(user)) {
-          if (await this.store.getTokens(user.email, user.password)) {
-            if (await this.store.login(user.email, user.password)) {
-              this.store.changeLogin()
-              setTimeout(() => router.push('/'), 2000)
-            } else {
-              this.isCorrectData = true
-              setTimeout(() => (this.isCorrectData = false), 6000)
-            }
+      if (await this.store.signup(user)) {
+        if (await this.store.getTokens(user.email, user.password)) {
+          if (await this.store.login(user.email, user.password)) {
+            this.store.changeLogin()
+            setTimeout(() => router.push('/'), 2000)
+          } else {
+            this.isCorrectData = true
+            setTimeout(() => (this.isCorrectData = false), 6000)
           }
-        } else {
-            this.emailErrors.push(StaticErrors.EMAIL_USED)
         }
+      } else {
+        this.emailErrors.push(StaticErrors.EMAIL_USED)
+      }
       this.store.isLoading = false
     }
   }
@@ -555,8 +546,8 @@ select {
 }
 
 .separator {
-  width: 100%; 
-  height: 20px; 
+  width: 100%;
+  height: 20px;
   border-bottom: 1px solid $app-dark-blue;
   text-align: center;
   margin: 10px 0;
@@ -564,7 +555,7 @@ select {
 
 span {
   font-size: 1.2rem;
-  background-color: $app-gray; 
+  background-color: $app-gray;
   padding: 0 10px;
 }
 
@@ -579,5 +570,4 @@ span {
   width: 20px;
   height: 20px;
 }
-
 </style>

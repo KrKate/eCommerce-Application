@@ -1,4 +1,3 @@
-/* eslint-env node */
 require('@rushstack/eslint-patch/modern-module-resolution')
 
 module.exports = {
@@ -19,5 +18,6 @@ module.exports = {
     "@typescript-eslint/no-explicit-any": 2,
     "eol-last": ["error", "always"],
     "max-lines-per-function": ["error", { "max": 40 }]
-}
+  },
+  ignorePatterns: ["**/*.test.*"]
 }
