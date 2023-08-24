@@ -1,6 +1,6 @@
-import {test, expect, describe} from 'vitest'
-import Validator from '../src/services/validator'
-import { Countries, EmailError } from '../src/global/constatnts'
+import { test, expect, describe } from 'vitest'
+import Validator from '../../src/services/validator'
+import { Countries, EmailError, PasswordError } from '../../src/global/constatnts'
 
 describe('Validator', () => {
   const validator = new Validator()
@@ -13,20 +13,56 @@ describe('Validator', () => {
 
     test('invalid email', () => {
       validator.validateEmail('user@')
-      expect(validator.errorsEmail).toEqual([
-        EmailError.FORMAT,
-        EmailError.DOMAIN
-      ])
+      expect(validator.errorsEmail).toEqual([EmailError.FORMAT, EmailError.DOMAIN])
     })
 
     test('empty email', () => {
       validator.validateEmail('')
-      expect(validator.errorsEmail).toEqual([EmailError.REQUIRED, EmailError.FORMAT, EmailError.DOMAIN, EmailError.SYMBOL])
+      expect(validator.errorsEmail).toEqual([
+        EmailError.REQUIRED,
+        EmailError.FORMAT,
+        EmailError.DOMAIN,
+        EmailError.SYMBOL
+      ])
     })
 
     test('email with whitespace', () => {
       validator.validateEmail(' user@example.com ')
       expect(validator.errorsEmail).toEqual([EmailError.FORMAT, EmailError.WHITESPACE])
+    })
+  })
+
+  describe('validatePassword', () => {
+    test('valid password', () => {
+      validator.validatePassword('P@ssw0rd!')
+      expect(validator.errorsPassword).toEqual([])
+    })
+
+    test('invalid password', () => {
+      validator.validatePassword('pass')
+      expect(validator.errorsPassword).toEqual([
+        PasswordError.LENGTH,
+        PasswordError.UPPERCASE,
+        PasswordError.DIGIT,
+        PasswordError.SPECIAL_CHARACTER
+      ])
+    })
+
+    test('empty password', () => {
+      validator.validatePassword('')
+      expect(validator.errorsPassword).toEqual([
+        PasswordError.REQUIRED,
+        PasswordError.LENGTH,
+        PasswordError.UPPERCASE,
+        PasswordError.LOWERCASE,
+        PasswordError.DIGIT,
+        PasswordError.SPECIAL_CHARACTER
+      ])
+    })
+
+    test('password with whitespace', () => {
+      validator.validatePassword(' P@ssw0rd! ')
+      expect(validator.errorsPassword).toEqual([PasswordError.WHITESPACE])
     })
   })
 
