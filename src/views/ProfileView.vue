@@ -1,12 +1,26 @@
 <template>
   <main>
     <p>Profile page</p>
+    <p style="font-size: 12px">{{ userInfo }}</p>
   </main>
 </template>
 
 <script>
+import { useUserStore } from '@/stores/authorization'
 export default {
-  name: "ProfileView"
+  name: 'ProfileView',
+  data() {
+    return {
+      store: useUserStore(),
+      userInfo: {}
+    }
+  },
+  async beforeMount() {
+    this.store.isLoading = true
+    this.userInfo = await this.store.getMyCustomerDetails()
+    this.store.isLoading = false
+  },
+  mounted() {}
 }
 </script>
 
