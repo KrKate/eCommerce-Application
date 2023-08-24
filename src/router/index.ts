@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
 import CatalogView from '../views/CatalogView.vue'
 import CartView from '../views/CartView.vue'
+import ProfileView from '../views/ProfileView.vue'
 import RegistrationView from '../views/RegistrationView.vue'
 import { useUserStore } from '@/stores/authorization'
 
@@ -28,6 +29,15 @@ const router = createRouter({
       path: '/cart',
       name: 'cart',
       component: CartView
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: ProfileView,
+      beforeEnter: () => {
+        if (!useUserStore().isLogin) router.push('/login')
+        return useUserStore().isLogin
+      }
     },
     {
       path: '/login',
