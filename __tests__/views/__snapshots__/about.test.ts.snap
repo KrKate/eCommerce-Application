@@ -1,0 +1,7 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AboutView > renders correctly 1`] = `
+"<main data-v-d4948df9=\\"\\">
+  <p data-v-d4948df9=\\"\\">About page</p>
+</main>"
+`;

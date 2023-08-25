@@ -455,6 +455,12 @@ form {
       margin: 0 auto;
     }
   }
+  @media screen and (max-width: 540px) {
+    max-width: 400px;
+  }
+  @media screen and (max-width: 450px) {
+    max-width: 300px;
+  }
 }
 
 label {
@@ -482,6 +488,9 @@ select {
   display: flex;
   flex-direction: column;
   width: 47%;
+  @media screen and (max-width: 540px) {
+    width: 100%;
+  }
 }
 
 .registerContainer {
