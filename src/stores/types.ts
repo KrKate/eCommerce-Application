@@ -9,37 +9,66 @@ export type CustomerInfo = {
   lastMessageSequenceNumber: number
   createdAt: string
   lastModifiedAt: string
-  lastModifiedBy: {
-    isPlatformClient: boolean
-    user: {
-      typeId: string
-      id: string
-    }
-  }
-  createdBy: {
-    isPlatformClient: boolean
-    user: {
-      typeId: string
-      id: string
-    }
-  }
+  lastModifiedBy: ModificationType
+  createdBy: ModificationType
+  customerNumber: string
   email: string
   firstName: string
   lastName: string
   middleName: string
   title: string
   salutation: string
+  dateOfBirth: string
+  companyName: string
   password: string
-  addresses: []
-  shippingAddressIds: []
-  billingAddressIds: []
+  addresses: CustomerAdress[]
+  defaultShippingAddressId: string
+  defaultBillingAddressId: string
+  shippingAddressIds: string[]
+  billingAddressIds: string[]
   isEmailVerified: boolean
-  customerGroup: {
+  customerGroup: CustomerGroup
+  stores: []
+  authenticationMode: string
+}
+
+export type CustomerGroup = {
+  typeId: string
+  id: string
+}
+
+export type CustomerAdress = {
+  id: string
+  title: string
+  salutation: string
+  firstName: string
+  lastName: string
+  streetName: string
+  streetNumber: string
+  additionalStreetInfo: string
+  postalCode: string
+  city: string
+  region: string
+  state: string
+  country: string
+  company: string
+  department: string
+  building: string
+  apartment: string
+  pOBox: string
+  phone: string
+  mobile: string
+  email: string
+  fax: string
+  additionalAddressInfo: string
+}
+
+export type ModificationType = {
+  isPlatformClient: boolean
+  user: {
     typeId: string
     id: string
   }
-  stores: []
-  authenticationMode: string
 }
 
 export type TokenResponse = {
@@ -64,20 +93,8 @@ export type Category = {
   lastMessageSequenceNumber: number
   createdAt: string
   lastModifiedAt: string
-  lastModifiedBy: {
-    isPlatformClient: boolean
-    user: {
-      typeId: string
-      id: string
-    }
-  }
-  createdBy: {
-    isPlatformClient: boolean
-    user: {
-      typeId: string
-      id: string
-    }
-  }
+  lastModifiedBy: ModificationType
+  createdBy: ModificationType
   key: string
   name: {
     'en-US': string
