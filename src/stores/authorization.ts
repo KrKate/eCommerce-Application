@@ -16,6 +16,7 @@ export const useUserStore = defineStore('user', {
     expires: 0,
     firstName: '',
     lastName: '',
+    isLoading: false,
     id: '',
     email: ''
   }),
@@ -113,7 +114,6 @@ export const useUserStore = defineStore('user', {
         )
         return true
       } catch (error) {
-        console.log(error)
         return false
       }
     },

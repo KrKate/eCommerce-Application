@@ -39,7 +39,7 @@ main {
   align-items: center;
 
   button {
-    @include pokemon-text($app-yelow, $app-light-blue);
+    @include pokemon-text($app-yellow, $app-light-blue);
     letter-spacing: 5px;
     font-size: 1rem;
     display: flex;
@@ -51,7 +51,7 @@ main {
   }
 
   button:hover {
-    @include pokemon-text($app-light-blue, $app-yelow);
+    @include pokemon-text($app-light-blue, $app-yellow);
     cursor: pointer;
   }
 }

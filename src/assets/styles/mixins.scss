@@ -20,6 +20,11 @@
   font-family: 'Pokemon Solid', sans-serif;
 }
 
+@mixin letters($animationName) {
+  animation: $animationName 4s forwards;
+  animation-delay: 4s;
+}
+
 @mixin fly-animation($left, $right, $rotate) {
   from {
     top: 55%;
