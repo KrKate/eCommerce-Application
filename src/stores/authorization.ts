@@ -1,13 +1,14 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import type {
-  Customer, CustomerInfo,
+  Customer,
+  CustomerInfo,
   PasswordFlowResponse,
   SiteCookie,
   TokenResponse,
   UserRegistrationInfo
 } from '@/stores/types'
-import router from "@/router";
+import router from '@/router'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -45,16 +46,13 @@ export const useUserStore = defineStore('user', {
     async getMyCustomerDetails() {
       try {
         const customerInfo: CustomerInfo = await axios
-            .get(
-                'https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me',
-                {
-                  headers: {
-                    Authorization: `Bearer ${this.token}`,
-                    "Content-Type": "application/json"
-                  }
-                }
-            )
-            .then((data) => data.data)
+          .get('https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me', {
+            headers: {
+              Authorization: `Bearer ${this.token}`,
+              'Content-Type': 'application/json'
+            }
+          })
+          .then((data) => data.data)
         return customerInfo
       } catch (error) {
         return {}

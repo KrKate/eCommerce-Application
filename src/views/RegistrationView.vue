@@ -1,17 +1,6 @@
 <template>
   <div class="registration-page">
-    <form
-      :novalidate="true"
-      ref="reg"
-      @submit.prevent="
-        signIn({
-          email: this.email,
-          password: this.password,
-          firstName: this.firstName,
-          lastName: this.lastName
-        })
-      "
-    >
+    <form :novalidate="true" ref="reg" @submit.prevent="signIn(userDTO)">
       <h2>{{ store.isLogin ? 'Successful registration!' : 'Registration' }}</h2>
       <div class="registration-item" v-if="!store.isLogin">
         <label for="email">Email:</label>
@@ -252,7 +241,7 @@
 </template>
 
 <script lang="ts">
-import { UserRegistrationInfo } from '@/stores/types'
+import { type UserRegistrationInfo } from '@/stores/types'
 import { useUserStore } from '@/stores/authorization'
 import router from '@/router'
 import { Countries, StaticErrors } from '@/global/constatnts'
@@ -276,18 +265,18 @@ export default {
       billingPostalCode: '',
       shippingCountry: '',
       billingCountry: '',
-      emailErrors: [],
-      passwordErrors: [],
-      firstNameError: [],
-      lastNameError: [],
-      dateError: '',
-      shippingStreetError: [],
-      billingStreetError: [],
-      shippingCityError: [],
-      billingCityError: [],
-      shippingPostalCodeError: [],
-      billingPostalCodeError: [],
-      countryError: [],
+      emailErrors: [] as string[],
+      passwordErrors: [] as string[],
+      firstNameError: [] as string[],
+      lastNameError: [] as string[],
+      dateError: [] as string[],
+      shippingStreetError: [] as string[],
+      billingStreetError: [] as string[],
+      shippingCityError: [] as string[],
+      billingCityError: [] as string[],
+      shippingPostalCodeError: [] as string[],
+      billingPostalCodeError: [] as string[],
+      countryError: [] as string[],
       countries: Countries,
       isCorrectData: false,
       store: useUserStore()
@@ -322,6 +311,15 @@ export default {
         this.shippingCountry &&
         this.billingCountry
       )
+    },
+    userDTO: function () {
+      const userInfo: UserRegistrationInfo = {
+        email: this.email,
+        password: this.password,
+        firstName: this.firstName,
+        lastName: this.lastName
+      }
+      return userInfo
     }
   },
   methods: {
