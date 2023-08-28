@@ -36,3 +36,62 @@ export enum Countries {
   Spain = 'Spain',
   UnitedKingdom = 'United Kingdom'
 }
+
+export enum CustomerUpdateActions {
+  changeEmail = 'changeEmail',
+  setFirstName = 'setFirstName',
+  setLastName = 'setLastName',
+  setMiddleName = 'setMiddleName',
+  setTitle = 'setTitle',
+  setSalutation = 'setSalutation',
+  addAddress = 'addAddress',
+  changeAddress = 'changeAddress',
+  removeAddress = 'removeAddress',
+  setDefaultShippingAddress = 'setDefaultShippingAddress',
+  addShippingAddressId = 'addShippingAddressId',
+  removeShippingAddressId = 'removeShippingAddressId',
+  addBillingAddressId = 'addBillingAddressId',
+  removeBillingAddressId = 'removeBillingAddressId',
+  setCustomerGroup = 'setCustomerGroup',
+  setCustomerNumber = 'setCustomerNumber',
+  setExternalId = 'setExternalId',
+  setCompanyName = 'setCompanyName',
+  setDateOfBirth = 'setDateOfBirth',
+  setVatId = 'setVatId',
+  setCustomType = 'setCustomType',
+  setCustomField = 'setCustomField',
+  setAddressCustomType = 'setAddressCustomType',
+  setAddressCustomField = 'setAddressCustomField',
+  setLocale = 'setLocale',
+  setKey = 'setKey',
+  setStores = 'setStores'
+}
+
+export enum Salutations {
+  None = '',
+  Mr = 'Mr.',
+  Mrs = 'Mrs.',
+  Ms = 'Ms.',
+  Miss = 'Miss',
+  Dr = 'Dr.',
+  Sr = 'Sr.',
+  Fr = 'Fr.',
+  Rev = 'Rev.',
+  Pastor = 'Pastor',
+  Judge = 'Judge',
+  Rabbi = 'Rabbi',
+  Mayor = 'Mayor',
+  Dear = 'Dear',
+  Comrade = 'Comrade',
+  Khaleesi = 'Khaleesi'
+}
+
+export const userProfileLeftSideFields = [
+  ['firstName', 'First name'],
+  ['middleName', 'Middle name'],
+  ['lastName', 'Last name'],
+  ['dateOfBirth', 'Date of birth'],
+  ['companyName', 'Company name'],
+  ['email', 'E-mail'],
+  ['customerNumber', 'Phone number']
+]
