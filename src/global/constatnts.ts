@@ -38,15 +38,15 @@ export enum Countries {
 }
 
 export enum CountryCodes {
-  Belarus = 'BY',
-  Italy = 'IT',
-  France = 'FR',
-  Germany = 'DE',
-  Kazakhstan = 'KZ',
-  Poland = 'PL',
-  Russia = 'RU',
-  Spain = 'ES',
-  UnitedKingdom = 'GB'
+  BY = 'Belarus',
+  IT = 'Italy',
+  FR = 'France',
+  DE = 'Germany',
+  KZ = 'Kazakhstan',
+  PL = 'Poland',
+  RU = 'Russia',
+  ES = 'Spain',
+  GB = 'UnitedKingdom'
 }
 
 export enum CustomerUpdateActions {
@@ -106,4 +106,31 @@ export const userProfileLeftSideFields = [
   ['companyName', 'Company name'],
   ['email', 'E-mail'],
   ['customerNumber', 'Phone number']
+]
+
+export const contactDetails = [
+  ['title', 'Title'],
+  ['firstName', 'First name'],
+  ['lastName', 'Last name'],
+  ['company', 'Company'],
+  ['department', 'Department'],
+  ['phone', 'Phone'],
+  ['mobile', 'Mobile'],
+  ['email', 'E-mail'],
+  ['fax', 'Fax']
+]
+
+export const addressDetails = [
+  ['streetName', 'Street name'],
+  ['streetNumber', 'Street number'],
+  ['postalCode', 'Postal code'],
+  ['city', 'City'],
+  ['region', 'Region'],
+  ['state', 'State'],
+  ['company', 'Company'],
+  ['building', 'Building'],
+  ['apartment', 'Apartment'],
+  ['pOBox', 'PO Box'],
+  ['additionalAddressInfo', 'Additional address info'],
+  ['additionalStreetInfo', 'Additional street info']
 ]
