@@ -20,7 +20,8 @@ export const useUserStore = defineStore('user', {
     lastName: '',
     isLoading: false,
     id: '',
-    email: ''
+    email: '',
+    redirectTimer: -1
   }),
   actions: {
     async fetchToken() {
@@ -157,9 +158,13 @@ export const useUserStore = defineStore('user', {
       }
     },
     changeLogin() {
-      if (this.isLogin) this.clearCookie()
+      if (this.isLogin) {
+        this.clearCookie()
+        router.push('/')
+      } else {
+        this.redirectTimer = setTimeout(() => router.push('/'), 2000)
+      }
       this.isLogin = !this.isLogin
-      router.push('/')
     }
   }
 })

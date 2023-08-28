@@ -63,9 +63,9 @@
 
 <script lang="ts">
 import { useUserStore } from '@/stores/authorization'
-import router from '@/router'
 import Validator from '@/services/validator'
 import { defineComponent } from 'vue'
+import {EmailError, PasswordError} from "@/global/constatnts";
 
 const validator = new Validator()
 
@@ -75,8 +75,8 @@ export default defineComponent({
     return {
       email: '',
       password: '',
-      emailErrors: [] as string[],
-      passwordErrors: [] as string[],
+      emailErrors: [] as EmailError[],
+      passwordErrors: [] as PasswordError[],
       isCorrectData: false,
       isEmailChanged: false,
       isPasswordChanged: false,
@@ -148,7 +148,6 @@ export default defineComponent({
         if (await this.store.getTokens(this.email, this.password)) {
           if (await this.store.login(this.email, this.password)) {
             this.store.changeLogin()
-            setTimeout(() => router.push('/'), 2000)
           } else {
             this.isCorrectData = true
             setTimeout(() => (this.isCorrectData = false), 6000)
@@ -160,6 +159,9 @@ export default defineComponent({
       }
       this.store.isLoading = false
     }
+  },
+  unmounted() {
+    if (this.store.redirectTimer > 0) clearTimeout(this.store.redirectTimer)
   }
 })
 </script>

@@ -243,7 +243,6 @@
 <script lang="ts">
 import { type UserRegistrationInfo } from '@/stores/types'
 import { useUserStore } from '@/stores/authorization'
-import router from '@/router'
 import { Countries, StaticErrors } from '@/global/constatnts'
 import Validator from '@/services/validator'
 const validator = new Validator()
@@ -390,7 +389,6 @@ export default {
         if (await this.store.getTokens(user.email, user.password)) {
           if (await this.store.login(user.email, user.password)) {
             this.store.changeLogin()
-            setTimeout(() => router.push('/'), 2000)
           } else {
             this.isCorrectData = true
             setTimeout(() => (this.isCorrectData = false), 6000)
@@ -401,6 +399,9 @@ export default {
       }
       this.store.isLoading = false
     }
+  },
+  unmounted() {
+    if (this.store.redirectTimer > 0) clearTimeout(this.store.redirectTimer)
   }
 }
 </script>
