@@ -37,6 +37,18 @@ export enum Countries {
   UnitedKingdom = 'United Kingdom'
 }
 
+export enum CountryCodes {
+  Belarus = 'BY',
+  Italy = 'IT',
+  France = 'FR',
+  Germany = 'DE',
+  Kazakhstan = 'KZ',
+  Poland = 'PL',
+  Russia = 'RU',
+  Spain = 'ES',
+  UnitedKingdom = 'GB'
+}
+
 export enum CustomerUpdateActions {
   changeEmail = 'changeEmail',
   setFirstName = 'setFirstName',
