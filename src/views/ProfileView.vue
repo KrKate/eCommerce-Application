@@ -27,72 +27,27 @@
           <div id="picture">
             <label>
               Salutation
-              <input
+              <select
                 class="user-main-info"
                 :class="isInfoMode ? '' : 'edit-mode'"
-                :value="userInfo.salutation"
                 :disabled="isInfoMode"
-              />
+              >
+                <option
+                  v-for="item in salutation"
+                  v-bind:value="item"
+                  v-bind:key="item"
+                  :selected="item.toString() === userInfo.salutation"
+                >
+                  {{ item }}
+                </option>
+              </select>
             </label>
-            <label>
-              First name
+            <label v-for="[item, value] in leftFields" v-bind:key="item">
+              {{ value }}
               <input
                 class="user-main-info"
                 :class="isInfoMode ? '' : 'edit-mode'"
-                :value="userInfo.firstName"
-                :disabled="isInfoMode"
-            /></label>
-            <label>
-              Middle name
-              <input
-                class="user-main-info"
-                :class="isInfoMode ? '' : 'edit-mode'"
-                :value="userInfo.middleName"
-                :disabled="isInfoMode"
-              />
-            </label>
-            <label>
-              Last name
-              <input
-                class="user-main-info"
-                :class="isInfoMode ? '' : 'edit-mode'"
-                :value="userInfo.lastName"
-                :disabled="isInfoMode"
-              />
-            </label>
-            <label>
-              Date of birth
-              <input
-                class="user-main-info"
-                :class="isInfoMode ? '' : 'edit-mode'"
-                :value="userInfo.dateOfBirth"
-                :disabled="isInfoMode"
-              />
-            </label>
-            <label>
-              Company name
-              <input
-                class="user-main-info"
-                :class="isInfoMode ? '' : 'edit-mode'"
-                :value="userInfo.companyName"
-                :disabled="isInfoMode"
-              />
-            </label>
-            <label>
-              E-mail
-              <input
-                class="user-main-info"
-                :class="isInfoMode ? '' : 'edit-mode'"
-                :value="userInfo.email"
-                :disabled="isInfoMode"
-              />
-            </label>
-            <label>
-              Phone number
-              <input
-                class="user-main-info"
-                :class="isInfoMode ? '' : 'edit-mode'"
-                :value="userInfo.customerNumber"
+                :value="userInfo[item]"
                 :disabled="isInfoMode"
               />
             </label>
@@ -133,20 +88,13 @@
         </div>
       </div>
       <div id="right">
-        <div id="stats">
-          <strong>Name:</strong> Psyduck<br />
-          <strong>Type:</strong> Water<br />
-          <strong>Height:</strong> 2'072''<br />
-          <strong>Weight:</strong> 43.2 lbs.<br /><br />
-          <strong>The duck Pokemon</strong><br />
-          Uses mysterious powers to perform various attacks.
-        </div>
+        <div id="stats"></div>
         <div id="miniButtonGlass4"></div>
         <div id="miniButtonGlass5"></div>
         <div id="barbutton3"></div>
         <div id="barbutton4"></div>
-        <div id="yellowBox1"></div>
-        <div id="yellowBox2"></div>
+        <div id="yellowBox1" class="yb-pressed">Billing address</div>
+        <div id="yellowBox2">Shipping address</div>
         <div id="bg_curve1_right"></div>
         <div id="bg_curve2_right"></div>
         <div id="curve1_right"></div>
@@ -158,20 +106,22 @@
 
 <script>
 import { useUserStore } from '@/stores/authorization'
+import { Salutations, userProfileLeftSideFields } from '@/global/constatnts'
 export default {
   name: 'ProfileView',
   data() {
     return {
       store: useUserStore(),
       userInfo: {},
-      isInfoMode: true
+      isInfoMode: true,
+      salutation: Salutations,
+      leftFields: userProfileLeftSideFields
     }
   },
   async beforeMount() {
     this.store.isLoading = true
     this.userInfo = await this.store.getMyCustomerDetails()
     this.store.isLoading = false
-    console.log(await this.userInfo)
   }
 }
 </script>
@@ -910,7 +860,8 @@ main {
     z-index: 1;
     font-size: 13px;
     font-family: arial, sans-serif;
-
+    overflow: scroll;
+    overflow-x: hidden;
     position: absolute;
     top: 130px;
     left: 25px;
@@ -1068,15 +1019,21 @@ main {
   }
 
   div#yellowBox1 {
+    user-select: none;
     width: 140px;
     height: 70px;
     z-index: 1;
     background-color: #ffff00;
-
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: absolute;
     top: 415px;
+    font-size: 0.8rem;
     left: 25px;
-
+    font-family: 'Orbitron', sans-serif;
+    color: $app-black;
+    font-weight: 700;
     border-radius: 15px;
     -webkit-border-radius: 15px;
     -moz-border-radius: 15px;
@@ -1089,15 +1046,21 @@ main {
   }
 
   div#yellowBox2 {
+    user-select: none;
     width: 140px;
     height: 70px;
     z-index: 1;
     background-color: #ffff00;
-
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: absolute;
+    font-size: 0.8rem;
     top: 415px;
     left: 185px;
-
+    font-family: 'Orbitron', sans-serif;
+    color: $app-black;
+    font-weight: 700;
     border-radius: 15px;
     -webkit-border-radius: 15px;
     -moz-border-radius: 15px;
@@ -1107,6 +1070,11 @@ main {
     -webkit-box-shadow: 0 0 20px #ff6600 inset;
     -moz-box-shadow: 0 0 20px #ff6600 inset;
     -o-box-shadow: 0 0 20px #ff6600 inset;
+  }
+
+  div#yellowBox2:hover,
+  div#yellowBox1:hover {
+    transform: scale(1.1);
   }
 }
 
