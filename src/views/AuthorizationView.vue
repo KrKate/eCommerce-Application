@@ -65,7 +65,7 @@
 import { useUserStore } from '@/stores/authorization'
 import Validator from '@/services/validator'
 import { defineComponent } from 'vue'
-import {EmailError, PasswordError} from "@/global/constatnts";
+import { EmailError, PasswordError } from '@/global/constatnts'
 
 const validator = new Validator()
 
