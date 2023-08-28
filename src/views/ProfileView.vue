@@ -31,6 +31,8 @@
                 class="user-main-info"
                 :class="isInfoMode ? '' : 'edit-mode'"
                 :disabled="isInfoMode"
+                :id="`LS-salutation`"
+                @change="validate($event)"
               >
                 <option
                   v-for="item in salutation"
@@ -49,6 +51,9 @@
                 :class="isInfoMode ? '' : 'edit-mode'"
                 :value="userInfo[item]"
                 :disabled="isInfoMode"
+                :type="getType(item)"
+                :id="`LS-${item}`"
+                @change.prevent="validate($event)"
               />
             </label>
           </div>
@@ -65,7 +70,7 @@
           :class="isInfoMode ? '' : 'clicked'"
           @click="isInfoMode = !isInfoMode"
         >
-          {{ isInfoMode ? `EDIT\nOFF` : `EDIT\nON` }}
+          {{ isInfoMode ? `EDIT` : `SAVE` }}
         </div>
         <div id="barbutton1"></div>
         <div id="barbutton2"></div>
@@ -89,7 +94,7 @@
       </div>
       <div id="right">
         <div id="stats">
-          <div class="shipping-address" v-if="isShowShippingAdresses">
+          <div class="shipping-address" v-if="isShowShippingAddresses">
             <div v-for="addressShip in userInfo.shippingAddressIds" :key="addressShip">
               <hr />
               <p v-if="addressShip === userInfo.defaultShippingAddressId">
@@ -123,6 +128,8 @@
                   :class="isInfoMode ? '' : 'edit-mode'"
                   :value="userInfo.addresses.find((value) => value.id === addressShip)[item]"
                   :disabled="isInfoMode"
+                  :id="`SA-${item}-${addressShip}`"
+                  @change.prevent="validate($event)"
                 />
               </label>
               <p>Address details</p>
@@ -157,11 +164,13 @@
                   :class="isInfoMode ? '' : 'edit-mode'"
                   :value="userInfo.addresses.find((value) => value.id === addressShip)[item]"
                   :disabled="isInfoMode"
+                  :id="`SA-${item}-${addressShip}`"
+                  @change.prevent="validate($event)"
                 />
               </label>
             </div>
           </div>
-          <div class="billing-address" v-if="!isShowShippingAdresses">
+          <div class="billing-address" v-if="!isShowShippingAddresses">
             <div v-for="addressBil in userInfo.billingAddressIds" :key="addressBil">
               <hr />
               <p v-if="addressBil === userInfo.defaultBillingAddressId">
@@ -195,6 +204,8 @@
                   :class="isInfoMode ? '' : 'edit-mode'"
                   :value="userInfo.addresses.find((value) => value.id === addressBil)[item]"
                   :disabled="isInfoMode"
+                  :id="`SA-${item}-${addressBil}`"
+                  @change.prevent="validate($event)"
                 />
               </label>
               <p>Address details</p>
@@ -229,6 +240,8 @@
                   :class="isInfoMode ? '' : 'edit-mode'"
                   :value="userInfo.addresses.find((value) => value.id === addressBil)[item]"
                   :disabled="isInfoMode"
+                  :id="`SA-${item}-${addressBil}`"
+                  @change.prevent="validate($event)"
                 />
               </label>
             </div>
@@ -240,15 +253,15 @@
         <div id="barbutton4"></div>
         <div
           id="yellowBox1"
-          @click="isShowShippingAdresses = false"
-          :class="isShowShippingAdresses ? '' : 'clickedYB'"
+          @click="isShowShippingAddresses = false"
+          :class="isShowShippingAddresses ? '' : 'clickedYB'"
         >
           Billing address
         </div>
         <div
           id="yellowBox2"
-          @click="isShowShippingAdresses = true"
-          :class="!isShowShippingAdresses ? '' : 'clickedYB'"
+          @click="isShowShippingAddresses = true"
+          :class="!isShowShippingAddresses ? '' : 'clickedYB'"
         >
           Shipping address
         </div>
@@ -271,6 +284,9 @@ import {
   Salutations,
   userProfileLeftSideFields
 } from '@/global/constatnts'
+import Validator from '@/services/validator'
+
+const validator = new Validator()
 export default {
   name: 'ProfileView',
   data() {
@@ -284,14 +300,53 @@ export default {
       leftFields: userProfileLeftSideFields,
       contactDetails: contactDetails,
       addressDetails: addressDetails,
-      isShowShippingAdresses: true
+      isShowShippingAddresses: true,
+      invalidFieldIds: [],
+      changedFields: []
     }
   },
   async beforeMount() {
     this.store.isLoading = true
     this.userInfo = await this.store.getMyCustomerDetails()
-    console.log(this.userInfo)
     this.store.isLoading = false
+  },
+  methods: {
+    validate(event) {
+      const field = event.target.id.replace('LS-', '')
+      let isValid = true
+      let bgColor = ''
+      if (this.userInfo[field] !== event.target.value) {
+        if (['firstName', 'middleName', 'lastName'].includes(field)) {
+          isValid = validator.validateOnlyLetters(event.target.value)
+        } else if (['dateOfBirth'].includes(field)) {
+          isValid = validator.validateAge(event.target.value)
+        } else if (['companyName'].includes(field)) {
+          isValid = validator.validateCompanyName(event.target.value)
+        } else if (['email'].includes(field)) {
+          validator.validateEmail(event.target.value)
+          isValid = validator.errorsEmail.length === 0
+        } else if (['customerNumber'].includes(field)) {
+          isValid = validator.validatePhoneNumber(event.target.value)
+        }
+        bgColor = isValid ? '#00FF007F' : '#FF00007F'
+        this.invalidFieldIds = [
+          ...this.invalidFieldIds.filter((value) => value !== event.target.id)
+        ]
+        if (!this.changedFields.includes(event.target.id)) this.changedFields.push(event.target.id)
+        if (!isValid && !this.invalidFieldIds.includes(event.target.id))
+          this.invalidFieldIds.push(event.target.id)
+      } else {
+        this.changedFields = [...this.changedFields.filter((value) => value !== event.target.id)]
+      }
+      event.target.style.backgroundColor = bgColor
+      console.log(this.changedFields)
+    },
+    getType(field) {
+      if (['dateOfBirth'].includes(field)) {
+        return 'date'
+      }
+      return 'text'
+    }
   }
 }
 </script>
@@ -1265,15 +1320,18 @@ main {
     -webkit-border-radius: 15px;
     -moz-border-radius: 15px;
     -o-border-radius: 15px;
-
+    transform: scale(0.9);
     box-shadow: 0 0 20px #ff6600 inset;
     -webkit-box-shadow: 0 0 20px #ff6600 inset;
     -moz-box-shadow: 0 0 20px #ff6600 inset;
     -o-box-shadow: 0 0 20px #ff6600 inset;
 
-    &.clickedYB,
-    &.clickedYB:hover {
-      transform: scale(0.9);
+    &:hover {
+      transform: scale(1);
+    }
+
+    &.clickedYB {
+      border: 5px inset darkred;
     }
   }
 
@@ -1297,20 +1355,28 @@ main {
     -webkit-border-radius: 15px;
     -moz-border-radius: 15px;
     -o-border-radius: 15px;
-
+    transform: scale(0.9);
     box-shadow: 0 0 20px #ff6600 inset;
     -webkit-box-shadow: 0 0 20px #ff6600 inset;
     -moz-box-shadow: 0 0 20px #ff6600 inset;
     -o-box-shadow: 0 0 20px #ff6600 inset;
-    &.clickedYB,
-    &.clickedYB:hover {
-      transform: scale(0.9);
+
+    &:hover {
+      transform: scale(1);
+    }
+
+    &.clickedYB {
+      border: 5px inset darkred;
     }
   }
+}
 
-  div#yellowBox2:hover,
-  div#yellowBox1:hover {
-    transform: scale(1.1);
+@keyframes animate {
+  0% {
+    background-position: 0%;
+  }
+  100% {
+    background-position: 400%;
   }
 }
 
