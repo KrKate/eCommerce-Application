@@ -14,6 +14,8 @@ export default class Validator {
   private postalCodeGerFrItSp = new RegExp(/^\d{5}$/)
   private postalCodeUK = new RegExp(/^[a-zA-Z]{1,2}[0-9][a-zA-Z0-9]? ?[0-9][a-zA-Z]{2}$/)
   private postalCodePoland = new RegExp(/^\d{2}[- ]?\d{3}$/)
+  private companyName = new RegExp(/^[a-zA-Z0-9-@.{}#&!()]+(\s[a-zA-Z0-9-@{}.#&!()]+)+(\s[a-zA-Z-@.#&!()]+)?$/)
+  private phoneNumber = new RegExp(/^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/)
 
   public validateEmail(email: string) {
     this.errorsEmail = []
@@ -71,4 +73,13 @@ export default class Validator {
     }
     return true
   }
+
+  validateCompanyName(name:string) {
+    return this.companyName.test(name)
+  }
+
+  validatePhoneNumber(phone: string) {
+    return this.phoneNumber.test(phone)
+  }
+
 }
