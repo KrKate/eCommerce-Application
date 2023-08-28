@@ -39,6 +39,9 @@ export type CustomerGroup = {
 
 export type CustomerAddress = {
   id: string
+  key: string
+  externalId: string
+  country: string
   title: string
   salutation: string
   firstName: string
@@ -50,7 +53,6 @@ export type CustomerAddress = {
   city: string
   region: string
   state: string
-  country: string
   company: string
   department: string
   building: string
