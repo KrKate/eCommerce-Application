@@ -88,13 +88,170 @@
         </div>
       </div>
       <div id="right">
-        <div id="stats"></div>
+        <div id="stats">
+          <div class="shipping-address" v-if="isShowShippingAdresses">
+            <div v-for="addressShip in userInfo.shippingAddressIds" :key="addressShip">
+              <hr />
+              <p v-if="addressShip === userInfo.defaultShippingAddressId">
+                This is your default shipping address
+              </p>
+              <p>Contact details</p>
+              <label>
+                Salutation
+                <select
+                  class="user-main-info"
+                  :class="isInfoMode ? '' : 'edit-mode'"
+                  :disabled="isInfoMode"
+                >
+                  <option
+                    v-for="item in salutation"
+                    v-bind:value="item"
+                    v-bind:key="item"
+                    :selected="
+                      item ===
+                      userInfo.addresses.find((value) => value.id === addressShip).salutation
+                    "
+                  >
+                    {{ item }}
+                  </option>
+                </select>
+              </label>
+              <label v-for="[item, value] in contactDetails" v-bind:key="item">
+                {{ value }}
+                <input
+                  class="user-main-info"
+                  :class="isInfoMode ? '' : 'edit-mode'"
+                  :value="userInfo.addresses.find((value) => value.id === addressShip)[item]"
+                  :disabled="isInfoMode"
+                />
+              </label>
+              <p>Address details</p>
+              <label>
+                Country
+                <select
+                  class="user-main-info"
+                  :class="isInfoMode ? '' : 'edit-mode'"
+                  :disabled="isInfoMode"
+                >
+                  <option
+                    v-for="item in countries"
+                    v-bind:value="item"
+                    v-bind:key="item"
+                    :selected="
+                      item ===
+                      countries[
+                        countryCodes[
+                          userInfo.addresses.find((value) => value.id === addressShip).country
+                        ]
+                      ]
+                    "
+                  >
+                    {{ item }}
+                  </option>
+                </select>
+              </label>
+              <label v-for="[item, value] in addressDetails" v-bind:key="item">
+                {{ value }}
+                <input
+                  class="user-main-info"
+                  :class="isInfoMode ? '' : 'edit-mode'"
+                  :value="userInfo.addresses.find((value) => value.id === addressShip)[item]"
+                  :disabled="isInfoMode"
+                />
+              </label>
+            </div>
+          </div>
+          <div class="billing-address" v-if="!isShowShippingAdresses">
+            <div v-for="addressBil in userInfo.billingAddressIds" :key="addressBil">
+              <hr />
+              <p v-if="addressBil === userInfo.defaultBillingAddressId">
+                This is your default billing address
+              </p>
+              <p>Contact details</p>
+              <label>
+                Salutation
+                <select
+                  class="user-main-info"
+                  :class="isInfoMode ? '' : 'edit-mode'"
+                  :disabled="isInfoMode"
+                >
+                  <option
+                    v-for="item in salutation"
+                    v-bind:value="item"
+                    v-bind:key="item"
+                    :selected="
+                      item ===
+                      userInfo.addresses.find((value) => value.id === addressBil).salutation
+                    "
+                  >
+                    {{ item }}
+                  </option>
+                </select>
+              </label>
+              <label v-for="[item, value] in contactDetails" v-bind:key="item">
+                {{ value }}
+                <input
+                  class="user-main-info"
+                  :class="isInfoMode ? '' : 'edit-mode'"
+                  :value="userInfo.addresses.find((value) => value.id === addressBil)[item]"
+                  :disabled="isInfoMode"
+                />
+              </label>
+              <p>Address details</p>
+              <label>
+                Country
+                <select
+                  class="user-main-info"
+                  :class="isInfoMode ? '' : 'edit-mode'"
+                  :disabled="isInfoMode"
+                >
+                  <option
+                    v-for="item in countries"
+                    v-bind:value="item"
+                    v-bind:key="item"
+                    :selected="
+                      item ===
+                      countries[
+                        countryCodes[
+                          userInfo.addresses.find((value) => value.id === addressBil).country
+                        ]
+                      ]
+                    "
+                  >
+                    {{ item }}
+                  </option>
+                </select>
+              </label>
+              <label v-for="[item, value] in addressDetails" v-bind:key="item">
+                {{ value }}
+                <input
+                  class="user-main-info"
+                  :class="isInfoMode ? '' : 'edit-mode'"
+                  :value="userInfo.addresses.find((value) => value.id === addressBil)[item]"
+                  :disabled="isInfoMode"
+                />
+              </label>
+            </div>
+          </div>
+        </div>
         <div id="miniButtonGlass4"></div>
         <div id="miniButtonGlass5"></div>
         <div id="barbutton3"></div>
         <div id="barbutton4"></div>
-        <div id="yellowBox1" class="yb-pressed">Billing address</div>
-        <div id="yellowBox2">Shipping address</div>
+        <div
+          id="yellowBox1"
+          @click="isShowShippingAdresses = false"
+          :class="isShowShippingAdresses ? '' : 'clickedYB'"
+        >
+          Billing address
+        </div>
+        <div
+          id="yellowBox2"
+          @click="isShowShippingAdresses = true"
+          :class="!isShowShippingAdresses ? '' : 'clickedYB'"
+        >
+          Shipping address
+        </div>
         <div id="bg_curve1_right"></div>
         <div id="bg_curve2_right"></div>
         <div id="curve1_right"></div>
@@ -106,7 +263,14 @@
 
 <script>
 import { useUserStore } from '@/stores/authorization'
-import { Salutations, userProfileLeftSideFields } from '@/global/constatnts'
+import {
+  addressDetails,
+  contactDetails,
+  Countries,
+  CountryCodes,
+  Salutations,
+  userProfileLeftSideFields
+} from '@/global/constatnts'
 export default {
   name: 'ProfileView',
   data() {
@@ -115,12 +279,18 @@ export default {
       userInfo: {},
       isInfoMode: true,
       salutation: Salutations,
-      leftFields: userProfileLeftSideFields
+      countries: Countries,
+      countryCodes: CountryCodes,
+      leftFields: userProfileLeftSideFields,
+      contactDetails: contactDetails,
+      addressDetails: addressDetails,
+      isShowShippingAdresses: true
     }
   },
   async beforeMount() {
     this.store.isLoading = true
     this.userInfo = await this.store.getMyCustomerDetails()
+    console.log(this.userInfo)
     this.store.isLoading = false
   }
 }
@@ -859,9 +1029,12 @@ main {
     background-color: #30da0c;
     z-index: 1;
     font-size: 13px;
-    font-family: arial, sans-serif;
+    color: darkred;
+    font-family: 'Orbitron', sans-serif;
     overflow: scroll;
     overflow-x: hidden;
+    scrollbar-color: #30da0c #714826;
+    scrollbar-width: none;
     position: absolute;
     top: 130px;
     left: 25px;
@@ -875,6 +1048,60 @@ main {
     -webkit-box-shadow: 0 0 20px #003300 inset;
     -moz-box-shadow: 0 0 20px #003300 inset;
     -o-box-shadow: 0 0 20px #003300 inset;
+
+    &::-webkit-scrollbar {
+      width: 5px;
+      background-color: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: transparent;
+      border-radius: 9em;
+      box-shadow: inset 1px 1px 10px darkred;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: darkred;
+    }
+
+    &::-webkit-scrollbar-button:vertical:start:decrement {
+      visibility: hidden;
+    }
+
+    &::-webkit-scrollbar-button:vertical:end:increment {
+      visibility: hidden;
+    }
+
+    p {
+      text-align: center;
+      font-weight: 700;
+      text-decoration: underline;
+      margin: 10px 0;
+    }
+
+    label {
+      display: flex;
+      font-size: 0.6rem;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 3px;
+    }
+
+    .user-main-info {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      width: 60%;
+      color: darkred;
+      background-color: transparent;
+      border: none;
+      font-size: 0.6rem;
+      display: flex;
+      padding: 0 10px;
+
+      &.edit-mode {
+        background-color: $app-gray;
+      }
+    }
   }
 
   div#blueButtons1 {
@@ -1043,6 +1270,11 @@ main {
     -webkit-box-shadow: 0 0 20px #ff6600 inset;
     -moz-box-shadow: 0 0 20px #ff6600 inset;
     -o-box-shadow: 0 0 20px #ff6600 inset;
+
+    &.clickedYB,
+    &.clickedYB:hover {
+      transform: scale(0.9);
+    }
   }
 
   div#yellowBox2 {
@@ -1070,12 +1302,25 @@ main {
     -webkit-box-shadow: 0 0 20px #ff6600 inset;
     -moz-box-shadow: 0 0 20px #ff6600 inset;
     -o-box-shadow: 0 0 20px #ff6600 inset;
+    &.clickedYB,
+    &.clickedYB:hover {
+      transform: scale(0.9);
+    }
   }
 
   div#yellowBox2:hover,
   div#yellowBox1:hover {
     transform: scale(1.1);
   }
+}
+
+hr {
+  border: none;
+  background-color: darkred;
+  color: darkred;
+  height: 2px;
+  width: 70%;
+  margin: 5px auto;
 }
 
 @media handheld and (orientation: portrait), (max-width: 768px) {
