@@ -87,10 +87,10 @@
         <span> Shipping Address </span>
       </div>
       <div class="registration-item" v-if="!store.isLogin">
-        <label for="street">Street:</label>
+        <label for="street-shipping">Street:</label>
         <input
           type="text"
-          id="street"
+          id="street-shipping"
           required
           v-model="shippingStreet"
           @input.prevent="validateShippingStreet"
@@ -103,18 +103,18 @@
         </div>
       </div>
       <div class="registration-item" v-if="!store.isLogin">
-        <label for="country">Country:</label>
-        <select id="country" required v-model="shippingCountry">
+        <label for="country-shipping">Country:</label>
+        <select id="country-shipping" required v-model="shippingCountry">
           <option v-for="item in countries" v-bind:value="item" v-bind:key="item">
             {{ item }}
           </option>
         </select>
       </div>
       <div class="registration-item" v-if="!store.isLogin">
-        <label for="city">City:</label>
+        <label for="city-shipping">City:</label>
         <input
           type="text"
-          id="city"
+          id="city-shipping"
           required
           v-model="shippingCity"
           @input.prevent="validateShippingCity"
@@ -127,10 +127,10 @@
         </div>
       </div>
       <div class="registration-item" v-if="!store.isLogin">
-        <label for="postalCode">Postal Code:</label>
+        <label for="postalCode-shipping">Postal Code:</label>
         <input
           type="text"
-          id="postalCode"
+          id="postalCode-shipping"
           required
           v-model="shippingPostalCode"
           @input.prevent="validateShippingPostalCode"
@@ -164,10 +164,10 @@
         <span> Billing Address </span>
       </div>
       <div class="registration-item" v-if="!store.isLogin">
-        <label for="street">Street:</label>
+        <label for="street-billing">Street:</label>
         <input
           type="text"
-          id="street"
+          id="street-billing"
           required
           v-model="billingStreet"
           @input.prevent="validateBillingStreet"
@@ -180,18 +180,18 @@
         </div>
       </div>
       <div class="registration-item" v-if="!store.isLogin">
-        <label for="country">Country:</label>
-        <select id="country" required v-model="billingCountry">
+        <label for="country-billing">Country:</label>
+        <select id="country-billing" required v-model="billingCountry">
           <option v-for="item in countries" v-bind:value="item" v-bind:key="item">
             {{ item }}
           </option>
         </select>
       </div>
       <div class="registration-item" v-if="!store.isLogin">
-        <label for="city">City:</label>
+        <label for="city-billing">City:</label>
         <input
           type="text"
-          id="city"
+          id="city-billing"
           required
           v-model="billingCity"
           @input.prevent="validateBillingCity"
@@ -204,10 +204,10 @@
         </div>
       </div>
       <div class="registration-item" v-if="!store.isLogin">
-        <label for="postalCode">Postal Code:</label>
+        <label for="postalCode-billing">Postal Code:</label>
         <input
           type="text"
-          id="postalCode"
+          id="postalCode-billing"
           required
           v-model="billingPostalCode"
           @input.prevent="validateBillingPostalCode"
@@ -316,7 +316,8 @@ export default {
         email: this.email,
         password: this.password,
         firstName: this.firstName,
-        lastName: this.lastName
+        lastName: this.lastName,
+        dateOfBirth: this.dateOfBirth
       }
       return userInfo
     }

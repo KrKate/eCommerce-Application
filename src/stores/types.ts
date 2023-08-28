@@ -21,7 +21,7 @@ export type CustomerInfo = {
   dateOfBirth: string
   companyName: string
   password: string
-  addresses: CustomerAdress[]
+  addresses: CustomerAddress[]
   defaultShippingAddressId: string
   defaultBillingAddressId: string
   shippingAddressIds: string[]
@@ -37,7 +37,7 @@ export type CustomerGroup = {
   id: string
 }
 
-export type CustomerAdress = {
+export type CustomerAddress = {
   id: string
   title: string
   salutation: string
@@ -133,4 +133,5 @@ export type UserRegistrationInfo = {
   firstName: string
   lastName: string
   password: string
+  dateOfBirth: string
 }
