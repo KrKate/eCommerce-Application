@@ -32,13 +32,14 @@
                 :class="isInfoMode ? '' : 'edit-mode'"
                 :disabled="isInfoMode"
                 :id="`LS-salutation`"
+                :ref="`LS-salutation`"
                 @change="validate($event)"
               >
                 <option
                   v-for="item in salutation"
                   v-bind:value="item"
                   v-bind:key="item"
-                  :selected="item.toString() === userInfo.salutation"
+                  :selected="item === userInfo.salutation"
                 >
                   {{ item }}
                 </option>
@@ -52,6 +53,7 @@
                 :value="userInfo[item]"
                 :disabled="isInfoMode"
                 :type="getType(item)"
+                :ref="`LS-${item}`"
                 :id="`LS-${item}`"
                 @change.prevent="validate($event)"
               />
@@ -72,8 +74,8 @@
         >
           {{ isInfoMode ? `EDIT` : `SAVE` }}
         </div>
-        <div id="barbutton1"></div>
-        <div id="barbutton2"></div>
+        <div id="barbutton1" :disabled="isInfoMode">{{ isInfoMode ? '' : 'update' }}</div>
+        <div id="barbutton2" :disabled="isInfoMode" @click="cancelChanges">{{ isInfoMode ? '' : 'cancel' }}</div>
         <div id="cross">
           <div id="leftcross">
             <div id="leftT"></div>
@@ -95,6 +97,7 @@
       <div id="right">
         <div id="stats">
           <div class="shipping-address" v-if="isShowShippingAddresses">
+            <p>Here are your shipping addresses</p>
             <div v-for="addressShip in userInfo.shippingAddressIds" :key="addressShip">
               <hr />
               <p v-if="addressShip === userInfo.defaultShippingAddressId">
@@ -108,6 +111,7 @@
                   :class="isInfoMode ? '' : 'edit-mode'"
                   :disabled="isInfoMode"
                   :id="`SA-salutation-${addressShip}`"
+                  :ref="`SA-salutation-${addressShip}`"
                   @change="validate($event)"
                 >
                   <option
@@ -131,6 +135,7 @@
                   :value="userInfo.addresses.find((value) => value.id === addressShip)[item]"
                   :disabled="isInfoMode"
                   :id="`SA-${item}-${addressShip}`"
+                  :ref="`SA-${item}-${addressShip}`"
                   @change.prevent="validate($event)"
                 />
               </label>
@@ -167,12 +172,14 @@
                   :value="userInfo.addresses.find((value) => value.id === addressShip)[item]"
                   :disabled="isInfoMode"
                   :id="`SA-${item}-${addressShip}`"
+                  :ref="`SA-${item}-${addressShip}`"
                   @change.prevent="validate($event)"
                 />
               </label>
             </div>
           </div>
           <div class="billing-address" v-if="!isShowShippingAddresses">
+            <p>Here are your billing addresses</p>
             <div v-for="addressBil in userInfo.billingAddressIds" :key="addressBil">
               <hr />
               <p v-if="addressBil === userInfo.defaultBillingAddressId">
@@ -186,6 +193,7 @@
                   :class="isInfoMode ? '' : 'edit-mode'"
                   :disabled="isInfoMode"
                   :id="`BA-salutation-${addressShip}`"
+                  :ref="`BA-salutation-${addressShip}`"
                   @change="validate($event)"
                 >
                   <option
@@ -209,6 +217,7 @@
                   :value="userInfo.addresses.find((value) => value.id === addressBil)[item]"
                   :disabled="isInfoMode"
                   :id="`BA-${item}-${addressBil}`"
+                  :ref="`BA-${item}-${addressBil}`"
                   @change.prevent="validate($event)"
                 />
               </label>
@@ -245,6 +254,7 @@
                   :value="userInfo.addresses.find((value) => value.id === addressBil)[item]"
                   :disabled="isInfoMode"
                   :id="`SA-${item}-${addressBil}`"
+                  :ref="`SA-${item}-${addressBil}`"
                   @change.prevent="validate($event)"
                 />
               </label>
@@ -317,13 +327,13 @@ export default {
   methods: {
     validate(event) {
       let field = event.target.id.replace('LS-', '').replace('SA-', '').replace('BA-', '')
-      let isValid = true, bgColor, addressID, address
+      let isValid = true,        bgColor,        addressID,        address
       if (field.includes('-')) {
         ;[field, addressID] = field.split('-')
         address = this.userInfo.addresses.filter((value) => value.id === addressID)
       }
       if (this.userInfo[field] !== event.target.value || address[field] === event.target.value) {
-        if (['firstName', 'middleName', 'lastName', 'title', 'city', 'region', 'state', 'department'].includes(field)) {
+        if (['firstName','middleName','lastName','title','city','region','state','department'].includes(field)) {
           isValid = validator.validateOnlyLetters(event.target.value)
         } else if (['dateOfBirth'].includes(field)) {
           isValid = validator.validateAge(event.target.value)
@@ -360,6 +370,21 @@ export default {
         return 'date'
       }
       return 'text'
+    },
+    cancelChanges() {
+      if (!this.isInfoMode) {
+        this.changedFields.forEach(value => {
+          if (value.includes('LS-')) {
+            this.$refs[value][0].value = this.userInfo[value.replace('LS-', '')]
+          } else if (value.includes('SA-') || value.includes('BA-')) {
+            let field, addressID
+            [field, addressID] = value.replace('SA-', '').replace('BA-', '').split('-')
+            let address = this.userInfo.addresses.filter((val) => val.id === addressID)[0]
+            this.$refs[value][0].value = address[field]
+          }
+          this.$refs[value][0].style.backgroundColor = ''
+        })
+      }
     }
   }
 }
@@ -374,7 +399,9 @@ export default {
   font-weight: 400;
   font-display: swap;
   src: url(@/assets/fonts/Orbitron.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF,
+    U+FFFD;
 }
 * {
   margin: 0;
@@ -639,6 +666,7 @@ main {
   }
 
   div#picture {
+    user-select: none;
     height: 175px;
     width: 254px;
     padding: 10px;
@@ -798,6 +826,11 @@ main {
   }
 
   div#barbutton1 {
+    display: flex;
+    font-size: 0.6rem;
+    align-items: center;
+    justify-content: center;
+    color: $app-white;
     height: 13px;
     width: 50px;
 
@@ -822,6 +855,11 @@ main {
   }
 
   div#barbutton2 {
+    display: flex;
+    font-size: 0.6rem;
+    align-items: center;
+    justify-content: center;
+    color: $app-white;
     height: 13px;
     width: 50px;
 
@@ -843,6 +881,11 @@ main {
     -webkit-box-shadow: -1px 2px #7b0000;
     -moz-box-shadow: -1px 2px #7b0000;
     -o-box-shadow: -1px 2px #7b0000;
+  }
+
+  div#barbutton1:hover, div#barbutton2:hover {
+    scale: 1.2;
+    cursor: pointer;
   }
 
   div#cross {
@@ -1099,6 +1142,7 @@ main {
   }
 
   div#stats {
+    user-select: none;
     height: 230px;
     width: 300px;
     padding: 10px;
@@ -1418,8 +1462,7 @@ hr {
   div#logo {
     width: 281px;
     height: 99px;
-    background: url('@/assets/images/pokedex-logo.png') no-repeat left
-      top;
+    background: url('@/assets/images/pokedex-logo.png') no-repeat left top;
     z-index: 1;
 
     position: absolute;
