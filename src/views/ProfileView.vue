@@ -107,6 +107,8 @@
                   class="user-main-info"
                   :class="isInfoMode ? '' : 'edit-mode'"
                   :disabled="isInfoMode"
+                  :id="`SA-salutation-${addressShip}`"
+                  @change="validate($event)"
                 >
                   <option
                     v-for="item in salutation"
@@ -183,6 +185,8 @@
                   class="user-main-info"
                   :class="isInfoMode ? '' : 'edit-mode'"
                   :disabled="isInfoMode"
+                  :id="`BA-salutation-${addressShip}`"
+                  @change="validate($event)"
                 >
                   <option
                     v-for="item in salutation"
@@ -204,7 +208,7 @@
                   :class="isInfoMode ? '' : 'edit-mode'"
                   :value="userInfo.addresses.find((value) => value.id === addressBil)[item]"
                   :disabled="isInfoMode"
-                  :id="`SA-${item}-${addressBil}`"
+                  :id="`BA-${item}-${addressBil}`"
                   @change.prevent="validate($event)"
                 />
               </label>
@@ -312,21 +316,32 @@ export default {
   },
   methods: {
     validate(event) {
-      const field = event.target.id.replace('LS-', '')
-      let isValid = true
-      let bgColor = ''
-      if (this.userInfo[field] !== event.target.value) {
-        if (['firstName', 'middleName', 'lastName'].includes(field)) {
+      let field = event.target.id.replace('LS-', '').replace('SA-', '').replace('BA-', '')
+      let isValid = true, bgColor, addressID, address
+      if (field.includes('-')) {
+        ;[field, addressID] = field.split('-')
+        address = this.userInfo.addresses.filter((value) => value.id === addressID)
+      }
+      if (this.userInfo[field] !== event.target.value || address[field] === event.target.value) {
+        if (['firstName', 'middleName', 'lastName', 'title', 'city', 'region', 'state', 'department'].includes(field)) {
           isValid = validator.validateOnlyLetters(event.target.value)
         } else if (['dateOfBirth'].includes(field)) {
           isValid = validator.validateAge(event.target.value)
-        } else if (['companyName'].includes(field)) {
+        } else if (['companyName', 'company', 'company'].includes(field)) {
           isValid = validator.validateCompanyName(event.target.value)
         } else if (['email'].includes(field)) {
           validator.validateEmail(event.target.value)
           isValid = validator.errorsEmail.length === 0
-        } else if (['customerNumber'].includes(field)) {
+        } else if (['customerNumber', 'phone', 'mobile', 'fax'].includes(field)) {
           isValid = validator.validatePhoneNumber(event.target.value)
+        } else if (['streetNumber'].includes(field)) {
+          isValid = validator.validateOnlyNumbers(event.target.value)
+        } else if (['postalCode'].includes(field)) {
+          isValid = validator.validatePostalCode(event.target.value, Countries.France)
+        } else if (['streetName', 'building', 'apartment'].includes(field)) {
+          isValid = validator.validateStreet(event.target.value)
+        } else if (['pOBox'].includes(field)) {
+          isValid = validator.validatePOBox(event.target.value)
         }
         bgColor = isValid ? '#00FF007F' : '#FF00007F'
         this.invalidFieldIds = [
@@ -338,8 +353,7 @@ export default {
       } else {
         this.changedFields = [...this.changedFields.filter((value) => value !== event.target.id)]
       }
-      event.target.style.backgroundColor = bgColor
-      console.log(this.changedFields)
+      event.target.style.backgroundColor = bgColor || ''
     },
     getType(field) {
       if (['dateOfBirth'].includes(field)) {
@@ -354,7 +368,14 @@ export default {
 <style scoped lang="scss">
 @import '@/assets/styles/mixins';
 @import '@/assets/styles/colors';
-@import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+@font-face {
+  font-family: 'Orbitron';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(@/assets/fonts/Orbitron.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 * {
   margin: 0;
   padding: 0;
@@ -1373,7 +1394,7 @@ main {
 
 @keyframes animate {
   0% {
-    background-position: 0%;
+    background-position: 0;
   }
   100% {
     background-position: 400%;
@@ -1397,7 +1418,7 @@ hr {
   div#logo {
     width: 281px;
     height: 99px;
-    background: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/200653/logo.png') no-repeat left
+    background: url('@/assets/images/pokedex-logo.png') no-repeat left
       top;
     z-index: 1;
 
