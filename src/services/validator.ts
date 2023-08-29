@@ -12,13 +12,17 @@ class Expressions {
   protected postalCodeGerFrItSp = new RegExp(/^\d{5}$/)
   protected postalCodeUK = new RegExp(/^[a-zA-Z]{1,2}[0-9][a-zA-Z0-9]? ?[0-9][a-zA-Z]{2}$/)
   protected postalCodePoland = new RegExp(/^\d{2}[- ]?\d{3}$/)
-  protected companyName = new RegExp(/^[a-zA-Z0-9-@.{}#&!()]+(\s[a-zA-Z0-9-@{}.#&!()]+)+(\s[a-zA-Z-@.#&!()]+)?$/)
+  protected companyName = new RegExp(
+    /^[a-zA-Z0-9-@.{}#&!()]+(\s[a-zA-Z0-9-@{}.#&!()]+)+(\s[a-zA-Z-@.#&!()]+)?$/
+  )
   protected phoneNumber = new RegExp(/^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/)
   protected onlyNumbers = new RegExp(/^[0-9]*$/)
-  protected poBox = new RegExp(/^ *((#\d+)|((box|bin)[-. \\]?\d+)|(.*p?([o0])[-. \\]? *-?((box|bin)|b|(#|n|num|number)?\d+))|(p(ost|ostal)? *(o(ff(ice)?)?)? *((box|bin)|b)? *(#|n|num|number)*\d+)|(p *-?\/?(o)? *-?box)|post office box|((box|bin)|b) *(#|n|num|number)? *\d+|(#|n|num|number) *\d+)/)
+  protected poBox = new RegExp(
+    /^ *((#\d+)|((box|bin)[-. \\]?\d+)|(.*p?([o0])[-. \\]? *-?((box|bin)|b|(#|n|num|number)?\d+))|(p(ost|ostal)? *(o(ff(ice)?)?)? *((box|bin)|b)? *(#|n|num|number)*\d+)|(p *-?\/?(o)? *-?box)|post office box|((box|bin)|b) *(#|n|num|number)? *\d+|(#|n|num|number) *\d+)/
+  )
 }
 
-export default class Validator extends Expressions{
+export default class Validator extends Expressions {
   public errorsEmail: EmailError[] = []
   public errorsPassword: PasswordError[] = []
 
@@ -79,7 +83,7 @@ export default class Validator extends Expressions{
     return true
   }
 
-  validateCompanyName(name:string) {
+  validateCompanyName(name: string) {
     return this.companyName.test(name)
   }
 
