@@ -1,15 +1,16 @@
 <template>
   <main>
     <div class="cards-container">
-      <div class="product-card">
+      <!-- <div class="product-card" v-for="cart in products" :key="cart.id"> -->
+        <div class="product-card">
         <h3 class="product-title">DDD</h3>
-        <img src="../assets/images/mewtwo.png" alt="Product Image" class="product-image">
+        <img src="../assets/images/Pikachu.png" alt="Product Image" class="product-image">
         <button @click="getProducts">BTn</button>
         <div class="product-description">dd</div>
         <div class="product-price">JJJ</div>
       </div>
     </div>
-    <p v-for="cart in products" :key="cart">{{ cart }}</p>
+    <p v-for="cart in products" :key="cart.id">{{ cart }}</p>
   </main>
 </template>
 
@@ -21,7 +22,7 @@ export default {
 data() {
   return {
     store: useUserStore(),
-    products: []
+    products: [] as Product[]
   }
 },
 methods: {
@@ -30,8 +31,6 @@ methods: {
   }
 }
 }
-
-
 </script>
 
 <style scoped lang="scss">
@@ -49,6 +48,8 @@ main {
   display: flex;
   flex-wrap: wrap;
   margin: 20px;
+  gap: 50px;
+  align-content: center
 }
 
 .product-card {
@@ -58,22 +59,36 @@ main {
   flex-direction: column;
   border: 2px solid #cccccc;
   padding: 10px;
+  border-radius: 10px;
+  transition: all 0.3s linear;
+  &:hover {
+  transform: perspective(800px) translateY(-5%) rotateX(25deg) translateZ(0);
+    box-shadow: 2px 35px 32px -8px rgba(0, 0, 0, 0.75);
+  -webkit-box-shadow: 2px 35px 32px -8px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 2px 35px 32px -8px rgba(0, 0, 0, 0.75);
+     .product-image {
+      transform: translate3d(0%, -15%, 500px);
+      scale: 1.3 1.6;
+     }
+}
+&:active {
+  transform: translateY(2%);
+  box-shadow: 2px 10px 10px -5px rgba(0, 0, 0, 0.75);
+  -webkit-box-shadow: 2px 10px 10px -5px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 2px 10px 10px -5px rgba(0, 0, 0, 0.75);
+  .product-image {
+    transform: translate3d(0%, 0%, 0px);
+      scale: none;
+     }
 }
 
-.product-card::before {
-  content: "";
-  background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
-  opacity: 0;
-  transition: opacity 0.5s;
-}
-
-.product-card:hover::before {
-  opacity: 1;
 }
 
 .product-image {
   object-fit: cover;
+  padding: 10px;
   margin-bottom: 10px;
+  transition: all 0.3s linear;
 }
 
 .product-title {
@@ -83,6 +98,7 @@ main {
   background-color: black;
   color: white;
   text-align: center;
+  border-radius: 10px;
 }
 
 .product-description {
