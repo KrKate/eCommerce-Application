@@ -157,10 +157,10 @@ export const useUserStore = defineStore('user', {
         document.cookie = `pokemonStore=;max-age=0`
       }
     },
-    changeLogin() {
+    async changeLogin() {
       if (this.isLogin) {
         this.clearCookie()
-        router.push('/')
+        await router.push('/')
       } else {
         this.redirectTimer = setTimeout(() => router.push('/'), 2000)
       }

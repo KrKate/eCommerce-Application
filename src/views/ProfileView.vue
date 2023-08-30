@@ -50,7 +50,7 @@
               <input
                 class="user-main-info"
                 :class="isInfoMode ? '' : 'edit-mode'"
-                :value="userInfo[item]"
+                :value="userInfo[item] || ''"
                 :disabled="isInfoMode"
                 :type="getType(item)"
                 :ref="`LS-${item}`"
@@ -120,7 +120,7 @@
                     v-bind:key="item"
                     :selected="
                       item ===
-                      userInfo.addresses.find((value) => value.id === addressShip).salutation
+                      (userInfo.addresses.find((value) => value.id === addressShip)?.salutation || salutation.None)
                     "
                   >
                     {{ item }}
@@ -132,7 +132,7 @@
                 <input
                   class="user-main-info"
                   :class="isInfoMode ? '' : 'edit-mode'"
-                  :value="userInfo.addresses.find((value) => value.id === addressShip)[item]"
+                  :value="userInfo?.addresses?.find((value) => value?.id === addressShip)[item] || ''"
                   :disabled="isInfoMode"
                   :id="`SA-${item}-${addressShip}`"
                   :ref="`SA-${item}-${addressShip}`"
@@ -288,7 +288,7 @@
   </main>
 </template>
 
-<script>
+<script lang="ts">
 import { useUserStore } from '@/stores/authorization'
 import {
   addressDetails,
@@ -299,6 +299,7 @@ import {
   userProfileLeftSideFields
 } from '@/global/constatnts'
 import Validator from '@/services/validator'
+import type {CustomerAddress, CustomerInfo} from "@/stores/types";
 
 const validator = new Validator()
 export default {
@@ -306,7 +307,7 @@ export default {
   data() {
     return {
       store: useUserStore(),
-      userInfo: {},
+      userInfo: {} as CustomerInfo,
       isInfoMode: true,
       salutation: Salutations,
       countries: Countries,
@@ -315,28 +316,34 @@ export default {
       contactDetails: contactDetails,
       addressDetails: addressDetails,
       isShowShippingAddresses: true,
-      invalidFieldIds: [],
-      changedFields: []
+      invalidFieldIds: [] as string[],
+      changedFields: [] as string[]
     }
   },
-  async beforeMount() {
+  async beforeMount(): void {
     this.store.isLoading = true
     this.userInfo = await this.store.getMyCustomerDetails()
     this.store.isLoading = false
   },
   methods: {
-    validate(event) {
-      let field = event.target.id.replace('LS-', '').replace('SA-', '').replace('BA-', '')
-      let isValid = true,        bgColor,        addressID,        address
-      if (field.includes('-')) {
-        ;[field, addressID] = field.split('-')
-        address = this.userInfo.addresses.filter((value) => value.id === addressID)
+    separatePrefixes(id: string): string[] {
+      let addressID = ''
+      let address = {} as CustomerAddress
+      let clearId = id.replace('LS-', '').replace('SA-', '').replace('BA-', '')
+      if (clearId.includes('-')) {
+        [clearId, addressID] = clearId.split('-')
+        address = this.userInfo.addresses.find((value) => value.id === addressID) || address
       }
+      return [clearId, address]
+    },
+    validate(event) {
+      let [field, address] = this.separatePrefixes(event.target.id)
+      let isValid = true, bgColor: string
       if (this.userInfo[field] !== event.target.value || address[field] === event.target.value) {
         if (['firstName','middleName','lastName','title','city','region','state','department'].includes(field)) {
           isValid = validator.validateOnlyLetters(event.target.value)
         } else if (['dateOfBirth'].includes(field)) {
-          isValid = validator.validateAge(event.target.value)
+          isValid = validator.validateAge(event.target?.value)
         } else if (['companyName', 'company', 'company'].includes(field)) {
           isValid = validator.validateCompanyName(event.target.value)
         } else if (['email'].includes(field)) {

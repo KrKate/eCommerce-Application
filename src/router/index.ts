@@ -34,8 +34,8 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: ProfileView,
-      beforeEnter: () => {
-        if (!useUserStore().isLogin) router.push('/login')
+      beforeEnter: async () => {
+        if (!useUserStore().isLogin) await router.push('/login')
         return useUserStore().isLogin
       }
     },
@@ -43,9 +43,9 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: () => import('../views/AuthorizationView.vue'),
-      beforeEnter: () => {
+      beforeEnter: async () => {
         if (useUserStore().isLogin) {
-          router.push('/')
+          await router.push('/')
           return false
         }
         return !useUserStore().isLogin
@@ -55,9 +55,9 @@ const router = createRouter({
       path: '/registration',
       name: 'Registration',
       component: RegistrationView,
-      beforeEnter: () => {
+      beforeEnter: async () => {
         if (useUserStore().isLogin) {
-          router.push('/')
+          await router.push('/')
           return false
         }
         return !useUserStore().isLogin
