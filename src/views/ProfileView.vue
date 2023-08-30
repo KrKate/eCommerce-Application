@@ -74,8 +74,12 @@
         >
           {{ isInfoMode ? `EDIT` : `SAVE` }}
         </div>
-        <div id="barbutton1" :disabled="isInfoMode">{{ isInfoMode ? '' : 'update' }}</div>
-        <div id="barbutton2" :disabled="isInfoMode" @click="cancelChanges">{{ isInfoMode ? '' : 'cancel' }}</div>
+        <div id="barbutton1" :disabled="isInfoMode" @click="acceptChanges">
+          {{ isInfoMode ? '' : 'update' }}
+        </div>
+        <div id="barbutton2" :disabled="isInfoMode" @click="cancelChanges">
+          {{ isInfoMode ? '' : 'cancel' }}
+        </div>
         <div id="cross">
           <div id="leftcross">
             <div id="leftT"></div>
@@ -120,7 +124,8 @@
                     v-bind:key="item"
                     :selected="
                       item ===
-                      (userInfo.addresses.find((value) => value.id === addressShip)?.salutation || salutation.None)
+                      (userInfo.addresses.find((value) => value.id === addressShip)?.salutation ||
+                        salutation.None)
                     "
                   >
                     {{ item }}
@@ -132,7 +137,9 @@
                 <input
                   class="user-main-info"
                   :class="isInfoMode ? '' : 'edit-mode'"
-                  :value="userInfo?.addresses?.find((value) => value?.id === addressShip)[item] || ''"
+                  :value="
+                    userInfo?.addresses?.find((value) => value?.id === addressShip)[item] || ''
+                  "
                   :disabled="isInfoMode"
                   :id="`SA-${item}-${addressShip}`"
                   :ref="`SA-${item}-${addressShip}`"
@@ -146,6 +153,9 @@
                   class="user-main-info"
                   :class="isInfoMode ? '' : 'edit-mode'"
                   :disabled="isInfoMode"
+                  :id="`SA-country-${addressShip}`"
+                  :ref="`SA-country-${addressShip}`"
+                  @change="validate($event)"
                 >
                   <option
                     v-for="item in countries"
@@ -295,13 +305,24 @@ import {
   contactDetails,
   Countries,
   CountryCodes,
+  CustomerUpdateActions,
   Salutations,
   userProfileLeftSideFields
 } from '@/global/constatnts'
 import Validator from '@/services/validator'
-import type {CustomerAddress, CustomerInfo} from "@/stores/types";
+import type { ActionsDTO, CustomerAddress, CustomerInfo, UpdateUserInfoDTO } from '@/stores/types'
 
 const validator = new Validator()
+const fieldsForValidation = [
+  'firstName',
+  'middleName',
+  'lastName',
+  'title',
+  'city',
+  'region',
+  'state',
+  'department'
+]
 export default {
   name: 'ProfileView',
   data() {
@@ -331,7 +352,7 @@ export default {
       let address = {} as CustomerAddress
       let clearId = id.replace('LS-', '').replace('SA-', '').replace('BA-', '')
       if (clearId.includes('-')) {
-        [clearId, addressID] = clearId.split('-')
+        ;[clearId, addressID] = clearId.split('-')
         address = this.userInfo.addresses.find((value) => value.id === addressID) || address
       }
       return [clearId, address]
@@ -339,7 +360,7 @@ export default {
     validate(event) {
       let [field, address, isValid, bgColor] = [...this.separatePrefixes(event.target.id), true, '']
       if (this.userInfo[field] !== event.target.value || address[field] === event.target.value) {
-        if (['firstName','middleName','lastName','title','city','region','state','department'].includes(field)) {
+        if (fieldsForValidation.includes(field)) {
           isValid = validator.validateOnlyLetters(event.target.value)
         } else if (['dateOfBirth'].includes(field)) {
           isValid = validator.validateAge(event.target?.value)
@@ -348,7 +369,7 @@ export default {
         } else if (['email'].includes(field)) {
           validator.validateEmail(event.target.value)
           isValid = validator.errorsEmail.length === 0
-        } else if (['customerNumber', 'phone', 'mobile', 'fax'].includes(field)) {
+        } else if (['phone', 'mobile', 'fax'].includes(field)) {
           isValid = validator.validatePhoneNumber(event.target.value)
         } else if (['streetNumber'].includes(field)) {
           isValid = validator.validateOnlyNumbers(event.target.value)
@@ -379,7 +400,7 @@ export default {
     },
     cancelChanges() {
       if (!this.isInfoMode) {
-        this.changedFields.forEach(value => {
+        this.changedFields.forEach((value) => {
           if (value.includes('LS-')) {
             if (value.replace('LS-', '') === 'salutation') {
               this.$refs[value].style.backgroundColor = ''
@@ -390,11 +411,72 @@ export default {
             this.$refs[value][0].value = this.userInfo[value.replace('LS-', '')]
           } else if (value.includes('SA-') || value.includes('BA-')) {
             let [field, address] = this.separatePrefixes(value)
+            if (field === 'country') {
+              console.log(this.$refs[value][0])
+              for (let obj of this.$refs[value][0]) {
+                obj.selected = obj.value === Countries[CountryCodes[address[field]]]
+              }
+            }
             this.$refs[value][0].value = address[field]
           }
           this.$refs[value][0].style.backgroundColor = ''
         })
       }
+    },
+    getLeftSideAction(field, val) {
+      const action: ActionsDTO = {}
+      switch (field) {
+        case 'salutation': {
+          action.action = CustomerUpdateActions.setSalutation
+          break
+        }
+        case 'firstName': {
+          action.action = CustomerUpdateActions.setFirstName
+          break
+        }
+        case 'middleName': {
+          action.action = CustomerUpdateActions.setMiddleName
+          break
+        }
+        case 'lastName': {
+          action.action = CustomerUpdateActions.setLastName
+          break
+        }
+        case 'dateOfBirth': {
+          action.action = CustomerUpdateActions.setDateOfBirth
+          break
+        }
+        case 'companyName': {
+          action.action = CustomerUpdateActions.setCompanyName
+          break
+        }
+        case 'title': {
+          action.action = CustomerUpdateActions.setTitle
+          break
+        }
+      }
+      action[field] = this.$refs[val][0].value || this.$refs[val].value
+      return action
+    },
+    async acceptChanges() {
+      this.store.isLoading = true
+      if (!this.invalidFieldIds.length) {
+        const updateInfo: UpdateUserInfoDTO = { version: this.userInfo.version, actions: [] }
+        this.changedFields.forEach((val) => {
+          if (val.includes('LS-')) {
+            const field = val.replace('LS-', '')
+            updateInfo.actions.push(this.getLeftSideAction(field, val))
+          } else {
+            const [field, adreess] = this.separatePrefixes(val)
+            console.log(field, adreess)
+          }
+        })
+        this.userInfo = await this.store.updateUserInfo(updateInfo)
+      } else {
+        alert('NOT VALID')
+        console.log(this.invalidFieldIds)
+      }
+      this.store.isLoading = false
     }
   }
 }
@@ -893,7 +975,8 @@ main {
     -o-box-shadow: -1px 2px #7b0000;
   }
 
-  div#barbutton1:hover, div#barbutton2:hover {
+  div#barbutton1:hover,
+  div#barbutton2:hover {
     scale: 1.2;
     cursor: pointer;
   }
