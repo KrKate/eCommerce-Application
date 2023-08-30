@@ -326,7 +326,7 @@ export default {
     this.store.isLoading = false
   },
   methods: {
-    separatePrefixes(id: string): string[] {
+    separatePrefixes(id: string): [string, CustomerAddress] {
       let addressID = ''
       let address = {} as CustomerAddress
       let clearId = id.replace('LS-', '').replace('SA-', '').replace('BA-', '')
@@ -337,8 +337,7 @@ export default {
       return [clearId, address]
     },
     validate(event) {
-      let [field, address] = this.separatePrefixes(event.target.id)
-      let isValid = true, bgColor: string
+      let [field, address, isValid, bgColor] = [...this.separatePrefixes(event.target.id), true, '']
       if (this.userInfo[field] !== event.target.value || address[field] === event.target.value) {
         if (['firstName','middleName','lastName','title','city','region','state','department'].includes(field)) {
           isValid = validator.validateOnlyLetters(event.target.value)
@@ -370,7 +369,7 @@ export default {
       } else {
         this.changedFields = [...this.changedFields.filter((value) => value !== event.target.id)]
       }
-      event.target.style.backgroundColor = bgColor || ''
+      event.target.style.backgroundColor = bgColor
     },
     getType(field) {
       if (['dateOfBirth'].includes(field)) {
@@ -382,11 +381,15 @@ export default {
       if (!this.isInfoMode) {
         this.changedFields.forEach(value => {
           if (value.includes('LS-')) {
+            if (value.replace('LS-', '') === 'salutation') {
+              this.$refs[value].style.backgroundColor = ''
+              for (let obj of this.$refs[value]) {
+                obj.selected = obj.value === this.userInfo.salutation
+              }
+            }
             this.$refs[value][0].value = this.userInfo[value.replace('LS-', '')]
           } else if (value.includes('SA-') || value.includes('BA-')) {
-            let field, addressID
-            [field, addressID] = value.replace('SA-', '').replace('BA-', '').split('-')
-            let address = this.userInfo.addresses.filter((val) => val.id === addressID)[0]
+            let [field, address] = this.separatePrefixes(value)
             this.$refs[value][0].value = address[field]
           }
           this.$refs[value][0].style.backgroundColor = ''
