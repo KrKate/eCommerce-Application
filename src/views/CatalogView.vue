@@ -1,12 +1,12 @@
 <template>
   <main>
+            <button @click="getProducts">BTn</button>
     <div class="cards-container">
        <div class="product-card" v-for="cart in products" :key="cart.id">
-        <h3 class="product-title">{{ cart.masterData.current.name.en }}</h3>
-        <img src="../assets/images/Pikachu.png" alt="Product Image" class="product-image">
-        <button @click="getProducts">BTn</button>
-        <div class="product-description">{{ cart.masterData.current.description.en }}</div>
-        <div class="product-price">JJJ</div>
+        <h3 class="product-title">{{ cart.masterData.current.name['en-US'] }}</h3>
+        <img :src="cart.masterData.current.masterVariant.images[0].url"  alt="Product Image" class="product-image">
+        <div class="product-description">{{ cart.masterData.current.description['en-US'] }}</div>
+        <div class="product-price">{{ }}</div>
       </div>
     </div>
     <p v-for="cart in products" :key="cart.id">{{ cart }}</p>

@@ -128,7 +128,7 @@ export type Product = {
           }
         ],
         "description": {
-          "en": string
+          "en-US": string
         },
         "masterVariant": {
           "attributes": [],
@@ -156,10 +156,10 @@ export type Product = {
           "sku": string
         },
         "name": {
-          "en": string
+          "en-US": string
         },
         "slug": {
-          "en": string
+          "en-US": string
         },
         "variants": [],
         "searchKeywords": {}
@@ -174,7 +174,7 @@ export type Product = {
           }
         ],
         "description": {
-          "en": string
+          "en-US": string
         },
         "masterVariant": {
           "attributes": [],
@@ -202,10 +202,10 @@ export type Product = {
           "sku": string
         },
         "name": {
-          "en": string
+          "en-US": string
         },
         "slug": {
-          "en": string
+          "en-US": string
         },
         "variants": [],
         "searchKeywords": {}
