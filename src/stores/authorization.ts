@@ -3,6 +3,7 @@ import axios from 'axios'
 import type {
   Customer,
   PasswordFlowResponse,
+  ProductResponse,
   SiteCookie,
   TokenResponse,
   UserRegistrationInfo
@@ -144,6 +145,24 @@ export const useUserStore = defineStore('user', {
     changeLogin() {
       if (this.isLogin) this.clearCookie()
       this.isLogin = !this.isLogin
+    },
+    async getProducts() {
+      try {
+        const productsData: ProductResponse = await axios
+          .get(
+            `https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/products`,
+            {
+              headers: {
+                Authorization: `Bearer ${this.token}`
+              }
+            }
+          )
+          .then((data) => data.data)
+          return productsData.results
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
+
 })

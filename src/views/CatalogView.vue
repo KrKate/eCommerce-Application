@@ -1,15 +1,38 @@
 <template>
   <main>
     <div class="cards-container">
-    <div class="product-card">
-    <h3 class="product-title">Mewtwo</h3>
-    <img src="../../src/assets/images/mewtwo.png" alt="Product Image" class="product-image">
-    <div class="product-description">Its DNA is almost the same as Mew’s. However, its size and disposition are vastly different.</div>
-    <div class="product-price">500$</div>
-  </div>
-  </div>
+      <div class="product-card">
+        <h3 class="product-title">DDD</h3>
+        <img src="../assets/images/mewtwo.png" alt="Product Image" class="product-image">
+        <button @click="getProducts">BTn</button>
+        <div class="product-description">dd</div>
+        <div class="product-price">JJJ</div>
+      </div>
+    </div>
+    <p v-for="cart in products" :key="cart">{{ cart }}</p>
   </main>
 </template>
+
+<script lang="ts">
+import { useUserStore } from '@/stores/authorization';
+import type { Product } from '@/stores/types';
+
+export default {
+data() {
+  return {
+    store: useUserStore(),
+    products: []
+  }
+},
+methods: {
+  async getProducts() {
+    this.products =  await this.store.getProducts()
+  }
+}
+}
+
+
+</script>
 
 <style scoped lang="scss">
 main {
@@ -27,6 +50,7 @@ main {
   flex-wrap: wrap;
   margin: 20px;
 }
+
 .product-card {
   max-height: 500px;
   max-width: 200px;
@@ -34,6 +58,17 @@ main {
   flex-direction: column;
   border: 2px solid #cccccc;
   padding: 10px;
+}
+
+.product-card::before {
+  content: "";
+  background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.product-card:hover::before {
+  opacity: 1;
 }
 
 .product-image {

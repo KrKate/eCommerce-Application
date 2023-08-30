@@ -114,3 +114,180 @@ export type UserRegistrationInfo = {
   lastName: string
   password: string
 }
+
+
+export type Product = {
+    "id": string,
+    "version": number,
+    "masterData": {
+      "current": {
+        "categories": [
+          {
+            "id": string,
+            "typeId": string
+          }
+        ],
+        "description": {
+          "en": string
+        },
+        "masterVariant": {
+          "attributes": [],
+          "id": number,
+          "images": [
+            {
+              "dimensions": {
+                "h": number,
+                "w": number
+              },
+              "url": string
+            }
+          ],
+          "prices": [
+            {
+              "value": {
+                "type": string,
+                "fractionDigits": number,
+                "centAmount": number,
+                "currencyCode": string
+              },
+              "id": string
+            }
+          ],
+          "sku": string
+        },
+        "name": {
+          "en": string
+        },
+        "slug": {
+          "en": string
+        },
+        "variants": [],
+        "searchKeywords": {}
+      },
+      "hasStagedChanges": boolean,
+      "published": boolean,
+      "staged": {
+        "categories": [
+          {
+            "id": string,
+            "typeId": string
+          }
+        ],
+        "description": {
+          "en": string
+        },
+        "masterVariant": {
+          "attributes": [],
+          "id": number,
+          "images": [
+            {
+              "dimensions": {
+                "h": number,
+                "w": number
+              },
+              "url": string
+            }
+          ],
+          "prices": [
+            {
+              "value": {
+                "type": string,
+                "fractionDigits": number,
+                "centAmount": number,
+                "currencyCode": string
+              },
+              "id": string
+            }
+          ],
+          "sku": string
+        },
+        "name": {
+          "en": string
+        },
+        "slug": {
+          "en": string
+        },
+        "variants": [],
+        "searchKeywords": {}
+      }
+    },
+    "productType": {
+      "id": string,
+      "typeId": string
+    },
+    "taxCategory": {
+      "id": string,
+      "typeId": string
+    },
+    "createdAt": string,
+    "lastModifiedAt": string
+
+}
+
+
+
+// export type Product = {
+//   id: string;
+//   version: number;
+//   masterData: {
+//     current: {
+//       categories: Array<{
+//         id: string;
+//         typeId: string;
+//       }>;
+//       description: {
+//         en: string;
+//       };
+//       masterVariant: {
+//         attributes: [];
+//         id: number;
+//         images: Array<{
+//           dimensions: {
+//             h: number;
+//             w: number;
+//           };
+//           url: string;
+//         }>;
+//         prices: Array<{
+//           value: {
+//             type: string;
+//             fractionDigits: number;
+//             centAmount: number;
+//             currencyCode: string;
+//           };
+//           id: number;
+//         }>;
+//         sku: string;
+//       };
+//       name: {
+//         en: string;
+//       };
+//       slug: {
+//         en: string;
+//       };
+//       variants: [];
+//       searchKeywords: {};
+//     };
+//     hasStagedChanges: boolean;
+//     published: boolean;
+//     staged: {};
+//   };
+//   productType: {
+//     id: string;
+//     typeId: string;
+//   };
+//   taxCategory: {
+//     id: string;
+//     typeId: string;
+//   };
+//   createdAt: string;
+//   lastModifiedAt: string;
+// };
+
+export type ProductResponse = {
+  "limit": number,
+  "offset": number,
+  "count": number,
+  "total": number,
+  "results": Product[]
+}
