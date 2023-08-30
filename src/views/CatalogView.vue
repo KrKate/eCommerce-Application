@@ -1,15 +1,15 @@
 <template>
   <main>
-            <button @click="getProducts">BTn</button>
+            <!-- <button @click="getProducts">BTn</button> -->
     <div class="cards-container">
        <div class="product-card" v-for="cart in products" :key="cart.id">
         <h3 class="product-title">{{ cart.masterData.current.name['en-US'] }}</h3>
         <img :src="getImageUrl(cart)"  alt="Product Image" class="product-image">
-        <div class="product-description">{{ cart.masterData.current.description['en-US'] }}</div>
-        <div class="product-price">{{ getPriceValue(cart) }}</div>
+        <div class="product-price">€ {{ getPriceValue(cart) }} </div>
+        <button class="info-button">More info</button>
       </div>
     </div>
-    <p v-for="cart in products" :key="cart.id">{{ cart }}</p>
+    <!-- <p v-for="cart in products" :key="cart.id">{{ cart }}</p> -->
   </main>
 </template>
 
@@ -23,6 +23,9 @@ data() {
     store: useUserStore(),
     products: [] as Product[]
   }
+},
+mounted() {
+    this.getProducts()
 },
 methods: {
   async getProducts() {
@@ -48,6 +51,8 @@ methods: {
 </script>
 
 <style scoped lang="scss">
+@import '@/assets/styles/colors';
+
 main {
   display: flex;
   margin: auto;
@@ -115,14 +120,72 @@ main {
   border-radius: 10px;
 }
 
-.product-description {
-  margin-bottom: 5px;
-  font-size: 1rem;
-  text-align: justify;
-}
-
 .product-price {
   font-size: 1.2rem;
   text-align: center;
+}
+
+.info-button {
+    height: 30px;
+    border: none;
+    outline: none;
+    color: #fff;
+    background: #111;
+    cursor: pointer;
+    position: relative;
+    z-index: 0;
+    border-radius: 10px;
+    margin-top:auto;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.info-button:before {
+    content: '';
+    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    position: absolute;
+    top: -2px;
+    left:-2px;
+    background-size: 400%;
+    z-index: -1;
+    filter: blur(5px);
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    animation: glowing 20s linear infinite;
+    opacity: 0;
+    transition: opacity .3s ease-in-out;
+    border-radius: 10px;
+}
+
+.info-button:active {
+    color: #000
+}
+
+.info-button:active:after {
+    background: transparent;
+}
+
+.info-button:hover:before {
+    opacity: 1;
+}
+
+.info-button:after {
+    z-index: -1;
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #0075be;
+    left: 0;
+    top: 0;
+    border-radius: 10px;
+}
+
+@keyframes glowing {
+    0% { background-position: 0 0; }
+    50% { background-position: 400% 0; }
+    100% { background-position: 0 0; }
 }
 </style>
