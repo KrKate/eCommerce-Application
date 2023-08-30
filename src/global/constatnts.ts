@@ -99,13 +99,13 @@ export enum Salutations {
 }
 
 export const userProfileLeftSideFields = [
+  ['title', 'Title'],
   ['firstName', 'First name'],
   ['middleName', 'Middle name'],
   ['lastName', 'Last name'],
   ['dateOfBirth', 'Date of birth'],
   ['companyName', 'Company name'],
-  ['email', 'E-mail'],
-  ['customerNumber', 'Phone number']
+  ['email', 'E-mail']
 ]
 
 export const contactDetails = [
