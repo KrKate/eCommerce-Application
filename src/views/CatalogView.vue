@@ -4,9 +4,9 @@
     <div class="cards-container">
        <div class="product-card" v-for="cart in products" :key="cart.id">
         <h3 class="product-title">{{ cart.masterData.current.name['en-US'] }}</h3>
-        <img :src="cart.masterData.current.masterVariant.images[0].url"  alt="Product Image" class="product-image">
+        <img :src="getImageUrl(cart)"  alt="Product Image" class="product-image">
         <div class="product-description">{{ cart.masterData.current.description['en-US'] }}</div>
-        <div class="product-price">{{ }}</div>
+        <div class="product-price">{{ getPriceValue(cart) }}</div>
       </div>
     </div>
     <p v-for="cart in products" :key="cart.id">{{ cart }}</p>
@@ -27,9 +27,24 @@ data() {
 methods: {
   async getProducts() {
     this.products = await this.store.getProducts() || [] as Product[]
+  },
+  getImageUrl(cart: Product) {
+      if (cart.masterData.current.masterVariant.images.length > 0) {
+        return cart.masterData.current.masterVariant.images[0].url;
+      } else {
+        return '#';
+      }
+    },
+    getPriceValue(cart: Product) {
+      if (cart.masterData.current.masterVariant.prices.length > 0) {
+        return cart.masterData.current.masterVariant.prices[0].value.centAmount;
+      } else {
+        return 'free';
+      }
+    }
   }
 }
-}
+
 </script>
 
 <style scoped lang="scss">
