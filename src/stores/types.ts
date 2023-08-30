@@ -1,3 +1,6 @@
+import type { CustomerUpdateActions } from '@/global/constatnts'
+import { CountryCodes, Salutations } from '@/global/constatnts'
+
 export type Customer = {
   customer: CustomerInfo
 }
@@ -41,9 +44,9 @@ export type CustomerAddress = {
   id: string
   key: string
   externalId: string
-  country: string
+  country: keyof CountryCodes
   title: string
-  salutation: string
+  salutation: Salutations
   firstName: string
   lastName: string
   streetName: string
@@ -136,4 +139,26 @@ export type UserRegistrationInfo = {
   lastName: string
   password: string
   dateOfBirth: string
+}
+
+export type UpdateUserInfoDTO = {
+  version: number
+  actions: ActionsDTO[]
+}
+
+export type ActionsDTO = {
+  action: CustomerUpdateActions
+  email: string
+  firstName: string
+  lastName: string
+  middleName: string
+  title: string
+  salutation: string
+  address: Omit<CustomerAddress, 'id'>
+  addressId: string
+  customerNumber: string
+  externalId: string
+  companyName: string
+  dateOfBirth: string
+  vatId: string
 }
