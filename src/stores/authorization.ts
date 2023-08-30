@@ -3,6 +3,7 @@ import axios from 'axios'
 import type {
   Customer,
   PasswordFlowResponse,
+  Product,
   ProductResponse,
   SiteCookie,
   TokenResponse,
@@ -160,7 +161,7 @@ export const useUserStore = defineStore('user', {
           .then((data) => data.data)
           return productsData.results
       } catch (error) {
-        console.log(error)
+        return [] as Product[]
       }
     }
   }

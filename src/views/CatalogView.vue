@@ -1,12 +1,11 @@
 <template>
   <main>
     <div class="cards-container">
-      <!-- <div class="product-card" v-for="cart in products" :key="cart.id"> -->
-        <div class="product-card">
-        <h3 class="product-title">DDD</h3>
+       <div class="product-card" v-for="cart in products" :key="cart.id">
+        <h3 class="product-title">{{ cart.masterData.current.name.en }}</h3>
         <img src="../assets/images/Pikachu.png" alt="Product Image" class="product-image">
         <button @click="getProducts">BTn</button>
-        <div class="product-description">dd</div>
+        <div class="product-description">{{ cart.masterData.current.description.en }}</div>
         <div class="product-price">JJJ</div>
       </div>
     </div>
@@ -27,7 +26,7 @@ data() {
 },
 methods: {
   async getProducts() {
-    this.products =  await this.store.getProducts()
+    this.products = await this.store.getProducts() || [] as Product[]
   }
 }
 }
