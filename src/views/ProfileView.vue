@@ -293,6 +293,8 @@
                 :class="isInfoMode ? '' : 'edit-mode'"
                 :disabled="isInfoMode"
                 type="password"
+                ref="currentPassword"
+                @input.prevent="validatePassword($event)"
               />
             </label>
             <label>
@@ -302,6 +304,8 @@
                 :class="isInfoMode ? '' : 'edit-mode'"
                 :disabled="isInfoMode"
                 type="password"
+                ref="newPassword"
+                @input.prevent="validatePassword($event)"
               />
             </label>
             <label>
@@ -311,9 +315,16 @@
                 :class="isInfoMode ? '' : 'edit-mode'"
                 :disabled="isInfoMode"
                 type="password"
+                ref="checkPassword"
+                @input.prevent="validatePassword($event)"
               />
             </label>
-            <button>update</button>
+            <button
+              @click="changePassword"
+              :disabled="!(isCheckPasswordValid && isCurrentPasswordValid && isNewPasswordValid)"
+            >
+              update
+            </button>
           </div>
         </div>
         <div id="miniButtonGlass4"></div>
@@ -369,7 +380,13 @@ import {
   userProfileLeftSideFields
 } from '@/global/constatnts'
 import Validator from '@/services/validator'
-import type { ActionsDTO, CustomerAddress, CustomerInfo, UpdateUserInfoDTO } from '@/stores/types'
+import type {
+  ActionsDTO,
+  ChangePasswordDTO,
+  CustomerAddress,
+  CustomerInfo,
+  UpdateUserInfoDTO
+} from '@/stores/types'
 
 const validator = new Validator()
 const fieldsForValidation = [
@@ -402,7 +419,10 @@ export default {
       invalidFieldIds: [] as string[],
       changedFields: [] as string[],
       isShowUpdateMessage: false,
-      statusMessage: ''
+      statusMessage: '',
+      isCurrentPasswordValid: false,
+      isNewPasswordValid: false,
+      isCheckPasswordValid: false
     }
   },
   async beforeMount(): void {
@@ -455,6 +475,23 @@ export default {
         this.changedFields = [...this.changedFields.filter((value) => value !== event.target.id)]
       }
       event.target.style.backgroundColor = bgColor
+    },
+    validatePassword(ev) {
+      if (ev.target === this.$refs.currentPassword) {
+        validator.validatePassword(ev.target.value)
+        console.log(validator.errorsPassword.length)
+        this.isCurrentPasswordValid = validator.errorsPassword.length === 0
+      }
+      if (ev.target === this.$refs.newPassword) {
+        validator.validatePassword(ev.target.value)
+        this.isNewPasswordValid =
+          validator.errorsPassword.length === 0 &&
+          this.$refs.currentPassword.value !== this.$refs.newPassword.value
+      }
+      if (ev.target === this.$refs.checkPassword) {
+        validator.validatePassword(ev.target.value)
+        this.isCheckPasswordValid = this.$refs.checkPassword.value === this.$refs.newPassword.value
+      }
     },
     getType(field) {
       if (['dateOfBirth'].includes(field)) {
@@ -524,6 +561,9 @@ export default {
           action.action = CustomerUpdateActions.setTitle
           break
         }
+        case 'email': {
+          action.action = CustomerUpdateActions.changeEmail
+        }
       }
       action[field] = this.$refs[val][0].value || this.$refs[val].value
       return action
@@ -540,6 +580,27 @@ export default {
       } else {
         this.isInfoMode = !this.isInfoMode
       }
+    },
+    async changePassword() {
+      this.store.isLoading = true
+      const passwordDTO: ChangePasswordDTO = {
+        id: this.userInfo.id,
+        currentPassword: this.$refs.currentPassword.value,
+        newPassword: this.$refs.newPassword.value,
+        version: this.userInfo.version
+      }
+      this.userInfo = await this.store.changePassword(passwordDTO)
+      if (this.userInfo.id) {
+        this.statusMessage = 'Password updated successfully!'
+        this.$refs.newPassword.value = ''
+        this.$refs.currentPassword.value = ''
+        this.$refs.checkPassword.value = ''
+      } else {
+        this.statusMessage = 'Check your old password and try again.'
+      }
+      this.isShowUpdateMessage = true
+      setTimeout(() => (this.isShowUpdateMessage = false), 1500)
+      this.store.isLoading = false
     },
     async acceptChanges() {
       this.store.isLoading = true
@@ -1199,6 +1260,25 @@ main {
         width: 100%;
         flex-wrap: wrap;
         gap: 5px;
+      }
+
+      button {
+        text-transform: uppercase;
+      }
+
+      button:disabled {
+        border: double;
+      }
+
+      button:not(:disabled) {
+        border: 1px solid $app-red;
+        background: $app-red;
+        color: $app-white;
+
+        &:hover {
+          cursor: pointer;
+          scale: 1.1;
+        }
       }
       input {
         width: 100%;

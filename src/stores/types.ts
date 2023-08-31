@@ -162,3 +162,10 @@ export type ActionsDTO = {
   dateOfBirth: string
   vatId: string
 }
+
+export type ChangePasswordDTO = {
+  "id": string,
+  "version": number,
+  "currentPassword": string,
+  "newPassword": string
+}

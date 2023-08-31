@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import type {
+  ChangePasswordDTO,
   Customer,
   CustomerInfo,
   PasswordFlowResponse,
@@ -146,7 +147,22 @@ export const useUserStore = defineStore('user', {
         ).then((data) => data.data)
         return customerInfo
       } catch (error) {
-        console.log(error)
+        return {} as CustomerInfo
+      }
+    },
+    async changePassword(data: ChangePasswordDTO) {
+      try {
+        const customerInfo: CustomerInfo =await axios.post(
+            `https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/password`,
+            JSON.stringify(data),
+            {
+              headers: {
+                Authorization: `Bearer ${this.token}`
+              }
+            }
+        ).then((data) => console.log(data.data))
+        return customerInfo
+      } catch (error) {
         return {} as CustomerInfo
       }
     },
