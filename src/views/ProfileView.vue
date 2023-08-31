@@ -269,8 +269,52 @@
               </label>
             </div>
           </div>
-          <div class="change-email" v-if="isShowChangeEmailAddresses">email</div>
-          <div class="change-password" v-if="isShowChangePassword">password</div>
+          <div class="change-email" v-if="isShowChangeEmailAddresses">
+            <label> Current email address </label>
+            <input
+              placeholder="Current email address"
+              :class="isInfoMode ? '' : 'edit-mode'"
+              :disabled="true"
+              :value="userInfo.email"
+            />
+            <label> New email address </label>
+            <input
+              placeholder="example@mail.com"
+              :class="isInfoMode ? '' : 'edit-mode'"
+              :disabled="isInfoMode"
+            />
+            <button :disabled="isInfoMode">update</button>
+          </div>
+          <div class="change-password" v-if="isShowChangePassword">
+            <label>
+              Current password
+              <input
+                placeholder="Type current password here"
+                :class="isInfoMode ? '' : 'edit-mode'"
+                :disabled="isInfoMode"
+                type="password"
+              />
+            </label>
+            <label>
+              New password
+              <input
+                placeholder="Type new password here"
+                :class="isInfoMode ? '' : 'edit-mode'"
+                :disabled="isInfoMode"
+                type="password"
+              />
+            </label>
+            <label>
+              Confirm new password
+              <input
+                placeholder="Confirm new password"
+                :class="isInfoMode ? '' : 'edit-mode'"
+                :disabled="isInfoMode"
+                type="password"
+              />
+            </label>
+            <button>update</button>
+          </div>
         </div>
         <div id="miniButtonGlass4"></div>
         <div id="miniButtonGlass5"></div>
@@ -1139,19 +1183,69 @@ main {
       margin-top: 3px;
     }
 
+    .change-email,
+    .change-password {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      height: 100%;
+      width: 80%;
+      margin: 0 auto;
+      gap: 10px;
+      justify-content: center;
+
+      label {
+        display: flex;
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+      input {
+        width: 100%;
+        background: transparent;
+        padding: 3px 10px;
+        border: none;
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 700;
+        font-size: 0.6rem;
+
+        &.edit-mode {
+          background-color: $app-gray;
+          border: none;
+        }
+      }
+
+      input:disabled {
+        background: transparent;
+      }
+
+      button {
+        background: transparent;
+        padding: 3px 10px;
+        border: none;
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 700;
+        font-size: 0.6rem;
+        &.edit-mode {
+          background-color: $app-gray;
+          border: none;
+        }
+      }
+    }
     .user-main-info {
       font-family: 'Orbitron', sans-serif;
       font-weight: 700;
+      font-size: 0.6rem;
       width: 60%;
       color: darkred;
       background-color: transparent;
       border: none;
-      font-size: 0.6rem;
       display: flex;
       padding: 0 10px;
 
       &.edit-mode {
         background-color: $app-gray;
+        border: none;
       }
     }
   }
