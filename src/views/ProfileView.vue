@@ -538,21 +538,17 @@ export default {
     U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF,
     U+FFFD;
 }
-* {
-  margin: 0;
-  padding: 0;
-}
 main {
   padding-top: 160px;
 }
 
 @media all {
-  div#pokedex {
+  #pokedex {
     width: 750px;
     margin: 50px auto 0 auto;
   }
 
-  div#left {
+  #left {
     width: 400px;
     height: 500px;
     float: left;
@@ -579,11 +575,7 @@ main {
     position: absolute;
     top: 0;
     left: 0;
-
-    box-shadow: -10px 9px #5e0000;
-    -webkit-box-shadow: -10px 9px #5e0000;
-    -moz-box-shadow: -10px 9px #5e0000;
-    -o-box-shadow: -10px 9px #5e0000;
+    @include box-shadow(-10px, 9px, #5e0000);
 
     border-bottom-right-radius: 85px 60px;
     -webkit-border-bottom-right-radius: 85px 60px;
@@ -627,11 +619,7 @@ main {
     width: 400px;
     height: 420px;
     background-color: #c00d0d;
-
-    box-shadow: -10px 9px #5e0000;
-    -webkit-box-shadow: -10px 9px #5e0000;
-    -moz-box-shadow: -10px 9px #5e0000;
-    -o-box-shadow: -10px 9px #5e0000;
+    @include box-shadow(-10px, 9px, #5e0000);
 
     border-bottom-left-radius: 30px;
     -webkit-border-bottom-left-radius: 30px;
@@ -655,11 +643,7 @@ main {
     background: -webkit-radial-gradient(#05fbfb, #29abe3);
     background: -moz-radial-gradient(#05fbfb, #29abe3);
     background: -o-radial-gradient(#05fbfb, #29abe3);
-
-    border-radius: 35px;
-    -webkit-border-radius: 35px;
-    -moz-border-radius: 35px;
-    -o-border-radius: 35px;
+    @include border-radius(35px);
   }
 
   div#reflect {
@@ -685,11 +669,7 @@ main {
     -webkit-box-shadow: 0 0 10px #490000;
     -moz-box-shadow: 0 0 10px #490000;
     -o-box-shadow: 0 0 10px #490000;
-
-    border-radius: 20px;
-    -webkit-border-radius: 20px;
-    -moz-border-radius: 20px;
-    -o-border-radius: 20px;
+    @include border-radius(20px);
 
     background: radial-gradient(#fb7b7b, #fb0505);
     background: -webkit-radial-gradient(#fb7b7b, #fb0505);
@@ -707,11 +687,7 @@ main {
     -webkit-box-shadow: 0 0 10px #490000;
     -moz-box-shadow: 0 0 10px #490000;
     -o-box-shadow: 0 0 10px #490000;
-
-    border-radius: 20px;
-    -webkit-border-radius: 20px;
-    -moz-border-radius: 20px;
-    -o-border-radius: 20px;
+    @include border-radius(20px);
 
     background: radial-gradient(#fbfb9b, #fbfb05);
     background: -webkit-radial-gradient(#fbfb9b, #fbfb05);
@@ -729,11 +705,7 @@ main {
     -webkit-box-shadow: 0 0 10px #490000;
     -moz-box-shadow: 0 0 10px #490000;
     -o-box-shadow: 0 0 10px #490000;
-
-    border-radius: 20px;
-    -webkit-border-radius: 20px;
-    -moz-border-radius: 20px;
-    -o-border-radius: 20px;
+    @include border-radius(20px);
 
     background: radial-gradient(#b0fb7b, #50fb05);
     background: -webkit-radial-gradient(#b0fb7b, #50fb05);
@@ -782,11 +754,7 @@ main {
     position: absolute;
     top: 130px;
     left: 19px;
-
-    border-radius: 15px;
-    -webkit-border-radius: 15px;
-    -moz-border-radius: 15px;
-    -o-border-radius: 15px;
+    @include border-radius(15px);
   }
 
   div#screen:after {
@@ -811,10 +779,7 @@ main {
     border: 3px solid #494949;
     clear: both;
     font-family: 'Orbitron', sans-serif;
-    border-radius: 15px;
-    -webkit-border-radius: 15px;
-    -moz-border-radius: 15px;
-    -o-border-radius: 15px;
+    @include border-radius(15px);
 
     .message {
       padding: 20px;
@@ -866,11 +831,7 @@ main {
     background-color: #c00d0d;
     border: 1px solid #000;
     float: left;
-
-    border-radius: 15px;
-    -webkit-border-radius: 15px;
-    -moz-border-radius: 15px;
-    -o-border-radius: 15px;
+    @include border-radius(15px);
   }
 
   div#buttontopPicture1 {
@@ -883,16 +844,8 @@ main {
     background-color: #c00d0d;
     margin-left: 35px;
     float: left;
-
-    border-radius: 30px;
-    -webkit-border-radius: 30px;
-    -moz-border-radius: 30px;
-    -o-border-radius: 30px;
-
-    box-shadow: -2px 1px #5e0000;
-    -webkit-box-shadow: -2px 1px #5e0000;
-    -moz-box-shadow: -2px 1px #5e0000;
-    -o-box-shadow: -2px 1px #5e0000;
+    @include border-radius(30px);
+    @include box-shadow(-2px, 1px, #5e0000);
 
     background: linear-gradient(top, #c00d0d 0%, #8b0000 80%);
     background: -webkit-linear-gradient(top, #c00d0d 0%, #8b0000 80%);
@@ -911,11 +864,7 @@ main {
     height: 3px;
     margin-bottom: 5px;
     background-color: #494949;
-
-    border-radius: 30px;
-    -webkit-border-radius: 30px;
-    -moz-border-radius: 30px;
-    -o-border-radius: 30px;
+    @include border-radius(30px);
   }
 
   div#bigbluebutton {
@@ -936,32 +885,20 @@ main {
     position: absolute;
     top: 395px;
     left: 30px;
-
-    border-radius: 100px;
-    -webkit-border-radius: 100px;
-    -moz-border-radius: 100px;
-    -o-border-radius: 100px;
+    @include border-radius(100px);
 
     background: linear-gradient(top, #307bfb 0%, #0530e5 80%);
     background: -webkit-linear-gradient(top, #307bfb 0%, #0530e5 80%);
     background: -moz-linear-gradient(top, #307bfb 0%, #0530e5 80%);
     background: -o-linear-gradient(top, #307bfb 0%, #0530e5 80%);
-
-    box-shadow: -3px 2px #001c91;
-    -webkit-box-shadow: -3px 2px #001c91;
-    -moz-box-shadow: -3px 2px #001c91;
-    -o-box-shadow: -3px 2px #001c91;
+    @include box-shadow(-3px, 2px, #001c91);
 
     &.clicked {
       background: linear-gradient(top, #2eb203 0%, #114802 80%);
       background: -webkit-linear-gradient(top, #2eb203 0%, #114802 80%);
       background: -moz-linear-gradient(top, #2eb203 0%, #114802 80%);
       background: -o-linear-gradient(top, #2eb203 0%, #114802 80%);
-
-      box-shadow: -3px 2px #052300;
-      -webkit-box-shadow: -3px 2px #052300;
-      -moz-box-shadow: -3px 2px #052300;
-      -o-box-shadow: -3px 2px #052300;
+      @include box-shadow(-3px, 2px, #052300);
     }
 
     &:hover {
@@ -981,21 +918,13 @@ main {
     position: absolute;
     top: 405px;
     left: 100px;
-
-    border-radius: 100px;
-    -webkit-border-radius: 100px;
-    -moz-border-radius: 100px;
-    -o-border-radius: 100px;
+    @include border-radius(100px);
 
     background: linear-gradient(top, #50fb05 0%, #057b05 100%);
     background: -webkit-linear-gradient(top, #50fb05 0%, #057b05 100%);
     background: -moz-linear-gradient(top, #50fb05 0%, #057b05 100%);
     background: -o-linear-gradient(top, #50fb05 0%, #057b05 100%);
-
-    box-shadow: -1px 2px #004200;
-    -webkit-box-shadow: -1px 2px #004200;
-    -moz-box-shadow: -1px 2px #004200;
-    -o-box-shadow: -1px 2px #004200;
+    @include box-shadow(-1px, 2px, #004200);
   }
 
   div#barbutton2 {
@@ -1010,21 +939,13 @@ main {
     position: absolute;
     top: 405px;
     left: 165px;
-
-    border-radius: 100px;
-    -webkit-border-radius: 100px;
-    -moz-border-radius: 100px;
-    -o-border-radius: 100px;
+    @include border-radius(100px);
 
     background: linear-gradient(top, #fb6505 0%, #bb0505 100%);
     background: -webkit-linear-gradient(top, #fb6505 0%, #bb0505 100%);
     background: -moz-linear-gradient(top, #fb6505 0%, #bb0505 100%);
     background: -o-linear-gradient(top, #fb6505 0%, #bb0505 100%);
-
-    box-shadow: -1px 2px #7b0000;
-    -webkit-box-shadow: -1px 2px #7b0000;
-    -moz-box-shadow: -1px 2px #7b0000;
-    -o-box-shadow: -1px 2px #7b0000;
+    @include box-shadow(-1px, 2px, #7b0000);
   }
 
   div#barbutton1:hover,
@@ -1050,11 +971,7 @@ main {
     position: absolute;
     top: 0;
     left: 30px;
-
-    box-shadow: -3px 2px #010101;
-    -webkit-box-shadow: -3px 2px #010101;
-    -moz-box-shadow: -3px 2px #010101;
-    -o-box-shadow: -3px 2px #010101;
+    @include box-shadow(-3px, 2px, #010101);
 
     border-top-left-radius: 5px;
     -webkit-border-top-left-radius: 5px;
@@ -1076,11 +993,7 @@ main {
     position: absolute;
     left: 0;
     top: 30px;
-
-    box-shadow: -3px 2px #010101;
-    -webkit-box-shadow: -3px 2px #010101;
-    -moz-box-shadow: -3px 2px #010101;
-    -o-box-shadow: -3px 2px #010101;
+    @include box-shadow(-3px, 2px, #010101);
 
     border-top-left-radius: 5px;
     -webkit-border-top-left-radius: 5px;
@@ -1101,11 +1014,7 @@ main {
     position: absolute;
     top: 30px;
     left: 30px;
-
-    box-shadow: -3px 2px #010101;
-    -webkit-box-shadow: -3px 2px #010101;
-    -moz-box-shadow: -3px 2px #010101;
-    -o-box-shadow: -3px 2px #010101;
+    @include box-shadow(-3px, 2px, #010101);
   }
 
   div#rightcross {
@@ -1116,11 +1025,7 @@ main {
     position: absolute;
     top: 30px;
     right: 0;
-
-    box-shadow: -3px 2px #010101;
-    -webkit-box-shadow: -3px 2px #010101;
-    -moz-box-shadow: -3px 2px #010101;
-    -o-box-shadow: -3px 2px #010101;
+    @include box-shadow(-3px, 2px, #010101);
 
     border-top-right-radius: 5px;
     -webkit-border-top-right-radius: 5px;
@@ -1141,11 +1046,7 @@ main {
     position: absolute;
     bottom: 0;
     left: 30px;
-
-    box-shadow: -3px 2px #010101;
-    -webkit-box-shadow: -3px 2px #010101;
-    -moz-box-shadow: -3px 2px #010101;
-    -o-box-shadow: -3px 2px #010101;
+    @include box-shadow(-3px, 2px, #010101);
 
     border-bottom-left-radius: 5px;
     -webkit-border-bottom-left-radius: 5px;
@@ -1213,11 +1114,7 @@ main {
     position: absolute;
     top: 5px;
     left: 4px;
-
-    border-radius: 30px;
-    -webkit-border-radius: 30px;
-    -moz-border-radius: 30px;
-    -o-border-radius: 30px;
+    @include border-radius(30px);
 
     background: radial-gradient(#111, #222);
     background: -webkit-radial-gradient(#111, #222);
@@ -1279,11 +1176,7 @@ main {
     -webkit-border-bottom-right-radius: 30px;
     -moz-border-bottom-right-radius: 30px;
     -o-border-bottom-right-radius: 30px;
-
-    box-shadow: -10px 9px #5e0000;
-    -webkit-box-shadow: -10px 9px #5e0000;
-    -moz-box-shadow: -10px 9px #5e0000;
-    -o-box-shadow: -10px 9px #5e0000;
+    @include box-shadow(-10px, 9px, #5e0000);
   }
 
   div#stats {
@@ -1303,11 +1196,7 @@ main {
     position: absolute;
     top: 130px;
     left: 25px;
-
-    border-radius: 15px;
-    -webkit-border-radius: 15px;
-    -moz-border-radius: 15px;
-    -o-border-radius: 15px;
+    @include border-radius(15px);
 
     box-shadow: 0 0 20px #003300 inset;
     -webkit-box-shadow: 0 0 20px #003300 inset;
@@ -1321,7 +1210,7 @@ main {
 
     &::-webkit-scrollbar-thumb {
       background-color: transparent;
-      border-radius: 9em;
+      @include border-radius(9em);
       box-shadow: inset 1px 1px 10px darkred;
     }
 
@@ -1391,21 +1280,13 @@ main {
     background-color: #003300;
     float: left;
     margin-right: 7px;
-
-    border-radius: 10px;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    -o-border-radius: 10px;
+    @include border-radius(10px);
 
     background: linear-gradient(top, #307bfb 0%, #0530e5 80%);
     background: -webkit-linear-gradient(top, #307bfb 0%, #0530e5 80%);
     background: -moz-linear-gradient(top, #307bfb 0%, #0530e5 80%);
     background: -o-linear-gradient(top, #307bfb 0%, #0530e5 80%);
-
-    box-shadow: -1px 2px #001c91;
-    -webkit-box-shadow: -1px 2px #001c91;
-    -moz-box-shadow: -1px 2px #001c91;
-    -o-box-shadow: -1px 2px #001c91;
+    @include box-shadow(-1px, 2px, #001c91);
   }
 
   div#barbutton3 {
@@ -1416,21 +1297,13 @@ main {
     position: absolute;
     top: 385px;
     left: 210px;
-
-    border-radius: 100px;
-    -webkit-border-radius: 100px;
-    -moz-border-radius: 100px;
-    -o-border-radius: 100px;
+    @include border-radius(100px);
 
     background: linear-gradient(top, #50fb05 0%, #057b05 100%);
     background: -webkit-linear-gradient(top, #50fb05 0%, #057b05 100%);
     background: -moz-linear-gradient(top, #50fb05 0%, #057b05 100%);
     background: -o-linear-gradient(top, #50fb05 0%, #057b05 100%);
-
-    box-shadow: -1px 2px #004200;
-    -webkit-box-shadow: -1px 2px #004200;
-    -moz-box-shadow: -1px 2px #004200;
-    -o-box-shadow: -1px 2px #004200;
+    @include box-shadow(-1px, 2px, #004200);
   }
 
   div#barbutton4 {
@@ -1441,21 +1314,13 @@ main {
     position: absolute;
     top: 385px;
     left: 270px;
-
-    border-radius: 100px;
-    -webkit-border-radius: 100px;
-    -moz-border-radius: 100px;
-    -o-border-radius: 100px;
+    @include border-radius(100px);
 
     background: linear-gradient(top, #fb6505 0%, #bb0505 100%);
     background: -webkit-linear-gradient(top, #fb6505 0%, #bb0505 100%);
     background: -moz-linear-gradient(top, #fb6505 0%, #bb0505 100%);
     background: -o-linear-gradient(top, #fb6505 0%, #bb0505 100%);
-
-    box-shadow: -1px 2px #7b0000;
-    -webkit-box-shadow: -1px 2px #7b0000;
-    -moz-box-shadow: -1px 2px #7b0000;
-    -o-box-shadow: -1px 2px #7b0000;
+    @include box-shadow(-1px, 2px, #7b0000);
   }
 
   div#miniButtonGlass4 {
@@ -1472,11 +1337,7 @@ main {
     -webkit-box-shadow: 0 0 10px #490000;
     -moz-box-shadow: 0 0 10px #490000;
     -o-box-shadow: 0 0 10px #490000;
-
-    border-radius: 20px;
-    -webkit-border-radius: 20px;
-    -moz-border-radius: 20px;
-    -o-border-radius: 20px;
+    @include border-radius(20px);
 
     background: radial-gradient(#ff9b5b, #fb6505);
     background: -webkit-radial-gradient(#ff9b5b, #fb6505);
@@ -1498,11 +1359,7 @@ main {
     -webkit-box-shadow: 0 0 10px #490000;
     -moz-box-shadow: 0 0 10px #490000;
     -o-box-shadow: 0 0 10px #490000;
-
-    border-radius: 20px;
-    -webkit-border-radius: 20px;
-    -moz-border-radius: 20px;
-    -o-border-radius: 20px;
+    @include border-radius(20px);
 
     background: radial-gradient(#0abd0a, #057b05);
     background: -webkit-radial-gradient(#0abd0a, #057b05);
@@ -1524,15 +1381,6 @@ main {
 
   #yellowBox4 {
     @include yellow-button(455px, 185px);
-  }
-}
-
-@keyframes animate {
-  0% {
-    background-position: 0;
-  }
-  100% {
-    background-position: 400%;
   }
 }
 
@@ -1580,11 +1428,7 @@ hr {
     position: absolute;
     top: 0;
     left: 0;
-
-    box-shadow: 0 0 #5e0000;
-    -webkit-box-shadow: 0 0 #5e0000;
-    -moz-box-shadow: 0 0 #5e0000;
-    -o-box-shadow: 0 0 #5e0000;
+    @include box-shadow(0, 0, #5e0000);
 
     border-bottom-right-radius: 85px 60px;
     -webkit-border-bottom-right-radius: 85px 60px;
@@ -1601,11 +1445,7 @@ hr {
     width: 400px;
     height: 80px;
     background-color: #8b0000;
-
-    box-shadow: -10px 9px #5e0000;
-    -webkit-box-shadow: -10px 9px #5e0000;
-    -moz-box-shadow: -10px 9px #5e0000;
-    -o-box-shadow: -10px 9px #5e0000;
+    @include box-shadow(-10px, 9px, #5e0000);
 
     border-top-left-radius: 30px;
     -webkit-border-top-left-radius: 30px;

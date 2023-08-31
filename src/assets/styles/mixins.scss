@@ -72,3 +72,17 @@
     border: 5px inset darkred;
   }
 }
+
+@mixin box-shadow($x, $y, $color) {
+  box-shadow: $x $y $color;
+  -webkit-box-shadow: $x $color;
+  -moz-box-shadow: $x $y $color;
+  -o-box-shadow: $x $y $color;
+}
+
+@mixin border-radius($radius) {
+  border-radius: $radius;
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  -o-border-radius: $radius;
+}
