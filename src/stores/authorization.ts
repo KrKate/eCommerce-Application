@@ -6,7 +6,8 @@ import type {
   CustomerInfo,
   PasswordFlowResponse,
   SiteCookie,
-  TokenResponse, UpdateUserInfoDTO,
+  TokenResponse,
+  UpdateUserInfoDTO,
   UserRegistrationInfo
 } from '@/stores/types'
 import router from '@/router'
@@ -136,7 +137,8 @@ export const useUserStore = defineStore('user', {
     },
     async updateUserInfo(data: UpdateUserInfoDTO) {
       try {
-        const customerInfo: CustomerInfo = await axios.post(
+        const customerInfo: CustomerInfo = await axios
+          .post(
             `https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me`,
             JSON.stringify(data),
             {
@@ -144,7 +146,8 @@ export const useUserStore = defineStore('user', {
                 Authorization: `Bearer ${this.token}`
               }
             }
-        ).then((data) => data.data)
+          )
+          .then((data) => data.data)
         return customerInfo
       } catch (error) {
         return {} as CustomerInfo
@@ -152,7 +155,8 @@ export const useUserStore = defineStore('user', {
     },
     async changePassword(data: ChangePasswordDTO) {
       try {
-        const customerInfo: CustomerInfo =await axios.post(
+        const customerInfo: CustomerInfo = await axios
+          .post(
             `https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/password`,
             JSON.stringify(data),
             {
@@ -160,7 +164,8 @@ export const useUserStore = defineStore('user', {
                 Authorization: `Bearer ${this.token}`
               }
             }
-        ).then((data) => console.log(data.data))
+          )
+          .then((data) => console.log(data.data))
         return customerInfo
       } catch (error) {
         return {} as CustomerInfo

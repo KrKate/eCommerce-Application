@@ -26,6 +26,7 @@
           </div>
           <div id="picture">
             <div class="message" v-if="isShowUpdateMessage">
+              <img src="@/assets/images/messageProfile.jpg" alt="message" />
               <p ref="update-message">{{ statusMessage }}</p>
             </div>
             <template v-if="!isShowUpdateMessage">
@@ -54,7 +55,7 @@
                 <input
                   class="user-main-info"
                   :class="isInfoMode ? '' : 'edit-mode'"
-                  :value="userInfo[item] || ''"
+                  :value="userInfo[item]"
                   :disabled="isInfoMode"
                   :type="getType(item)"
                   :ref="`LS-${item}`"
@@ -136,9 +137,7 @@
                 <input
                   class="user-main-info"
                   :class="isInfoMode ? '' : 'edit-mode'"
-                  :value="
-                    userInfo?.addresses?.find((value) => value?.id === addressShip)[item] || ''
-                  "
+                  :value="userInfo?.addresses?.find((value) => value.id === addressShip)[item]"
                   :disabled="isInfoMode"
                   :id="`SA-${item}-${addressShip}`"
                   :ref="`SA-${item}-${addressShip}`"
@@ -164,7 +163,7 @@
                       item ===
                       countries[
                         countryCodes[
-                          userInfo.addresses.find((value) => value.id === addressShip).country
+                          userInfo?.addresses?.find((value) => value.id === addressShip).country
                         ]
                       ]
                     "
@@ -178,7 +177,7 @@
                 <input
                   class="user-main-info"
                   :class="isInfoMode ? '' : 'edit-mode'"
-                  :value="userInfo.addresses.find((value) => value.id === addressShip)[item]"
+                  :value="userInfo?.addresses.find((value) => value.id === addressShip)[item]"
                   :disabled="isInfoMode"
                   :id="`SA-${item}-${addressShip}`"
                   :ref="`SA-${item}-${addressShip}`"
@@ -211,7 +210,7 @@
                     v-bind:key="item"
                     :selected="
                       item ===
-                      userInfo.addresses.find((value) => value.id === addressBil).salutation
+                      userInfo?.addresses.find((value) => value.id === addressBil).salutation
                     "
                   >
                     {{ item }}
@@ -223,7 +222,7 @@
                 <input
                   class="user-main-info"
                   :class="isInfoMode ? '' : 'edit-mode'"
-                  :value="userInfo.addresses.find((value) => value.id === addressBil)[item]"
+                  :value="userInfo?.addresses.find((value) => value.id === addressBil)[item]"
                   :disabled="isInfoMode"
                   :id="`BA-${item}-${addressBil}`"
                   :ref="`BA-${item}-${addressBil}`"
@@ -246,7 +245,7 @@
                       item ===
                       countries[
                         countryCodes[
-                          userInfo.addresses.find((value) => value.id === addressBil).country
+                          userInfo?.addresses.find((value) => value.id === addressBil).country
                         ]
                       ]
                     "
@@ -260,7 +259,7 @@
                 <input
                   class="user-main-info"
                   :class="isInfoMode ? '' : 'edit-mode'"
-                  :value="userInfo.addresses.find((value) => value.id === addressBil)[item]"
+                  :value="userInfo?.addresses.find((value) => value.id === addressBil)[item]"
                   :disabled="isInfoMode"
                   :id="`SA-${item}-${addressBil}`"
                   :ref="`SA-${item}-${addressBil}`"
@@ -296,6 +295,14 @@
                 ref="currentPassword"
                 @input.prevent="validatePassword($event)"
               />
+              <img
+                v-if="!isInfoMode"
+                src="@/assets/icons/eye.png"
+                class="password-toggle"
+                @click="changePasswordVisibility('currentPassword')"
+                alt="show-password"
+              />
+              <div class="crossed" v-if="isShowPasswordCurrent"></div>
             </label>
             <label>
               New password
@@ -307,6 +314,14 @@
                 ref="newPassword"
                 @input.prevent="validatePassword($event)"
               />
+              <img
+                src="@/assets/icons/eye.png"
+                v-if="!isInfoMode"
+                class="password-toggle"
+                @click="changePasswordVisibility('newPassword')"
+                alt="show-password"
+              />
+              <div class="crossed" v-if="isShowPasswordNew"></div>
             </label>
             <label>
               Confirm new password
@@ -318,6 +333,14 @@
                 ref="checkPassword"
                 @input.prevent="validatePassword($event)"
               />
+              <img
+                src="@/assets/icons/eye.png"
+                v-if="!isInfoMode"
+                class="password-toggle"
+                @click="changePasswordVisibility('checkPassword')"
+                alt="show-password"
+              />
+              <div class="crossed" v-if="isShowPasswordCheck"></div>
             </label>
             <button
               @click="changePassword"
@@ -422,7 +445,10 @@ export default {
       statusMessage: '',
       isCurrentPasswordValid: false,
       isNewPasswordValid: false,
-      isCheckPasswordValid: false
+      isCheckPasswordValid: false,
+      isShowPasswordCurrent: false,
+      isShowPasswordNew: false,
+      isShowPasswordCheck: false
     }
   },
   async beforeMount(): void {
@@ -431,6 +457,20 @@ export default {
     this.store.isLoading = false
   },
   methods: {
+    changePasswordVisibility(el: string) {
+      const pass = this.$refs[el] as HTMLInputElement
+      if (pass) {
+        console.log(pass)
+        pass.type = pass.type === 'password' ? 'text' : 'password'
+        if (pass === this.$refs.currentPassword)
+          this.isShowPasswordCurrent = !this.isShowPasswordCurrent
+        if (pass === this.$refs.checkPassword) this.isShowPasswordCheck = !this.isShowPasswordCheck
+        if (pass === this.$refs.newPassword) this.isShowPasswordNew = !this.isShowPasswordNew
+      }
+    },
+    clearInput(ev) {
+      ev.target.value = ''
+    },
     separatePrefixes(id: string): [string, CustomerAddress] {
       let addressID = ''
       let address = {} as CustomerAddress
@@ -477,23 +517,27 @@ export default {
       event.target.style.backgroundColor = bgColor
     },
     validatePassword(ev) {
-      if (ev.target === this.$refs.currentPassword) {
-        validator.validatePassword(ev.target.value)
-        console.log(validator.errorsPassword.length)
+      const checkPass = this.$refs.checkPassword
+      const newPass = this.$refs.newPassword
+      const currPass = this.$refs.currentPassword
+      const el: HTMLInputElement = ev.target as HTMLInputElement
+      const value = el.value as string
+      if (el === currPass) {
+        validator.validatePassword(el.value)
         this.isCurrentPasswordValid = validator.errorsPassword.length === 0
       }
-      if (ev.target === this.$refs.newPassword) {
-        validator.validatePassword(ev.target.value)
+      if (el === newPass) {
+        validator.validatePassword(value)
+        if (!currPass) throw new ReferenceError('Element not found!')
         this.isNewPasswordValid =
-          validator.errorsPassword.length === 0 &&
-          this.$refs.currentPassword.value !== this.$refs.newPassword.value
+          currPass.value !== newPass.value && validator.errorsPassword.length === 0
       }
-      if (ev.target === this.$refs.checkPassword) {
-        validator.validatePassword(ev.target.value)
-        this.isCheckPasswordValid = this.$refs.checkPassword.value === this.$refs.newPassword.value
+      if (el === this.$refs.checkPassword) {
+        validator.validatePassword(value)
+        this.isCheckPasswordValid = checkPass.value === newPass.value
       }
     },
-    getType(field) {
+    getType(field: string) {
       if (['dateOfBirth'].includes(field)) {
         return 'date'
       }
@@ -510,8 +554,9 @@ export default {
         this.changedFields.forEach((value) => {
           if (value.includes('LS-')) {
             if (value.replace('LS-', '') === 'salutation') {
-              this.$refs[value].style.backgroundColor = ''
-              for (let obj of this.$refs[value]) {
+              const val = this.$refs[value] as HTMLSelectElement
+              val.style.backgroundColor = ''
+              for (let obj of val) {
                 obj.selected = obj.value === this.userInfo.salutation
               }
             }
@@ -519,8 +564,8 @@ export default {
           } else if (value.includes('SA-') || value.includes('BA-')) {
             let [field, address] = this.separatePrefixes(value)
             if (field === 'country') {
-              console.log(this.$refs[value][0])
-              for (let obj of this.$refs[value][0]) {
+              const country = this.$refs[value][0]
+              for (let obj of country) {
                 obj.selected = obj.value === Countries[CountryCodes[address[field]]]
               }
             }
@@ -530,8 +575,8 @@ export default {
         })
       }
     },
-    getLeftSideAction(field, val) {
-      const action: ActionsDTO = {}
+    getLeftSideAction(field: keyof ActionsDTO, val: string): ActionsDTO {
+      const action: ActionsDTO = {} as ActionsDTO
       switch (field) {
         case 'salutation': {
           action.action = CustomerUpdateActions.setSalutation
@@ -565,7 +610,7 @@ export default {
           action.action = CustomerUpdateActions.changeEmail
         }
       }
-      action[field] = this.$refs[val][0].value || this.$refs[val].value
+      action[field] = this.$refs[val][0]?.value || this.$refs[val]?.value
       return action
     },
     changeMode() {
@@ -575,7 +620,7 @@ export default {
         } else {
           this.statusMessage = 'Check the correctness of the entered data'
           this.isShowUpdateMessage = true
-          setTimeout(() => (this.isShowUpdateMessage = false), 1500)
+          setTimeout(() => (this.isShowUpdateMessage = false), 2000)
         }
       } else {
         this.isInfoMode = !this.isInfoMode
@@ -616,14 +661,14 @@ export default {
       })
       this.userInfo = await this.store.updateUserInfo(updateInfo)
       if (this.userInfo.id) {
-        this.statusMessage = 'Data updated successfully!'
+        this.statusMessage = 'Successfully updated.'
         this.changedFields = []
         this.invalidFieldIds = []
       } else {
         this.statusMessage = 'An error occurred while executing the request. Try later.'
       }
       this.isShowUpdateMessage = true
-      setTimeout(() => (this.isShowUpdateMessage = false), 1500)
+      setTimeout(() => (this.isShowUpdateMessage = false), 2000)
       this.store.isLoading = false
     }
   }
@@ -848,6 +893,19 @@ main {
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-direction: column;
+      text-align: justify;
+
+      p {
+        display: flex;
+        width: 100%;
+      }
+
+      img {
+        height: 50px;
+        display: flex;
+        margin: 10px auto;
+      }
     }
 
     label {
@@ -1260,6 +1318,7 @@ main {
         width: 100%;
         flex-wrap: wrap;
         gap: 5px;
+        position: relative;
       }
 
       button {
@@ -1280,6 +1339,7 @@ main {
           scale: 1.1;
         }
       }
+
       input {
         width: 100%;
         background: transparent;
@@ -1306,9 +1366,31 @@ main {
         font-family: 'Orbitron', sans-serif;
         font-weight: 700;
         font-size: 0.6rem;
+
         &.edit-mode {
           background-color: $app-gray;
           border: none;
+        }
+      }
+
+      .crossed {
+        position: absolute;
+        width: 15px;
+        right: 10px;
+        top: 30px;
+        transform: rotate(-45deg);
+        border: 1px solid $app-black;
+      }
+
+      .password-toggle {
+        height: 15px;
+        position: absolute;
+        right: 10px;
+        z-index: 1;
+        top: 22px;
+
+        &:hover {
+          transform: scale(1.2);
         }
       }
     }

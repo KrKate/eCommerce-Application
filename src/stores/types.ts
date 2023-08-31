@@ -148,19 +148,19 @@ export type UpdateUserInfoDTO = {
 
 export type ActionsDTO = {
   action: CustomerUpdateActions
-  email: string
-  firstName: string
-  lastName: string
-  middleName: string
-  title: string
-  salutation: string
-  address: Omit<CustomerAddress, 'id'>
-  addressId: string
-  customerNumber: string
+  email?: string
+  firstName?: string
+  lastName?: string
+  middleName?: string
+  title?: string
+  salutation?: string
+  address?: Omit<CustomerAddress, 'id'>
+  addressId?: string
+  customerNumber?: string
   externalId: string
-  companyName: string
-  dateOfBirth: string
-  vatId: string
+  companyName?: string
+  dateOfBirth?: string
+  vatId?: string
 }
 
 export type ChangePasswordDTO = {
