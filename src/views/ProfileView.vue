@@ -25,39 +25,44 @@
             <div id="buttontopPicture2"></div>
           </div>
           <div id="picture">
-            <label>
-              Salutation
-              <select
-                class="user-main-info"
-                :class="isInfoMode ? '' : 'edit-mode'"
-                :disabled="isInfoMode"
-                :id="`LS-salutation`"
-                :ref="`LS-salutation`"
-                @change="validate($event)"
-              >
-                <option
-                  v-for="item in salutation"
-                  v-bind:value="item"
-                  v-bind:key="item"
-                  :selected="item === userInfo.salutation"
+            <div class="message" v-if="isShowUpdateMessage">
+              <p ref="update-message">{{ statusMessage }}</p>
+            </div>
+            <template v-if="!isShowUpdateMessage">
+              <label>
+                Salutation
+                <select
+                  class="user-main-info"
+                  :class="isInfoMode ? '' : 'edit-mode'"
+                  :disabled="isInfoMode"
+                  :id="`LS-salutation`"
+                  :ref="`LS-salutation`"
+                  @change="validate($event)"
                 >
-                  {{ item }}
-                </option>
-              </select>
-            </label>
-            <label v-for="[item, value] in leftFields" v-bind:key="item">
-              {{ value }}
-              <input
-                class="user-main-info"
-                :class="isInfoMode ? '' : 'edit-mode'"
-                :value="userInfo[item] || ''"
-                :disabled="isInfoMode"
-                :type="getType(item)"
-                :ref="`LS-${item}`"
-                :id="`LS-${item}`"
-                @change.prevent="validate($event)"
-              />
-            </label>
+                  <option
+                    v-for="item in salutation"
+                    v-bind:value="item"
+                    v-bind:key="item"
+                    :selected="item === userInfo.salutation"
+                  >
+                    {{ item }}
+                  </option>
+                </select>
+              </label>
+              <label v-for="[item, value] in leftFields" v-bind:key="item">
+                {{ value }}
+                <input
+                  class="user-main-info"
+                  :class="isInfoMode ? '' : 'edit-mode'"
+                  :value="userInfo[item] || ''"
+                  :disabled="isInfoMode"
+                  :type="getType(item)"
+                  :ref="`LS-${item}`"
+                  :id="`LS-${item}`"
+                  @change.prevent="validate($event)"
+                />
+              </label>
+            </template>
           </div>
           <div id="buttonbottomPicture"></div>
           <div id="speakers">
@@ -67,16 +72,10 @@
             <div class="sp"></div>
           </div>
         </div>
-        <div
-          id="bigbluebutton"
-          :class="isInfoMode ? '' : 'clicked'"
-          @click="isInfoMode = !isInfoMode"
-        >
+        <div id="bigbluebutton" :class="isInfoMode ? '' : 'clicked'" @click="changeMode">
           {{ isInfoMode ? `EDIT` : `SAVE` }}
         </div>
-        <div id="barbutton1" :disabled="isInfoMode" @click="acceptChanges">
-          {{ isInfoMode ? '' : 'update' }}
-        </div>
+        <div id="barbutton1"></div>
         <div id="barbutton2" :disabled="isInfoMode" @click="cancelChanges">
           {{ isInfoMode ? '' : 'cancel' }}
         </div>
@@ -338,7 +337,9 @@ export default {
       addressDetails: addressDetails,
       isShowShippingAddresses: true,
       invalidFieldIds: [] as string[],
-      changedFields: [] as string[]
+      changedFields: [] as string[],
+      isShowUpdateMessage: false,
+      statusMessage: ''
     }
   },
   async beforeMount(): void {
@@ -458,24 +459,41 @@ export default {
       action[field] = this.$refs[val][0].value || this.$refs[val].value
       return action
     },
+    changeMode() {
+      if (!this.isInfoMode && this.changedFields.length) {
+        if (!this.invalidFieldIds.length) {
+          this.acceptChanges()
+        } else {
+          this.statusMessage = 'Check the correctness of the entered data'
+          this.isShowUpdateMessage = true
+          setTimeout(() => (this.isShowUpdateMessage = false), 1500)
+        }
+      } else {
+        this.isInfoMode = !this.isInfoMode
+      }
+    },
     async acceptChanges() {
       this.store.isLoading = true
-      if (!this.invalidFieldIds.length) {
-        const updateInfo: UpdateUserInfoDTO = { version: this.userInfo.version, actions: [] }
-        this.changedFields.forEach((val) => {
-          if (val.includes('LS-')) {
-            const field = val.replace('LS-', '')
-            updateInfo.actions.push(this.getLeftSideAction(field, val))
-          } else {
-            const [field, adreess] = this.separatePrefixes(val)
-            console.log(field, adreess)
-          }
-        })
-        this.userInfo = await this.store.updateUserInfo(updateInfo)
+      const updateInfo: UpdateUserInfoDTO = { version: this.userInfo.version, actions: [] }
+      this.changedFields.forEach((val) => {
+        if (val.includes('LS-')) {
+          const field = val.replace('LS-', '')
+          updateInfo.actions.push(this.getLeftSideAction(field, val))
+        } else {
+          const [field, adreess] = this.separatePrefixes(val)
+          console.log(field, adreess)
+        }
+      })
+      this.userInfo = await this.store.updateUserInfo(updateInfo)
+      if (this.userInfo.id) {
+        this.statusMessage = 'Data updated successfully!'
+        this.changedFields = []
+        this.invalidFieldIds = []
       } else {
-        alert('NOT VALID')
-        console.log(this.invalidFieldIds)
+        this.statusMessage = 'An error occurred while executing the request. Try later.'
       }
+      this.isShowUpdateMessage = true
+      setTimeout(() => (this.isShowUpdateMessage = false), 1500)
       this.store.isLoading = false
     }
   }
@@ -772,6 +790,15 @@ main {
     -webkit-border-radius: 15px;
     -moz-border-radius: 15px;
     -o-border-radius: 15px;
+
+    .message {
+      padding: 20px;
+      font-size: 0.8rem;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
     label {
       display: flex;
