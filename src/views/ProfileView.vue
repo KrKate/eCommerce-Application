@@ -187,7 +187,7 @@
               </label>
             </div>
           </div>
-          <div class="billing-address" v-if="!isShowShippingAddresses">
+          <div class="billing-address" v-if="isShowBillingAddresses">
             <p>Here are your billing addresses</p>
             <div v-for="addressBil in userInfo.billingAddressIds" :key="addressBil">
               <hr />
@@ -269,6 +269,8 @@
               </label>
             </div>
           </div>
+          <div class="change-email" v-if="isShowChangeEmailAddresses">email</div>
+          <div class="change-password" v-if="isShowChangePassword">password</div>
         </div>
         <div id="miniButtonGlass4"></div>
         <div id="miniButtonGlass5"></div>
@@ -276,17 +278,31 @@
         <div id="barbutton4"></div>
         <div
           id="yellowBox1"
-          @click="isShowShippingAddresses = false"
-          :class="isShowShippingAddresses ? '' : 'clickedYB'"
+          @click="yellowButtonsClick('BA')"
+          :class="!isShowBillingAddresses ? '' : 'clickedYB'"
         >
           Billing address
         </div>
         <div
           id="yellowBox2"
-          @click="isShowShippingAddresses = true"
+          @click="yellowButtonsClick('SA')"
           :class="!isShowShippingAddresses ? '' : 'clickedYB'"
         >
           Shipping address
+        </div>
+        <div
+          id="yellowBox3"
+          @click="yellowButtonsClick('email')"
+          :class="!isShowChangeEmailAddresses ? '' : 'clickedYB'"
+        >
+          Change email
+        </div>
+        <div
+          id="yellowBox4"
+          @click="yellowButtonsClick('password')"
+          :class="!isShowChangePassword ? '' : 'clickedYB'"
+        >
+          Change password
         </div>
         <div id="bg_curve1_right"></div>
         <div id="bg_curve2_right"></div>
@@ -336,6 +352,9 @@ export default {
       contactDetails: contactDetails,
       addressDetails: addressDetails,
       isShowShippingAddresses: true,
+      isShowBillingAddresses: false,
+      isShowChangeEmailAddresses: false,
+      isShowChangePassword: false,
       invalidFieldIds: [] as string[],
       changedFields: [] as string[],
       isShowUpdateMessage: false,
@@ -398,6 +417,12 @@ export default {
         return 'date'
       }
       return 'text'
+    },
+    yellowButtonsClick(clicked: string) {
+      this.isShowChangeEmailAddresses = clicked === 'email'
+      this.isShowShippingAddresses = clicked === 'SA'
+      this.isShowBillingAddresses = clicked === 'BA'
+      this.isShowChangePassword = clicked === 'password'
     },
     cancelChanges() {
       if (!this.isInfoMode) {
@@ -1459,7 +1484,7 @@ main {
     background: -o-radial-gradient(#ff9b5b, #fb6505);
   }
 
-  div#miniButtonGlass5 {
+  #miniButtonGlass5 {
     width: 15px;
     height: 15px;
     float: left;
@@ -1485,74 +1510,20 @@ main {
     background: -o-radial-gradient(#0abd0a, #057b05);
   }
 
-  div#yellowBox1 {
-    user-select: none;
-    width: 140px;
-    height: 70px;
-    z-index: 1;
-    background-color: #ffff00;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    top: 415px;
-    font-size: 0.8rem;
-    left: 25px;
-    font-family: 'Orbitron', sans-serif;
-    color: $app-black;
-    font-weight: 700;
-    border-radius: 15px;
-    -webkit-border-radius: 15px;
-    -moz-border-radius: 15px;
-    -o-border-radius: 15px;
-    transform: scale(0.9);
-    box-shadow: 0 0 20px #ff6600 inset;
-    -webkit-box-shadow: 0 0 20px #ff6600 inset;
-    -moz-box-shadow: 0 0 20px #ff6600 inset;
-    -o-box-shadow: 0 0 20px #ff6600 inset;
-
-    &:hover {
-      transform: scale(1);
-    }
-
-    &.clickedYB {
-      border: 5px inset darkred;
-    }
+  #yellowBox1 {
+    @include yellow-button(415px, 25px);
   }
 
-  div#yellowBox2 {
-    user-select: none;
-    width: 140px;
-    height: 70px;
-    z-index: 1;
-    background-color: #ffff00;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    font-size: 0.8rem;
-    top: 415px;
-    left: 185px;
-    font-family: 'Orbitron', sans-serif;
-    color: $app-black;
-    font-weight: 700;
-    border-radius: 15px;
-    -webkit-border-radius: 15px;
-    -moz-border-radius: 15px;
-    -o-border-radius: 15px;
-    transform: scale(0.9);
-    box-shadow: 0 0 20px #ff6600 inset;
-    -webkit-box-shadow: 0 0 20px #ff6600 inset;
-    -moz-box-shadow: 0 0 20px #ff6600 inset;
-    -o-box-shadow: 0 0 20px #ff6600 inset;
+  #yellowBox2 {
+    @include yellow-button(415px, 185px);
+  }
 
-    &:hover {
-      transform: scale(1);
-    }
+  #yellowBox3 {
+    @include yellow-button(455px, 25px);
+  }
 
-    &.clickedYB {
-      border: 5px inset darkred;
-    }
+  #yellowBox4 {
+    @include yellow-button(455px, 185px);
   }
 }
 
