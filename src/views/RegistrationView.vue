@@ -161,20 +161,20 @@
         />
         <label for="also">This is also my billing address</label>
       </div>
-      <div v-show="!$refs.isAlsoBilling?.checked" style="display: contents;">
+      <div v-show="!$refs.isAlsoBilling?.checked" style="display: contents">
         <div class="separator" v-if="!store.isLogin">
           <span> Billing Address </span>
         </div>
         <div class="registration-item" v-if="!store.isLogin">
           <label for="street-billing">Street:</label>
           <input
-              type="text"
-              id="street-billing"
-              required
-              v-model="billingStreet"
-              :disabled="$refs.isAlsoBilling?.checked"
-              @input.prevent="validateBillingStreet"
-              :class="{ 'invalid-input': billingStreetError.length }"
+            type="text"
+            id="street-billing"
+            required
+            v-model="billingStreet"
+            :disabled="$refs.isAlsoBilling?.checked"
+            @input.prevent="validateBillingStreet"
+            :class="{ 'invalid-input': billingStreetError.length }"
           />
           <div v-if="billingStreetError.length" class="error">
             <ul>
@@ -185,10 +185,10 @@
         <div class="registration-item" v-if="!store.isLogin">
           <label for="country-billing">Country:</label>
           <select
-              id="country-billing"
-              required
-              v-model="billingCountry"
-              :disabled="$refs.isAlsoBilling?.checked"
+            id="country-billing"
+            required
+            v-model="billingCountry"
+            :disabled="$refs.isAlsoBilling?.checked"
           >
             <option v-for="item in countries" v-bind:value="item" v-bind:key="item">
               {{ item }}
@@ -198,12 +198,12 @@
         <div class="registration-item" v-if="!store.isLogin">
           <label for="city-billing">City:</label>
           <input
-              type="text"
-              id="city-billing"
-              required
-              v-model="billingCity"
-              @input.prevent="validateBillingCity"
-              :class="{ 'invalid-input': billingCityError.length }"
+            type="text"
+            id="city-billing"
+            required
+            v-model="billingCity"
+            @input.prevent="validateBillingCity"
+            :class="{ 'invalid-input': billingCityError.length }"
           />
           <div v-if="billingCityError.length" class="error">
             <ul>
@@ -214,13 +214,13 @@
         <div class="registration-item" v-if="!store.isLogin">
           <label for="postalCode-billing">Postal Code:</label>
           <input
-              type="text"
-              id="postalCode-billing"
-              required
-              v-model="billingPostalCode"
-              @input.prevent="validateBillingPostalCode"
-              :class="{ 'invalid-input': billingPostalCodeError.length }"
-              :disabled="!billingCountry"
+            type="text"
+            id="postalCode-billing"
+            required
+            v-model="billingPostalCode"
+            @input.prevent="validateBillingPostalCode"
+            :class="{ 'invalid-input': billingPostalCodeError.length }"
+            :disabled="!billingCountry"
           />
           <div v-if="billingPostalCodeError.length" class="error">
             <ul>
@@ -250,11 +250,11 @@
 </template>
 
 <script lang="ts">
-import {
+import type {
   ActionsDTO,
   CustomerAddress,
   UpdateUserInfoDTO,
-  type UserRegistrationInfo
+  UserRegistrationInfo
 } from '@/stores/types'
 import { useUserStore } from '@/stores/authorization'
 import {
@@ -418,7 +418,8 @@ export default {
         action: CustomerUpdateActions.addAddress,
         address: adressShipping
       })
-      if (!this.$refs.isAlsoBilling) {const adressBilling: Partial<CustomerAddress> = {
+      if (!this.$refs.isAlsoBilling) {
+        const adressBilling: Partial<CustomerAddress> = {
           city: this.billingCity,
           country: CountryCodesByCountry[this.billingCountry],
           postalCode: this.billingPostalCode,
