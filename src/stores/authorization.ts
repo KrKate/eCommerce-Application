@@ -151,7 +151,7 @@ export const useUserStore = defineStore('user', {
       try {
         const productsData: ProductResponse = await axios
           .get(
-            `https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/products`,
+            `https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/products?limit=50`,
             {
               headers: {
                 Authorization: `Bearer ${this.token}`

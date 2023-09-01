@@ -1,6 +1,19 @@
 <template>
   <main>
-            <!-- <button @click="getProducts">BTn</button> -->
+    <h1>Choose your pokemon!</h1>
+    <div class="setting-bar">
+    <form class="search-form">
+      <input class="search-input" type="text" placeholder="Enter your search query">
+      <button class="search-button" type="submit">Search</button>
+    </form>
+    <button class="category-btn" @click="toggleSelect">Category</button>
+   </div>
+   <div class="select" :class="{ show: showSelect }">
+     <div class="item" v-for="item in items" :key="item.id">
+      <input type="checkbox" :id="item.id" :value="item.value">
+        <label :for="item.id">{{ item.label }}</label>
+     </div>
+   </div>
     <div class="cards-container">
        <div class="product-card" v-for="cart in products" :key="cart.id">
         <h3 class="product-title">{{ cart.masterData.current.name['en-US'] }}</h3>
@@ -9,7 +22,6 @@
         <button class="info-button">More info</button>
       </div>
     </div>
-    <!-- <p v-for="cart in products" :key="cart.id">{{ cart }}</p> -->
   </main>
 </template>
 
@@ -21,7 +33,15 @@ export default {
 data() {
   return {
     store: useUserStore(),
-    products: [] as Product[]
+    products: [] as Product[],
+    items: [
+      { id: "electric", value: "electric", label: "Electric" },
+      { id: "fire", value: "fire", label: "Fire" },
+      { id: "normal", value: "normal", label: "Normal" },
+      { id: "psychic", value: "psychic", label: "Psychic" },
+      { id: "water", value: "water", label: "Water" }
+    ],
+    showSelect: false
   }
 },
 mounted() {
@@ -44,14 +64,32 @@ methods: {
       } else {
         return 'free';
       }
+    },
+    toggleSelect() {
+      this.showSelect = !this.showSelect;
     }
-  }
 }
+}
+
 
 </script>
 
 <style scoped lang="scss">
+@import '@/assets/styles/mixins';
 @import '@/assets/styles/colors';
+
+h1 {
+  @include pokemon-text($app-yellow, $app-dark-blue);
+  margin: 0 auto;
+  font-size: 3rem;
+  @media screen and (max-width: 760px) {
+    font-size: 2.5rem;
+  }
+  @media screen and (max-width: 560px) {
+    font-size: 2rem;
+  }
+}
+
 
 main {
   display: flex;
@@ -66,9 +104,11 @@ main {
 .cards-container {
   display: flex;
   flex-wrap: wrap;
-  margin: 20px;
+  margin: 50px 20px 20px 20px;
   gap: 50px;
-  align-content: center
+  align-content: center;
+  align-items: center;
+  justify-content: center;
 }
 
 .product-card {
@@ -187,5 +227,67 @@ main {
     0% { background-position: 0 0; }
     50% { background-position: 400% 0; }
     100% { background-position: 0 0; }
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  border: 2px solid #cccccc;
+  width: 50%;
+  margin: 15px 10px 0px 0px;
+}
+
+.search-button {
+  border-radius: 0 7px 7px 0;
+  color: black;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+}
+.search-input {
+  border-radius: 7px 0 0 7px;
+  width: 70%;
+  flex: 1;
+  padding: 10px;
+  border: none;
+  outline: none;
+}
+
+.setting-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.select {
+  display: none;
+  flex-direction: column;
+  height: fit-content;
+  width: fit-content;
+  border: 2px solid #cccccc;
+  border-radius: 10px;
+  padding: 15px;
+  font-size: 1rem;
+  position: absolute;
+  right: 18%;
+  top: 54%;
+  z-index: 10;
+  background-color: #fbfafa;
+}
+
+.show {
+  display: flex;
+}
+.category-btn {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  border: 2px solid #cccccc;
+  margin-top: 15px;
+}
+
+label {
+  margin-left: 10px;
 }
 </style>
