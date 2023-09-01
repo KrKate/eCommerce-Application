@@ -115,119 +115,118 @@ export type UserRegistrationInfo = {
   password: string
 }
 
-
 export type Product = {
-    "id": string,
-    "version": number,
-    "masterData": {
-      "current": {
-        "categories": [
-          {
-            "id": string,
-            "typeId": string
-          }
-        ],
-        "description": {
-          "en-US": string
-        },
-        "masterVariant": {
-          "attributes": [],
-          "id": number,
-          "images": [
-            {
-              "dimensions": {
-                "h": number,
-                "w": number
-              },
-              "url": string
-            }
-          ],
-          "prices": [
-            {
-              "value": {
-                "type": string,
-                "fractionDigits": number,
-                "centAmount": number,
-                "currencyCode": string
-              },
-              "id": string
-            }
-          ],
-          "sku": string
-        },
-        "name": {
-          "en-US": string
-        },
-        "slug": {
-          "en-US": string
-        },
-        "variants": [],
-        "searchKeywords": {}
-      },
-      "hasStagedChanges": boolean,
-      "published": boolean,
-      "staged": {
-        "categories": [
-          {
-            "id": string,
-            "typeId": string
-          }
-        ],
-        "description": {
-          "en-US": string
-        },
-        "masterVariant": {
-          "key": string,
-          "attributes": [],
-          "id": number,
-          "images": [
-            {
-              "dimensions": {
-                "h": number,
-                "w": number
-              },
-              "url": string
-            }
-          ],
-          "prices": [
-            {
-              "value": {
-                "type": string,
-                "fractionDigits": number,
-                "centAmount": number,
-                "currencyCode": string
-              },
-              "id": string
-            }
-          ],
-          "sku": string
-        },
-        "name": {
-          "en-US": string
-        },
-        "slug": {
-          "en-US": string
-        },
-        "variants": [],
-        "searchKeywords": {}
+  id: string
+  version: number
+  masterData: {
+    current: {
+      categories: [
+        {
+          id: string
+          typeId: string
+        }
+      ]
+      description: {
+        'en-US': string
       }
-    },
-    "productType": {
-      "id": string,
-      "typeId": string
-    },
-    "taxCategory": {
-      "id": string,
-      "typeId": string
-    },
-    "createdAt": string,
-    "lastModifiedAt": string
+      masterVariant: {
+        attributes: []
+        id: number
+        images: [
+          {
+            dimensions: {
+              h: number
+              w: number
+            }
+            url: string
+          }
+        ]
+        prices: [
+          {
+            value: {
+              type: string
+              fractionDigits: number
+              centAmount: number
+              currencyCode: string
+            }
+            id: string
+          }
+        ]
+        sku: string
+      }
+      name: {
+        'en-US': string
+      }
+      slug: {
+        'en-US': string
+      }
+      variants: []
+      searchKeywords: {}
+    }
+    hasStagedChanges: boolean
+    published: boolean
+    staged: {
+      categories: [
+        {
+          id: string
+          typeId: string
+        }
+      ]
+      description: {
+        'en-US': string
+      }
+      masterVariant: {
+        key: string
+        attributes: []
+        id: number
+        images: [
+          {
+            dimensions: {
+              h: number
+              w: number
+            }
+            url: string
+          }
+        ]
+        prices: [
+          {
+            value: {
+              type: string
+              fractionDigits: number
+              centAmount: number
+              currencyCode: string
+            }
+            id: string
+          }
+        ]
+        sku: string
+      }
+      name: {
+        'en-US': string
+      }
+      slug: {
+        'en-US': string
+      }
+      variants: []
+      searchKeywords: {}
+    }
+  }
+  productType: {
+    id: string
+    typeId: string
+  }
+  taxCategory: {
+    id: string
+    typeId: string
+  }
+  createdAt: string
+  lastModifiedAt: string
 }
 
 export type ProductResponse = {
-  "limit": number,
-  "offset": number,
-  "count": number,
-  "total": number,
-  "results": Product[]
+  limit: number
+  offset: number
+  count: number
+  total: number
+  results: Product[]
 }

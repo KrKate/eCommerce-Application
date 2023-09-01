@@ -122,7 +122,7 @@ export const useUserStore = defineStore('user', {
     setCookie(cookie: SiteCookie) {
       document.cookie = `pokemonStore=${encodeURI(JSON.stringify(cookie))};max-age=${this.expires}`
     },
-    readCookie() {
+    async readCookie() {
       const cookies = document.cookie.split(';')
       const siteData = cookies.filter((value) => value.includes('pokemonStore='))
       if (siteData.length) {
@@ -134,6 +134,8 @@ export const useUserStore = defineStore('user', {
         this.id = data.id
         this.refreshToken = data.refreshToken
         this.isLogin = true
+      } else {
+        await this.fetchToken()
       }
     },
     clearCookie() {
@@ -159,11 +161,10 @@ export const useUserStore = defineStore('user', {
             }
           )
           .then((data) => data.data)
-          return productsData.results
+        return productsData.results
       } catch (error) {
         return [] as Product[]
       }
     }
   }
-
 })
