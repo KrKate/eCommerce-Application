@@ -91,6 +91,7 @@
         <input
           type="text"
           id="street-shipping"
+          ref="streetShipping"
           required
           v-model="shippingStreet"
           @input.prevent="validateShippingStreet"
@@ -155,6 +156,7 @@
           type="checkbox"
           id="also"
           @change="copyShippingToBilling"
+          ref="isAlsoBilling"
           v-model="also"
         />
         <label for="also">This is also my billing address</label>
@@ -170,6 +172,7 @@
           id="street-billing"
           required
           v-model="billingStreet"
+          :disabled="$refs.isAlsoBilling?.checked"
           @input.prevent="validateBillingStreet"
           :class="{ 'invalid-input': billingStreetError.length }"
         />
@@ -181,7 +184,12 @@
       </div>
       <div class="registration-item" v-if="!store.isLogin">
         <label for="country-billing">Country:</label>
-        <select id="country-billing" required v-model="billingCountry">
+        <select
+          id="country-billing"
+          required
+          v-model="billingCountry"
+          :disabled="$refs.isAlsoBilling?.checked"
+        >
           <option v-for="item in countries" v-bind:value="item" v-bind:key="item">
             {{ item }}
           </option>
@@ -194,6 +202,7 @@
           id="city-billing"
           required
           v-model="billingCity"
+          :disabled="$refs.isAlsoBilling?.checked"
           @input.prevent="validateBillingCity"
           :class="{ 'invalid-input': billingCityError.length }"
         />
@@ -212,7 +221,7 @@
           v-model="billingPostalCode"
           @input.prevent="validateBillingPostalCode"
           :class="{ 'invalid-input': billingPostalCodeError.length }"
-          :disabled="!billingCountry"
+          :disabled="!billingCountry || $refs.isAlsoBilling?.checked"
         />
         <div v-if="billingPostalCodeError.length" class="error">
           <ul>
@@ -241,10 +250,21 @@
 </template>
 
 <script lang="ts">
-import { type UserRegistrationInfo } from '@/stores/types'
+import {
+  ActionsDTO,
+  CustomerAddress,
+  UpdateUserInfoDTO,
+  type UserRegistrationInfo
+} from '@/stores/types'
 import { useUserStore } from '@/stores/authorization'
-import { Countries, StaticErrors } from '@/global/constatnts'
+import {
+  Countries,
+  CountryCodesByCountry,
+  CustomerUpdateActions,
+  StaticErrors
+} from '@/global/constatnts'
 import Validator from '@/services/validator'
+
 const validator = new Validator()
 export default {
   name: 'AuthorizationView',
@@ -383,13 +403,50 @@ export default {
       if (!validator.validatePostalCode(this.billingCountry, this.billingPostalCode))
         this.billingPostalCodeError = [StaticErrors.POSTAL_CODE]
     },
-    async signIn(user: UserRegistrationInfo) {
+    getAddressesForRegistration(): UpdateUserInfoDTO {
+      const updateData: UpdateUserInfoDTO = {
+        version: 1,
+        actions: [] as ActionsDTO[]
+      }
+      const adressShipping: Partial<CustomerAddress> = {
+        city: this.shippingCity,
+        country: CountryCodesByCountry[this.shippingCountry],
+        postalCode: this.shippingPostalCode,
+        streetName: this.shippingStreet
+      }
+      updateData.actions.push({
+        action: CustomerUpdateActions.addAddress,
+        address: adressShipping
+      })
+      if (this.$refs.isAlsoBilling) {
+        updateData.actions.push({
+          action: CustomerUpdateActions.addAddress,
+          address: adressShipping
+        })
+      } else {
+        const adressBilling: Partial<CustomerAddress> = {
+          city: this.billingCity,
+          country: CountryCodesByCountry[this.billingCountry],
+          postalCode: this.billingPostalCode,
+          streetName: this.billingStreet
+        }
+        updateData.actions.push({
+          action: CustomerUpdateActions.addAddress,
+          address: adressBilling
+        })
+      }
+      return updateData
+    },
+    signIn: async function (user: UserRegistrationInfo) {
       this.store.isLoading = true
       await this.store.fetchToken()
       if (await this.store.signup(user)) {
         if (await this.store.getTokens(user.email, user.password)) {
           if (await this.store.login(user.email, user.password)) {
-            this.store.changeLogin()
+            this.store.userInfo = await this.store.updateUserInfo(
+              this.getAddressesForRegistration()
+            )
+            await this.store.changeLogin()
           } else {
             this.isCorrectData = true
             setTimeout(() => (this.isCorrectData = false), 6000)

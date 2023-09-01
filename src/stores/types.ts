@@ -157,7 +157,7 @@ export type ActionsDTO = {
   address?: Omit<CustomerAddress, 'id'>
   addressId?: string
   customerNumber?: string
-  externalId: string
+  externalId?: string
   companyName?: string
   dateOfBirth?: string
   vatId?: string

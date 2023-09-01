@@ -23,6 +23,7 @@ export const useUserStore = defineStore('user', {
     isLoading: false,
     id: '',
     email: '',
+    userInfo: {} as CustomerInfo,
     redirectTimer: -1
   }),
   actions: {
@@ -81,6 +82,7 @@ export const useUserStore = defineStore('user', {
         this.lastName = customerData.customer.lastName
         this.email = customerData.customer.email
         this.id = customerData.customer.id
+        this.userInfo = customerData.customer
         const cookie: SiteCookie = {
           firstName: this.firstName,
           lastName: this.lastName,
@@ -148,6 +150,7 @@ export const useUserStore = defineStore('user', {
             }
           )
           .then((data) => data.data)
+        console.log(customerInfo)
         return customerInfo
       } catch (error) {
         return {} as CustomerInfo
