@@ -20,7 +20,7 @@ export const useUserStore = defineStore('user', {
     expires: 0,
     firstName: '',
     lastName: '',
-    isLoading: false,
+    isLoading: true,
     id: '',
     email: '',
     redirectTimer: -1
@@ -165,7 +165,7 @@ export const useUserStore = defineStore('user', {
               }
             }
           )
-          .then((data) => console.log(data.data))
+          .then((data) => data.data)
         return customerInfo
       } catch (error) {
         return {} as CustomerInfo

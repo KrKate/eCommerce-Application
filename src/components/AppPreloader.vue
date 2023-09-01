@@ -1,14 +1,7 @@
 <template>
   <div class="page">
     <div class="preloader" :style="cssVars">
-      <span class="rot-1"></span>
-      <span class="rot-2"></span>
-      <span class="rot-3"></span>
-      <span class="rot-4"></span>
-      <span class="rot-5"></span>
-      <span class="rot-6"></span>
-      <span class="rot-7"></span>
-      <span class="rot-8"></span>
+      <span :class="`rot-${index}`" v-for="index in 8" :key="index"></span>
     </div>
   </div>
 </template>
@@ -34,7 +27,7 @@ export default {
   height: 100vh;
   position: absolute;
   display: flex;
-  top: 0;
+  bottom: 0;
   left: 0;
   background-color: $app-gray;
   opacity: 0.6;
