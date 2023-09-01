@@ -177,6 +177,7 @@ export type Product = {
           "en-US": string
         },
         "masterVariant": {
+          "key": string,
           "attributes": [],
           "id": number,
           "images": [

@@ -19,7 +19,7 @@
         <h3 class="product-title">{{ cart.masterData.current.name['en-US'] }}</h3>
         <img :src="getImageUrl(cart)"  alt="Product Image" class="product-image">
         <div class="product-price">€ {{ getPriceValue(cart) }} </div>
-        <button class="info-button">More info</button>
+        <RouterLink class="info-button" :to="'/' + cart.masterData.current.masterVariant.id">More info</RouterLink>
       </div>
     </div>
   </main>
@@ -88,6 +88,9 @@ h1 {
   @media screen and (max-width: 560px) {
     font-size: 2rem;
   }
+  @media screen and (max-width: 390px) {
+     font-size: 1.5rem;
+  }
 }
 
 
@@ -99,6 +102,7 @@ main {
   font-weight: 700;
   font-style: italic;
   flex-direction: column;
+  overflow-x: hidden;
 }
 
 .cards-container {
@@ -180,6 +184,8 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 1.2rem;
+    text-decoration: none;
 }
 
 .info-button:before {
@@ -269,10 +275,33 @@ main {
   padding: 15px;
   font-size: 1rem;
   position: absolute;
-  right: 18%;
-  top: 54%;
+  right: 2%;
+  top: 295px;
   z-index: 10;
   background-color: #fbfafa;
+  @media screen and (max-width: 760px) {
+    top: 280px;
+  }
+  @media screen and (max-width: 710px) {
+    top: 330px;
+    right: 12%;
+  }
+  @media screen and (max-width: 560px) {
+    top: 320px;
+    right: 9.5%;
+  }
+  @media screen and (max-width: 470px) {
+    top: 320px;
+    right: 8%;
+  }
+  @media screen and (max-width: 450px) {
+    top: 320px;
+    right: 7%;
+  }
+  @media screen and (max-width: 344px) {
+    top: 365px;
+    right: 13%;
+  }
 }
 
 .show {
