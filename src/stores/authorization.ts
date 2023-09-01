@@ -20,7 +20,7 @@ export const useUserStore = defineStore('user', {
     expires: 0,
     firstName: '',
     lastName: '',
-    isLoading: true,
+    isLoading: false,
     id: '',
     email: '',
     redirectTimer: -1
