@@ -83,7 +83,7 @@
           </ul>
         </div>
       </div>
-      <div class="separator">
+      <div class="separator" v-if="!store.isLogin">
         <span> Shipping Address </span>
       </div>
       <div class="registration-item" v-if="!store.isLogin">
@@ -144,12 +144,12 @@
         </div>
       </div>
 
-      <div class="check-item">
+      <div class="check-item" v-if="!store.isLogin">
         <input class="check" type="checkbox" id="saveDefaultShippingAddress" />
         <label for="saveDefaultShippingAddress">Save as default shipping address</label>
       </div>
 
-      <div class="check-item">
+      <div class="check-item" v-if="!store.isLogin">
         <input
           class="check"
           type="checkbox"
@@ -160,7 +160,7 @@
         <label for="also">This is also my billing address</label>
       </div>
 
-      <div class="separator">
+      <div class="separator" v-if="!store.isLogin">
         <span> Billing Address </span>
       </div>
       <div class="registration-item" v-if="!store.isLogin">
@@ -221,7 +221,7 @@
         </div>
       </div>
 
-      <div class="check-item">
+      <div class="check-item" v-if="!store.isLogin">
         <input class="check" type="checkbox" id="saveDefaultBillingAddress" />
         <label for="saveDefaultBillingAddress">Save as default billing address</label>
       </div>
