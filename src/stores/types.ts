@@ -150,6 +150,18 @@ export type Product = {
               currencyCode: string
             }
             id: string
+            discounted?: {
+              value?: {
+                  type?: string,
+                  currencyCode?: string,
+                  centAmount?: number,
+                  fractionDigits?: number
+              },
+              discount?: {
+                  typeId?: string,
+                  id?: string
+              }
+          }
           }
         ]
         sku: string

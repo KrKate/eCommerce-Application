@@ -18,7 +18,11 @@
        <div class="product-card" v-for="cart in products" :key="cart.id">
         <h3 class="product-title">{{ cart.masterData.current.name['en-US'] }}</h3>
         <img :src="getImageUrl(cart)"  alt="Product Image" class="product-image">
-        <div class="product-price">€ {{ getPriceValue(cart) }} </div>
+        <div class="prices">
+          <div class="product-price" :class="{ 'crossed-out': getDiscount(cart) !== ' ' }"> {{ getPriceValue(cart) }} </div>
+            <div class="product-discount"> {{ getDiscount(cart) }} </div>
+        </div>
+
         <RouterLink class="info-button" :to="'/' + cart.masterData.current.masterVariant.id">More info</RouterLink>
       </div>
     </div>
@@ -60,17 +64,20 @@ methods: {
     },
     getPriceValue(cart: Product) {
       if (cart.masterData.current.masterVariant.prices.length > 0) {
-        return cart.masterData.current.masterVariant.prices[0].value.centAmount;
+        return `€ ${(cart.masterData.current.masterVariant.prices[0].value.centAmount)/100}`;
       } else {
         return 'free';
       }
     },
+    getDiscount(cart: Product) {
+        const discounted = cart.masterData.current.masterVariant.prices[0]?.discounted?.value.centAmount;
+        return discounted ? `€ ${discounted / 100}` : " ";
+},
     toggleSelect() {
       this.showSelect = !this.showSelect;
     }
 }
 }
-
 
 </script>
 
@@ -125,6 +132,7 @@ main {
   border-radius: 10px;
   transition: all 0.3s linear;
   &:hover {
+  background-color:  #e2e1e1;
   transform: perspective(800px) translateY(-5%) rotateX(25deg) translateZ(0);
     box-shadow: 2px 35px 32px -8px rgba(0, 0, 0, 0.75);
   -webkit-box-shadow: 2px 35px 32px -8px rgba(0, 0, 0, 0.75);
@@ -150,7 +158,6 @@ main {
 .product-image {
   object-fit: cover;
   padding: 10px;
-  margin-bottom: 10px;
   transition: all 0.3s linear;
 }
 
@@ -163,10 +170,42 @@ main {
   text-align: center;
   border-radius: 10px;
 }
-
+.prices {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
 .product-price {
   font-size: 1.2rem;
-  text-align: center;
+}
+
+.product-discount {
+  font-size: 1.2rem;
+  color: $app-red;
+  font-weight: 700;
+}
+
+.crossed-out {
+  position: relative;
+}
+
+.crossed-out::before, .crossed-out::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background-color: $app-red;
+}
+
+.crossed-out::before {
+  transform: rotate(-35deg);
+}
+.crossed-out::after {
+  transform: rotate(35deg);
 }
 
 .info-button {
@@ -319,4 +358,7 @@ main {
 label {
   margin-left: 10px;
 }
+
+
+
 </style>
