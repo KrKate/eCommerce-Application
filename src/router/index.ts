@@ -1,10 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import NotFoundView from '../views/NotFoundView.vue'
-import CatalogView from '../views/CatalogView.vue'
-import CartView from '../views/CartView.vue'
-import RegistrationView from '../views/RegistrationView.vue'
+import NotFoundView from '@/views/NotFoundView.vue'
+import CatalogView from '@/views/CatalogView.vue'
+import CartView from '@/views/CartView.vue'
+import RegistrationView from '@/views/RegistrationView.vue'
 import { useUserStore } from '@/stores/authorization'
+import ProductInfoView from '@/views/ProductInfoView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,6 +24,11 @@ const router = createRouter({
       path: '/catalog',
       name: 'catalog',
       component: CatalogView
+    },
+    {
+      path: '/product/:id',
+      name: 'product',
+      component: ProductInfoView
     },
     {
       path: '/cart',
