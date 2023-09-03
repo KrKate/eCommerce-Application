@@ -137,7 +137,7 @@
                 <input
                   class="user-main-info"
                   :class="isInfoMode ? '' : 'edit-mode'"
-                  :value="userInfo?.addresses?.find((valuej) => value.id === addressShip)[item]"
+                  :value="userInfo?.addresses?.find((value) => value.id === addressShip)[item]"
                   :disabled="isInfoMode"
                   :id="`SA-${item}-${addressShip}`"
                   :ref="`SA-${item}-${addressShip}`"
@@ -177,7 +177,7 @@
                 <input
                   class="user-main-info"
                   :class="isInfoMode ? '' : 'edit-mode'"
-                  :value="userInfo?.addresses.find(() => value.id === addressShip)[item]"
+                  :value="userInfo?.addresses.find((value) => value.id === addressShip)[item]"
                   :disabled="isInfoMode"
                   :id="`SA-${item}-${addressShip}`"
                   :ref="`SA-${item}-${addressShip}`"

@@ -5,6 +5,8 @@ import type {
   Customer,
   CustomerInfo,
   PasswordFlowResponse,
+  Product,
+  ProductResponse,
   SiteCookie,
   TokenResponse,
   UpdateUserInfoDTO,
@@ -101,7 +103,9 @@ export const useUserStore = defineStore('user', {
       try {
         const userData: PasswordFlowResponse = await axios
           .post(
-            `https://auth.europe-west1.gcp.commercetools.com/oauth/ecommerce_app_sloths/customers/token?grant_type=password&username=${email}&password=${password}`,
+            `https://auth.europe-west1.gcp.commercetools.com/oauth/ecommerce_app_sloths/customers/token?grant_type=password&username=${email}&password=${encodeURIComponent(
+              password
+            )}`,
             {},
             {
               headers: {
@@ -177,7 +181,7 @@ export const useUserStore = defineStore('user', {
     setCookie(cookie: SiteCookie) {
       document.cookie = `pokemonStore=${encodeURI(JSON.stringify(cookie))};max-age=${this.expires}`
     },
-    readCookie() {
+    async readCookie() {
       const cookies = document.cookie.split(';')
       const siteData = cookies.filter((value) => value.includes('pokemonStore='))
       if (siteData.length) {
@@ -189,6 +193,8 @@ export const useUserStore = defineStore('user', {
         this.id = data.id
         this.refreshToken = data.refreshToken
         this.isLogin = true
+      } else {
+        await this.fetchToken()
       }
     },
     clearCookie() {
@@ -206,6 +212,40 @@ export const useUserStore = defineStore('user', {
         this.redirectTimer = setTimeout(() => router.push('/'), 2000)
       }
       this.isLogin = !this.isLogin
+    },
+    async getProducts() {
+      try {
+        const productsData: ProductResponse = await axios
+          .get(
+            `https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/products?limit=50`,
+            {
+              headers: {
+                Authorization: `Bearer ${this.token}`
+              }
+            }
+          )
+          .then((data) => data.data)
+        return productsData.results
+      } catch (error) {
+        return [] as Product[]
+      }
+    },
+    async getProductById(id: string) {
+      try {
+        const product: Product = await axios
+          .get(
+            `https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/products/${id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${this.token}`
+              }
+            }
+          )
+          .then((data) => data.data)
+        return product
+      } catch (error) {
+        return {} as Product
+      }
     }
   }
 })
