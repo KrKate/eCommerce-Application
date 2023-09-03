@@ -9,9 +9,15 @@
       <button class="category-btn" @click="toggleSelect">Category</button>
     </div>
     <div class="select" :class="{ show: showSelect }">
-      <div class="item" v-for="item in items" :key="item.id">
-        <input type="checkbox" :id="item.id" :value="item.value" />
-        <label :for="item.id">{{ item.label }}</label>
+      <div class="item" v-for="item in getPatenCategory" :key="item.id">
+        <input type="checkbox" :id="item.externalId" :value="item.name['en-US']" />
+        <label :for="item.externalId">{{ item.name['en-US'] }}</label>
+        <ul>
+          <li v-for="sub in getChildCategory(item.id)" :key="sub.id">
+            <input type="checkbox" :id="sub.externalId" :value="sub.name['en-US']" />
+            <label :for="sub.externalId">{{ sub.name['en-US'] }}</label>
+          </li>
+        </ul>
       </div>
     </div>
     <div class="cards-container">
@@ -35,13 +41,14 @@
 
 <script lang="ts">
 import { useUserStore } from '@/stores/authorization'
-import type { Product } from '@/stores/types'
+import type { Category, Product } from '@/stores/types'
 
 export default {
   data() {
     return {
       store: useUserStore(),
       products: [] as Product[],
+      categories: [] as Category[],
       items: [
         { id: 'electric', value: 'electric', label: 'Electric' },
         { id: 'fire', value: 'fire', label: 'Fire' },
@@ -52,14 +59,20 @@ export default {
       showSelect: false
     }
   },
-  mounted() {
-    this.getProducts()
+  async mounted() {
+    await this.getProducts()
+    this.categories = await this.store.getCategories()
   },
   methods: {
     async getProducts() {
       this.store.isLoading = true
       this.products = await this.store.getProducts()
       this.store.isLoading = false
+    },
+    getChildCategory(id: string) {
+      return this.categories
+        .filter((value) => value.ancestors.length > 0)
+        .filter((value) => value.ancestors[0].id === id)
     },
     getImageUrl(cart: Product) {
       if (cart.masterData.current.masterVariant.images.length > 0) {
@@ -82,6 +95,11 @@ export default {
     },
     toggleSelect() {
       this.showSelect = !this.showSelect
+    }
+  },
+  computed: {
+    getPatenCategory() {
+      return this.categories.filter((value) => value.ancestors.length === 0)
     }
   }
 }
@@ -340,6 +358,10 @@ main {
   top: 295px;
   z-index: 10;
   background-color: #fbfafa;
+
+  ul {
+    list-style: none;
+  }
   @media screen and (max-width: 760px) {
     top: 280px;
   }

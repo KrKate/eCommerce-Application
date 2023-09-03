@@ -91,6 +91,11 @@ export type CategoryResponse = {
   results: Category[]
 }
 
+type AncestorsType = {
+  typeId: string
+  id: string
+}
+
 export type Category = {
   id: string
   version: number
@@ -103,14 +108,17 @@ export type Category = {
   key: string
   name: {
     'en-US': string
+    ru: string
   }
   slug: {
     'en-US': string
+    ru: string
   }
   description: {
     'en-US': string
   }
-  ancestors: []
+  ancestors: AncestorsType[]
+  parent: AncestorsType[]
   orderHint: string
   externalId: string
   assets: []
@@ -164,10 +172,10 @@ export type ActionsDTO = {
 }
 
 export type ChangePasswordDTO = {
-  "id": string,
-  "version": number,
-  "currentPassword": string,
-  "newPassword": string
+  id: string
+  version: number
+  currentPassword: string
+  newPassword: string
 }
 
 export type Product = {

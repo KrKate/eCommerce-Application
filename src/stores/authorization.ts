@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import type {
+  Category,
+  CategoryResponse,
   ChangePasswordDTO,
   Customer,
   CustomerInfo,
@@ -245,6 +247,23 @@ export const useUserStore = defineStore('user', {
         return product
       } catch (error) {
         return {} as Product
+      }
+    },
+    async getCategories() {
+      try {
+        const categoriesData: CategoryResponse = await axios
+            .get(
+                `https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/categories`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${this.token}`
+                  }
+                }
+            )
+            .then((data) => data.data)
+        return categoriesData.results
+      } catch (error) {
+        return [] as Category[]
       }
     }
   }
