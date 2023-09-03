@@ -165,6 +165,23 @@ export const useUserStore = defineStore('user', {
       } catch (error) {
         return [] as Product[]
       }
+    },
+    async getProductById(id: string) {
+      try {
+        const product: Product = await axios
+          .get(
+            `https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/products/${id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${this.token}`
+              }
+            }
+          )
+          .then((data) => data.data)
+        return product
+      } catch (error) {
+        return {} as Product
+      }
     }
   }
 })

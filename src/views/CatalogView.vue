@@ -2,83 +2,89 @@
   <main>
     <h1>Choose your pokemon!</h1>
     <div class="setting-bar">
-    <form class="search-form">
-      <input class="search-input" type="text" placeholder="Enter your search query">
-      <button class="search-button" type="submit">Search</button>
-    </form>
-    <button class="category-btn" @click="toggleSelect">Category</button>
-   </div>
-   <div class="select" :class="{ show: showSelect }">
-     <div class="item" v-for="item in items" :key="item.id">
-      <input type="checkbox" :id="item.id" :value="item.value">
+      <form class="search-form">
+        <input class="search-input" type="text" placeholder="Enter your search query" />
+        <button class="search-button" type="submit">Search</button>
+      </form>
+      <button class="category-btn" @click="toggleSelect">Category</button>
+    </div>
+    <div class="select" :class="{ show: showSelect }">
+      <div class="item" v-for="item in items" :key="item.id">
+        <input type="checkbox" :id="item.id" :value="item.value" />
         <label :for="item.id">{{ item.label }}</label>
-     </div>
-   </div>
+      </div>
+    </div>
     <div class="cards-container">
-       <div class="product-card" v-for="cart in products" :key="cart.id">
+      <div class="product-card" v-for="cart in products" :key="cart.id">
         <h3 class="product-title">{{ cart.masterData.current.name['en-US'] }}</h3>
-        <img :src="getImageUrl(cart)"  alt="Product Image" class="product-image">
+        <img :src="getImageUrl(cart)" alt="Product Image" class="product-image" />
         <div class="prices">
-          <div class="product-price" :class="{ 'crossed-out': getDiscount(cart) !== ' ' }"> {{ getPriceValue(cart) }} </div>
-            <div class="product-discount"> {{ getDiscount(cart) }} </div>
+          <div class="product-price" :class="{ 'crossed-out': getDiscount(cart) !== ' ' }">
+            {{ getPriceValue(cart) }}
+          </div>
+          <div class="product-discount">{{ getDiscount(cart) }}</div>
         </div>
 
-        <RouterLink class="info-button" :to="'/' + cart.masterData.current.masterVariant.id">More info</RouterLink>
+        <RouterLink class="info-button" :to="{ name: 'product', params: { id: cart.id } }"
+          >More info</RouterLink
+        >
       </div>
     </div>
   </main>
 </template>
 
 <script lang="ts">
-import { useUserStore } from '@/stores/authorization';
-import type { Product } from '@/stores/types';
+import { useUserStore } from '@/stores/authorization'
+import type { Product } from '@/stores/types'
 
 export default {
-data() {
-  return {
-    store: useUserStore(),
-    products: [] as Product[],
-    items: [
-      { id: "electric", value: "electric", label: "Electric" },
-      { id: "fire", value: "fire", label: "Fire" },
-      { id: "normal", value: "normal", label: "Normal" },
-      { id: "psychic", value: "psychic", label: "Psychic" },
-      { id: "water", value: "water", label: "Water" }
-    ],
-    showSelect: false
-  }
-},
-mounted() {
-    this.getProducts()
-},
-methods: {
-  async getProducts() {
-    this.products = await this.store.getProducts() || [] as Product[]
+  data() {
+    return {
+      store: useUserStore(),
+      products: [] as Product[],
+      items: [
+        { id: 'electric', value: 'electric', label: 'Electric' },
+        { id: 'fire', value: 'fire', label: 'Fire' },
+        { id: 'normal', value: 'normal', label: 'Normal' },
+        { id: 'psychic', value: 'psychic', label: 'Psychic' },
+        { id: 'water', value: 'water', label: 'Water' }
+      ],
+      showSelect: false
+    }
   },
-  getImageUrl(cart: Product) {
+  mounted() {
+    this.getProducts()
+  },
+  methods: {
+    async getProducts() {
+      this.store.isLoading = true
+      this.products = await this.store.getProducts()
+      this.store.isLoading = false
+    },
+    getImageUrl(cart: Product) {
       if (cart.masterData.current.masterVariant.images.length > 0) {
-        return cart.masterData.current.masterVariant.images[0].url;
+        return cart.masterData.current.masterVariant.images[0].url
       } else {
-        return '#';
+        return '#'
       }
     },
     getPriceValue(cart: Product) {
       if (cart.masterData.current.masterVariant.prices.length > 0) {
-        return `€ ${(cart.masterData.current.masterVariant.prices[0].value.centAmount)/100}`;
+        return `€ ${cart.masterData.current.masterVariant.prices[0].value.centAmount / 100}`
       } else {
-        return 'free';
+        return 'free'
       }
     },
     getDiscount(cart: Product) {
-        const discounted = cart.masterData.current.masterVariant.prices[0]?.discounted?.value.centAmount;
-        return discounted ? `€ ${discounted / 100}` : " ";
-},
+      const discounted =
+        cart?.masterData?.current?.masterVariant?.prices[0]?.discounted?.value?.centAmount
+      return discounted ? `€ ${discounted / 100}` : ' '
+    },
     toggleSelect() {
-      this.showSelect = !this.showSelect;
+      this.showSelect = !this.showSelect
     }
+  }
 }
-}
-
 </script>
 
 <style scoped lang="scss">
@@ -96,10 +102,9 @@ h1 {
     font-size: 2rem;
   }
   @media screen and (max-width: 390px) {
-     font-size: 1.5rem;
+    font-size: 1.5rem;
   }
 }
-
 
 main {
   display: flex;
@@ -132,27 +137,26 @@ main {
   border-radius: 10px;
   transition: all 0.3s linear;
   &:hover {
-  background-color:  #e2e1e1;
-  transform: perspective(800px) translateY(-5%) rotateX(25deg) translateZ(0);
+    background-color: #e2e1e1;
+    transform: perspective(800px) translateY(-5%) rotateX(25deg) translateZ(0);
     box-shadow: 2px 35px 32px -8px rgba(0, 0, 0, 0.75);
-  -webkit-box-shadow: 2px 35px 32px -8px rgba(0, 0, 0, 0.75);
-  -moz-box-shadow: 2px 35px 32px -8px rgba(0, 0, 0, 0.75);
-     .product-image {
+    -webkit-box-shadow: 2px 35px 32px -8px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 2px 35px 32px -8px rgba(0, 0, 0, 0.75);
+    .product-image {
       transform: translate3d(0%, -15%, 500px);
       scale: 1.3 1.6;
-     }
-}
-&:active {
-  transform: translateY(2%);
-  box-shadow: 2px 10px 10px -5px rgba(0, 0, 0, 0.75);
-  -webkit-box-shadow: 2px 10px 10px -5px rgba(0, 0, 0, 0.75);
-  -moz-box-shadow: 2px 10px 10px -5px rgba(0, 0, 0, 0.75);
-  .product-image {
-    transform: translate3d(0%, 0%, 0px);
+    }
+  }
+  &:active {
+    transform: translateY(2%);
+    box-shadow: 2px 10px 10px -5px rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: 2px 10px 10px -5px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 2px 10px 10px -5px rgba(0, 0, 0, 0.75);
+    .product-image {
+      transform: translate3d(0%, 0%, 0px);
       scale: none;
-     }
-}
-
+    }
+  }
 }
 
 .product-image {
@@ -191,8 +195,9 @@ main {
   position: relative;
 }
 
-.crossed-out::before, .crossed-out::after {
-  content: "";
+.crossed-out::before,
+.crossed-out::after {
+  content: '';
   position: absolute;
   top: 50%;
   left: 0;
@@ -209,69 +214,86 @@ main {
 }
 
 .info-button {
-    height: 30px;
-    border: none;
-    outline: none;
-    color: #fff;
-    background: #111;
-    cursor: pointer;
-    position: relative;
-    z-index: 0;
-    border-radius: 10px;
-    margin-top:auto;
-    padding: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    text-decoration: none;
+  height: 30px;
+  border: none;
+  outline: none;
+  color: #fff;
+  background: #111;
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+  border-radius: 10px;
+  margin-top: auto;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  text-decoration: none;
 }
 
 .info-button:before {
-    content: '';
-    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
-    position: absolute;
-    top: -2px;
-    left:-2px;
-    background-size: 400%;
-    z-index: -1;
-    filter: blur(5px);
-    width: calc(100% + 4px);
-    height: calc(100% + 4px);
-    animation: glowing 20s linear infinite;
-    opacity: 0;
-    transition: opacity .3s ease-in-out;
-    border-radius: 10px;
+  content: '';
+  background: linear-gradient(
+    45deg,
+    #ff0000,
+    #ff7300,
+    #fffb00,
+    #48ff00,
+    #00ffd5,
+    #002bff,
+    #7a00ff,
+    #ff00c8,
+    #ff0000
+  );
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(5px);
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  animation: glowing 20s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: 10px;
 }
 
 .info-button:active {
-    color: #000
+  color: #000;
 }
 
 .info-button:active:after {
-    background: transparent;
+  background: transparent;
 }
 
 .info-button:hover:before {
-    opacity: 1;
+  opacity: 1;
 }
 
 .info-button:after {
-    z-index: -1;
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: #0075be;
-    left: 0;
-    top: 0;
-    border-radius: 10px;
+  z-index: -1;
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #0075be;
+  left: 0;
+  top: 0;
+  border-radius: 10px;
 }
 
 @keyframes glowing {
-    0% { background-position: 0 0; }
-    50% { background-position: 400% 0; }
-    100% { background-position: 0 0; }
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
 }
 
 .search-form {
@@ -280,7 +302,7 @@ main {
   border-radius: 10px;
   border: 2px solid #cccccc;
   width: 50%;
-  margin: 15px 10px 0px 0px;
+  margin: 15px 10px 0 0;
 }
 
 .search-button {
@@ -358,7 +380,4 @@ main {
 label {
   margin-left: 10px;
 }
-
-
-
 </style>
