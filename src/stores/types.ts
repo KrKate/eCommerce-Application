@@ -198,6 +198,20 @@ export type Product = {
               w: number
             }
             url: string
+          },
+          {
+            dimensions?: {
+              h?: number
+              w?: number
+            }
+            url?: string
+          },
+          {
+            dimensions?: {
+              h?: number
+              w?: number
+            }
+            url?: string
           }
         ]
         prices: [
