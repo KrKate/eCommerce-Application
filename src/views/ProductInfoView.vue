@@ -2,12 +2,19 @@
   <main>
     <div class="images-container">
     <div class="alternate-images">
-      <img v-for="(image, index) in product.masterData.staged.masterVariant.images" :key="index" class="alternate-img" :src="image.url" alt="Pokemon" @click="changeImage(index)">
+      <img v-for="(image, index) in product.masterData.staged.masterVariant.images"
+      :key="index" class="alternate-img"
+      :src="image.url" alt="Pokemon"
+      @click="changeImage(index)">
     </div>
     <div class="main-img-container">
     <button class="arrow" @click="previousImage">❮</button>
      <div class="main-image">
-      <img class="central-img" :src="product.masterData.staged.masterVariant.images[currentImageIndex]?.url" alt="Pokemon">
+      <img class="central-img"
+      :src="product.masterData.staged.masterVariant.images[currentImageIndex]?.url"
+      alt="Pokemon"
+      @click="openModal(currentImageIndex)"
+      >
      </div>
     <button class="arrow" @click="nextImage">❯</button>
     </div>
@@ -20,8 +27,13 @@
       </div>
       <div class="description">{{ product.masterData.current.description['en-US'] }}</div>
       <button class="add-button">Add to Cart</button>
-      <div class="slider">
-      </div>
+    </div>
+    <div class="modal-wrapper" v-show="isModalOpen"></div>
+    <div v-show="isModalOpen" class="modal">
+      <button class="arrow modal-arrow" @click="previousImage">❮</button>
+        <img class="modal-content" :src="product.masterData.staged.masterVariant.images[currentImageIndex]?.url" alt="Pokemon">
+        <span class="close" @click="closeModal">&times;</span>
+      <button class="arrow modal-arrow" @click="nextImage">❯</button>
     </div>
   </main>
 </template>
@@ -39,7 +51,8 @@ export default {
     return {
       store: useUserStore(),
       product: {} as Product,
-      currentImageIndex: 0
+      currentImageIndex: 0,
+      isModalOpen: false
     }
   },
   async mounted() {
@@ -69,7 +82,14 @@ previousImage() {
   } else {
     this.currentImageIndex = this.product.masterData.staged.masterVariant.images.length - 1;
   }
-}
+},
+openModal(index: number) {
+      this.isModalOpen = true;
+      this.currentImageIndex = index;
+    },
+    closeModal() {
+      this.isModalOpen = false;
+    }
   }
 
 }
@@ -302,11 +322,12 @@ h1 {
 .arrow {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content:space-between;
   background: none;
   border: none;
   font-size: 2rem;
 }
+
 .main-img-container {
   display: flex;
   align-items: center;
@@ -317,5 +338,73 @@ h1 {
   max-width: 100%;
   max-height: 100%;
 }
+
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 999;
+  width: 70%;
+  height: 80%;
+  background: white;
+  border-radius: 20px;
+  border: 3px solid #cccccc;
+  overflow: hidden;
+  object-fit: contain;
+  @media screen and (max-width: 1200px) {
+    width: 60%;
+    height: 70%;
+  }
+  @media screen and (max-width: 650px) {
+    margin-top: -200px;
+    height: 60%;
+  }
+  @media screen and (max-width: 460px) {
+    height: 50%;
+  }
+}
+
+.modal-content {
+  max-width: 50%;
+  @media screen and (max-width: 1200px) {
+  max-width: 60%;
+  }
+  @media screen and (max-width: 850px) {
+  max-width: 70%;
+  }
+  @media screen and (max-width: 650px) {
+  max-width: 80%;
+  }
+  @media screen and (max-width: 500px) {
+  max-width: 85%;
+  }
+  @media screen and (max-width: 490px) {
+  max-width: 80%;
+  }
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 4rem;
+  color: black;
+  cursor: pointer;
+  @media screen and (max-width: 1200px) {
+  font-size: 3rem;
+  }
+}
+
+.modal-wrapper {
+  position: fixed;
+  z-index: 997;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
 
 </style>
