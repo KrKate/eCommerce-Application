@@ -10,7 +10,7 @@
           placeholder="Enter your search query"
           @input.prevent="debounce(filterByName)"
         />
-        <select class="sort-options" @change.prevent="sort" ref="sorting">
+        <select class="sort-options" @change.prevent="changeSorting" ref="sorting">
           <option value="" selected>sort by...</option>
           <option value="asc">Name ASC</option>
           <option value="desc">Name DESC</option>
@@ -61,15 +61,10 @@
       <div class="pagination-box">
         <p class="title">{{ response.total }} products found</p>
         <div class="pagination-buttons">
-          <button :disabled="currentPage === 1" @click="previousPage">previous</button>
-          Page <span>{{ currentPage }}</span
-          >> of <span>{{ Math.ceil(response.total / response.limit) }}</span
-          ><button
-            @click="nextPage"
-            :disabled="currentPage >= Math.floor(response.total / response.limit)"
-          >
-            next
-          </button>
+          <button :disabled="currentPage === 0" @click="previousPage">previous</button>
+          Page <span>{{ currentPage + 1 }}</span> of
+          <span>{{ Math.ceil(response.total / response.limit) }}</span
+          ><button @click="nextPage" :disabled="currentPage >= 2">next</button>
           Show products on page
           <input
             ref="limit"
@@ -94,38 +89,29 @@ export default {
     return {
       store: useUserStore(),
       products: [] as ProductProjections[],
-      currentPage: 1,
+      currentPage: 0,
+      offset: 0,
+      limit: 10,
       categories: [] as Category[],
       response: {} as ProductResponse,
       filteredProducts: [] as ProductProjections[],
       filteredCategory: [] as string[],
-      items: [
-        { id: 'electric', value: 'electric', label: 'Electric' },
-        { id: 'fire', value: 'fire', label: 'Fire' },
-        { id: 'normal', value: 'normal', label: 'Normal' },
-        { id: 'psychic', value: 'psychic', label: 'Psychic' },
-        { id: 'water', value: 'water', label: 'Water' }
-      ],
       timerID: -1,
       showSelect: false
     }
   },
   async mounted() {
+    this.store.isLoading = true
     if (!this.store.token) {
       await this.store.readCookie()
     }
-    await this.getProducts()
+    this.response = await this.store.getSortedProducts(this.$refs.limit.value)
+    this.products = this.response.results as ProductProjections[]
+    this.filteredProducts = [...this.products]
     this.categories = await this.store.getCategories()
+    this.store.isLoading = false
   },
   methods: {
-    async getProducts() {
-      this.store.isLoading = true
-      this.response = await this.store.getSortedProducts(this.$refs.limit.value)
-      this.products = this.response.results as ProductProjections[]
-      this.filteredProducts = [...this.products]
-      this.store.isLoading = false
-      this.currentPage = 1
-    },
     getChildCategory(id: string) {
       return this.categories
         .filter((value) => value.ancestors.length > 0)
@@ -150,12 +136,19 @@ export default {
       this.currentPage = this.currentPage - 1
       this.sort()
     },
+    changeSorting() {
+      this.currentPage = 0
+      this.offset = 0
+      this.sort()
+    },
     nextPage() {
       this.currentPage = this.currentPage + 1
       this.sort()
     },
     changeLimit() {
-      this.currentPage = 1
+      this.currentPage = 0
+      this.offset = 0
+      this.limit = parseInt(this.$refs?.limit.value || 0, 10)
       this.sort()
     },
     async sort() {
@@ -172,12 +165,9 @@ export default {
         sort = `&sort=name.en-us ${this.$refs.sorting.value}`
       }
       this.response = await this.store.getSortedProducts(
-        this.$refs.limit.value,
-        this.currentPage * this.$refs.limit.value + this.currentPage - 1,
+        this.limit,
+        this.limit * this.currentPage,
         `${sort}${cat}`
-      )
-      this.currentPage = Math.floor(
-        this.response.total / (this.response.limit + this.response.offset)
       )
       this.products = this.response.results as ProductProjections[]
       this.filteredProducts = this.products
