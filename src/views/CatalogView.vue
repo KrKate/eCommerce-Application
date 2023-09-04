@@ -60,6 +60,9 @@ export default {
     }
   },
   async mounted() {
+    if (!this.store.token) {
+      await this.store.readCookie()
+    }
     await this.getProducts()
     this.categories = await this.store.getCategories()
   },
