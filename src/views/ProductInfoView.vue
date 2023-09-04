@@ -2,22 +2,26 @@
   <main>
     <div class="images-container">
     <div class="alternate-images">
-      <img class="alternate-img" :src="product.masterData.staged.masterVariant.images[0]?.url || '#'" alt="Pokemon">
-      <img class="alternate-img" :src="product.masterData.staged.masterVariant.images[1]?.url || '#'" alt="Pokemon">
-      <img class="alternate-img" :src="product.masterData.staged.masterVariant.images[2]?.url || '#'" alt="Pokemon">
+      <img v-for="(image, index) in product.masterData.staged.masterVariant.images" :key="index" class="alternate-img" :src="image.url" alt="Pokemon" @click="changeImage(index)">
     </div>
-    <div class="main-image">
-      <img :src="product.masterData.current.masterVariant.images[0].url" alt="Pokemon">
+    <div class="main-img-container">
+    <button class="arrow" @click="previousImage">❮</button>
+     <div class="main-image">
+      <img class="central-img" :src="product.masterData.staged.masterVariant.images[currentImageIndex]?.url" alt="Pokemon">
+     </div>
+    <button class="arrow" @click="nextImage">❯</button>
     </div>
   </div>
     <div class="main-description">
       <h1 class="title">{{ product.masterData.current.name['en-US'] }}</h1>
       <div class="price-container">
-        <div class="price">€ {{ (product.masterData.current.masterVariant.prices[0].value.centAmount)/100 }} </div>
+        <div class="price">€ {{ ((product.masterData.current.masterVariant.prices[0].value.centAmount)/100).toFixed(2) }} </div>
         <div class="discount" :class="{ 'crossed-out': getDiscount(product) !== ' ' }">{{ getDiscount(product) }}</div>
       </div>
       <div class="description">{{ product.masterData.current.description['en-US'] }}</div>
       <button class="add-button">Add to Cart</button>
+      <div class="slider">
+      </div>
     </div>
   </main>
 </template>
@@ -28,12 +32,14 @@
 import { useUserStore } from '@/stores/authorization'
 import { type Product } from '@/stores/types'
 
+
 export default {
   name: 'ProductInfoView',
   data() {
     return {
       store: useUserStore(),
-      product: {} as Product
+      product: {} as Product,
+      currentImageIndex: 0
     }
   },
   async mounted() {
@@ -45,8 +51,25 @@ export default {
       getDiscount(product: Product) {
       const discounted =
         product.masterData?.current?.masterVariant?.prices[0]?.discounted?.value?.centAmount
-      return discounted ? `€ ${discounted / 100}` : ' '
+      return discounted ? `€ ${(discounted / 100).toFixed(2)}` : ' '
     },
+    changeImage(index: number) {
+    this.currentImageIndex = index;
+  },
+  nextImage() {
+  if (this.currentImageIndex < this.product.masterData.staged.masterVariant.images.length - 1) {
+    this.currentImageIndex++;
+  } else {
+    this.currentImageIndex = 0;
+  }
+},
+previousImage() {
+  if (this.currentImageIndex > 0) {
+    this.currentImageIndex--;
+  } else {
+    this.currentImageIndex = this.product.masterData.staged.masterVariant.images.length - 1;
+  }
+}
   }
 
 }
@@ -125,14 +148,22 @@ h1 {
 .main-image img{
   height: 40vh;
   object-fit: contain;
+  width: 100%;
   @media screen and (max-width: 600px) {
     height: 30vh;
   }
 }
+
+.main-img {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .alternate-images {
    display: flex;
    gap: 10px;
-   justify-content:space-between;
+   justify-content: center;
    @media screen and (max-width: 600px) {
     justify-content: center;
     height: 120px;
@@ -266,6 +297,25 @@ h1 {
 
 .price, .discount {
   font-weight: 500;
+}
+
+.arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  font-size: 2rem;
+}
+.main-img-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.central-img {
+  max-width: 100%;
+  max-height: 100%;
 }
 
 </style>

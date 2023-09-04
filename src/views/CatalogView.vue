@@ -70,7 +70,7 @@ export default {
     },
     getPriceValue(cart: Product) {
       if (cart.masterData.current.masterVariant.prices.length > 0) {
-        return `€ ${cart.masterData.current.masterVariant.prices[0].value.centAmount / 100}`
+        return `€ ${(cart.masterData.current.masterVariant.prices[0].value.centAmount / 100).toFixed(2)}`
       } else {
         return 'free'
       }
@@ -78,7 +78,7 @@ export default {
     getDiscount(cart: Product) {
       const discounted =
         cart?.masterData?.current?.masterVariant?.prices[0]?.discounted?.value?.centAmount
-      return discounted ? `€ ${discounted / 100}` : ' '
+      return discounted ? `€ ${(discounted / 100).toFixed(2)}` : ' '
     },
     toggleSelect() {
       this.showSelect = !this.showSelect
