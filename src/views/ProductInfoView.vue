@@ -1,6 +1,7 @@
 <script lang="ts">
 import { useUserStore } from '@/stores/authorization'
 import { Product } from '@/stores/types'
+import router from '@/router'
 
 export default {
   name: 'ProductInfoView',
@@ -12,7 +13,13 @@ export default {
   },
   async mounted() {
     this.store.isLoading = true
-    this.product = await this.store.getProductById(this.$route.params.id)
+    const productId = this.$route.params.id as string
+    if (await this.store.checkProductExistsById(productId)) {
+      this.product = await this.store.getProductById(productId)
+    } else {
+      await router.push({ name: '404' })
+    }
+
     this.store.isLoading = false
   }
 }

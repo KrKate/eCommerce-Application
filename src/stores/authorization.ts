@@ -252,18 +252,32 @@ export const useUserStore = defineStore('user', {
     async getCategories() {
       try {
         const categoriesData: CategoryResponse = await axios
-            .get(
-                `https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/categories`,
-                {
-                  headers: {
-                    Authorization: `Bearer ${this.token}`
-                  }
-                }
-            )
-            .then((data) => data.data)
+          .get(`https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/categories`, {
+            headers: {
+              Authorization: `Bearer ${this.token}`
+            }
+          })
+          .then((data) => data.data)
         return categoriesData.results
       } catch (error) {
         return [] as Category[]
+      }
+    },
+    async checkProductExistsById(id: string) {
+      try {
+        const status = await axios
+          .head(
+            `https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/products/${id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${this.token}`
+              }
+            }
+          )
+          .then((data) => data.status)
+        return status === 200
+      } catch (error) {
+        return false
       }
     }
   }
