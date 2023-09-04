@@ -1,29 +1,41 @@
 <template>
   <main>
     <div class="images-container">
-    <div class="alternate-images">
-      <img v-for="(image, index) in product.masterData.staged.masterVariant.images"
-      :key="index" class="alternate-img"
-      :src="image.url" alt="Pokemon"
-      @click="changeImage(index)">
+      <div class="alternate-images">
+        <img
+          v-for="(image, index) in product.masterData.staged.masterVariant.images"
+          :key="index"
+          class="alternate-img"
+          :src="image.url"
+          alt="Pokemon"
+          @click="changeImage(index)"
+        />
+      </div>
+      <div class="main-img-container">
+        <button class="arrow" @click="previousImage">❮</button>
+        <div class="main-image">
+          <img
+            class="central-img"
+            :src="product.masterData.staged.masterVariant.images[currentImageIndex]?.url"
+            alt="Pokemon"
+            @click="openModal(currentImageIndex)"
+          />
+        </div>
+        <button class="arrow" @click="nextImage">❯</button>
+      </div>
     </div>
-    <div class="main-img-container">
-    <button class="arrow" @click="previousImage">❮</button>
-     <div class="main-image">
-      <img class="central-img"
-      :src="product.masterData.staged.masterVariant.images[currentImageIndex]?.url"
-      alt="Pokemon"
-      @click="openModal(currentImageIndex)"
-      >
-     </div>
-    <button class="arrow" @click="nextImage">❯</button>
-    </div>
-  </div>
     <div class="main-description">
       <h1 class="title">{{ product.masterData.current.name['en-US'] }}</h1>
       <div class="price-container">
-        <div class="price">€ {{ ((product.masterData.current.masterVariant.prices[0].value.centAmount)/100).toFixed(2) }} </div>
-        <div class="discount" :class="{ 'crossed-out': getDiscount(product) !== ' ' }">{{ getDiscount(product) }}</div>
+        <div class="price">
+          €
+          {{
+            (product.masterData.current.masterVariant.prices[0].value.centAmount / 100).toFixed(2)
+          }}
+        </div>
+        <div class="discount" :class="{ 'crossed-out': getDiscount(product) !== ' ' }">
+          {{ getDiscount(product) }}
+        </div>
       </div>
       <div class="description">{{ product.masterData.current.description['en-US'] }}</div>
       <button class="add-button">Add to Cart</button>
@@ -31,19 +43,20 @@
     <div class="modal-wrapper" v-show="isModalOpen"></div>
     <div v-show="isModalOpen" class="modal">
       <button class="arrow modal-arrow" @click="previousImage">❮</button>
-        <img class="modal-content" :src="product.masterData.staged.masterVariant.images[currentImageIndex]?.url" alt="Pokemon">
-        <span class="close" @click="closeModal">&times;</span>
+      <img
+        class="modal-content"
+        :src="product.masterData.staged.masterVariant.images[currentImageIndex]?.url"
+        alt="Pokemon"
+      />
+      <span class="close" @click="closeModal">&times;</span>
       <button class="arrow modal-arrow" @click="nextImage">❯</button>
     </div>
   </main>
 </template>
 
-
-
 <script lang="ts">
 import { useUserStore } from '@/stores/authorization'
 import { type Product } from '@/stores/types'
-
 
 export default {
   name: 'ProductInfoView',
@@ -67,40 +80,38 @@ export default {
     this.store.isLoading = false
   },
   methods: {
-      getDiscount(product: Product) {
+    getDiscount(product: Product) {
       const discounted =
         product.masterData?.current?.masterVariant?.prices[0]?.discounted?.value?.centAmount
       return discounted ? `€ ${(discounted / 100).toFixed(2)}` : ' '
     },
     changeImage(index: number) {
-    this.currentImageIndex = index;
-  },
-  nextImage() {
-  if (this.currentImageIndex < this.product.masterData.staged.masterVariant.images.length - 1) {
-    this.currentImageIndex++;
-  } else {
-    this.currentImageIndex = 0;
-  }
-},
-previousImage() {
-  if (this.currentImageIndex > 0) {
-    this.currentImageIndex--;
-  } else {
-    this.currentImageIndex = this.product.masterData.staged.masterVariant.images.length - 1;
-  }
-},
-openModal(index: number) {
-      this.isModalOpen = true;
-      this.currentImageIndex = index;
+      this.currentImageIndex = index
+    },
+    nextImage() {
+      if (this.currentImageIndex < this.product.masterData.staged.masterVariant.images.length - 1) {
+        this.currentImageIndex++
+      } else {
+        this.currentImageIndex = 0
+      }
+    },
+    previousImage() {
+      if (this.currentImageIndex > 0) {
+        this.currentImageIndex--
+      } else {
+        this.currentImageIndex = this.product.masterData.staged.masterVariant.images.length - 1
+      }
+    },
+    openModal(index: number) {
+      this.isModalOpen = true
+      this.currentImageIndex = index
     },
     closeModal() {
-      this.isModalOpen = false;
+      this.isModalOpen = false
     }
   }
-
 }
 </script>
-
 
 <style scoped lang="scss">
 @import '@/assets/styles/mixins';
@@ -160,7 +171,6 @@ h1 {
   }
 }
 
-
 .images-container {
   width: 30%;
   display: flex;
@@ -171,7 +181,7 @@ h1 {
   }
 }
 
-.main-image img{
+.main-image img {
   height: 40vh;
   object-fit: contain;
   width: 100%;
@@ -187,10 +197,10 @@ h1 {
   align-items: center;
 }
 .alternate-images {
-   display: flex;
-   gap: 10px;
-   justify-content: center;
-   @media screen and (max-width: 600px) {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  @media screen and (max-width: 600px) {
     justify-content: center;
     height: 120px;
   }
@@ -200,7 +210,8 @@ h1 {
   width: 25%;
 }
 
-.alternate-img, .main-image {
+.alternate-img,
+.main-image {
   border: 3px solid #cccccc;
   border-radius: 10px;
 }
@@ -321,14 +332,15 @@ h1 {
   transform: rotate(35deg);
 }
 
-.price, .discount {
+.price,
+.discount {
   font-weight: 500;
 }
 
 .arrow {
   display: flex;
   align-items: center;
-  justify-content:space-between;
+  justify-content: space-between;
   background: none;
   border: none;
   font-size: 2rem;
@@ -374,19 +386,19 @@ h1 {
 .modal-content {
   max-width: 50%;
   @media screen and (max-width: 1200px) {
-  max-width: 60%;
+    max-width: 60%;
   }
   @media screen and (max-width: 850px) {
-  max-width: 70%;
+    max-width: 70%;
   }
   @media screen and (max-width: 650px) {
-  max-width: 80%;
+    max-width: 80%;
   }
   @media screen and (max-width: 500px) {
-  max-width: 85%;
+    max-width: 85%;
   }
   @media screen and (max-width: 490px) {
-  max-width: 80%;
+    max-width: 80%;
   }
 }
 
@@ -398,7 +410,7 @@ h1 {
   color: black;
   cursor: pointer;
   @media screen and (max-width: 1200px) {
-  font-size: 3rem;
+    font-size: 3rem;
   }
 }
 
@@ -411,6 +423,4 @@ h1 {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
 }
-
-
 </style>

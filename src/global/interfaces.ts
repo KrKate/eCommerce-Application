@@ -1,3 +1,3 @@
 export interface InputVueEvent extends Event {
-    target: HTMLInputElement;
+  target: HTMLInputElement
 }

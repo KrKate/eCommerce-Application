@@ -229,7 +229,7 @@ export const useUserStore = defineStore('user', {
         return [] as Product[]
       }
     },
-    async getSortedProducts(limit = '30', page='0', query = '') {
+    async getSortedProducts(limit = '30', page = '0', query = '') {
       try {
         const productsData: ProductResponse = await axios
           .get(
