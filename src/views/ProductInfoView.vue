@@ -350,7 +350,6 @@ h1 {
   background: white;
   border-radius: 20px;
   border: 3px solid #cccccc;
-  overflow: hidden;
   object-fit: contain;
   @media screen and (max-width: 1200px) {
     width: 60%;
