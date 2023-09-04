@@ -178,17 +178,18 @@ export type ChangePasswordDTO = {
   newPassword: string
 }
 
+type ProductCategory = {
+  id: string
+  typeId: string
+}
+
 export type Product = {
   id: string
   version: number
+  productType: ProductCategory
   masterData: {
     current: {
-      categories: [
-        {
-          id: string
-          typeId: string
-        }
-      ]
+      categories: ProductCategory[]
       description: {
         'en-US': string
       }
@@ -286,14 +287,87 @@ export type Product = {
       searchKeywords: {}
     }
   }
-  productType: {
-    id: string
-    typeId: string
-  }
   taxCategory: {
     id: string
     typeId: string
   }
+  createdAt: string
+  lastModifiedAt: string
+}
+
+export type ProductProjections = {
+  id: string
+  version: number
+  productType: ProductCategory
+  name: {
+    'en-US': string
+    ru: string
+  }
+  description: {
+    'en-US': string
+    ru: string
+  }
+  categories: ProductCategory[]
+  categoryOrderHints: {}
+  slug: {
+    'en-US': string
+    ru: string
+  }
+  metaTitle: {
+    'en-US': string
+    ru: string
+  }
+  metaDescription: {
+    'en-US': string
+    ru: string
+  }
+  masterVariant: {
+    id: number
+    sku: string
+    key: string
+    prices: [
+      {
+        id: string
+        value: {
+          type: string
+          currencyCode: string
+          centAmount: number
+          fractionDigits: number
+        }
+        discounted?: {
+          value?: {
+            type?: string
+            currencyCode?: string
+            centAmount?: number
+            fractionDigits?: number
+          }
+          discount?: {
+            typeId?: string
+            id?: string
+          }
+        }
+      }
+    ]
+    images: [
+      {
+        url: string
+        label: string
+        dimensions: {
+          w: number
+          h: number
+        }
+      }
+    ]
+    attributes: []
+    assets: []
+  }
+  variants: []
+  searchKeywords: {}
+  hasStagedChanges: boolean
+  published: boolean
+  key: string
+  taxCategory: ProductCategory
+  priceMode: string
   createdAt: string
   lastModifiedAt: string
 }
@@ -303,5 +377,5 @@ export type ProductResponse = {
   offset: number
   count: number
   total: number
-  results: Product[]
+  results: Product[] | ProductProjections[]
 }

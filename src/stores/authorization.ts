@@ -218,18 +218,32 @@ export const useUserStore = defineStore('user', {
     async getProducts() {
       try {
         const productsData: ProductResponse = await axios
+          .get(`https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/products`, {
+            headers: {
+              Authorization: `Bearer ${this.token}`
+            }
+          })
+          .then((data) => data.data)
+        return productsData.results as Product[]
+      } catch (error) {
+        return [] as Product[]
+      }
+    },
+    async getSortedProducts(limit = '30', page='0', query = '') {
+      try {
+        const productsData: ProductResponse = await axios
           .get(
-            `https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/products?limit=50`,
+            `https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/product-projections/search?limit=${limit}&offset=${page}${query}`,
             {
               headers: {
                 Authorization: `Bearer ${this.token}`
               }
             }
           )
-          .then((data) => data.data)
-        return productsData.results
+          .then((data) => data.data as ProductResponse)
+        return productsData as ProductResponse
       } catch (error) {
-        return [] as Product[]
+        return {} as ProductResponse
       }
     },
     async getProductById(id: string) {
