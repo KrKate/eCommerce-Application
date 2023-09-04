@@ -3,7 +3,7 @@
     <div class="images-container">
       <div class="alternate-images">
         <img
-          v-for="(image, index) in product.masterData.staged.masterVariant.images"
+          v-for="(image, index) in product.masterData?.staged.masterVariant.images"
           :key="index"
           class="alternate-img"
           :src="image.url"
@@ -16,7 +16,7 @@
         <div class="main-image">
           <img
             class="central-img"
-            :src="product.masterData.staged.masterVariant.images[currentImageIndex]?.url"
+            :src="product.masterData?.staged.masterVariant.images[currentImageIndex]?.url"
             alt="Pokemon"
             @click="openModal(currentImageIndex)"
           />
@@ -25,19 +25,19 @@
       </div>
     </div>
     <div class="main-description">
-      <h1 class="title">{{ product.masterData.current.name['en-US'] }}</h1>
+      <h1 class="title">{{ product.masterData?.current.name['en-US'] }}</h1>
       <div class="price-container">
         <div class="price">
           €
           {{
-            (product.masterData.current.masterVariant.prices[0].value.centAmount / 100).toFixed(2)
+            (product.masterData?.current.masterVariant.prices[0].value.centAmount / 100).toFixed(2)
           }}
         </div>
         <div class="discount" :class="{ 'crossed-out': getDiscount(product) !== ' ' }">
           {{ getDiscount(product) }}
         </div>
       </div>
-      <div class="description">{{ product.masterData.current.description['en-US'] }}</div>
+      <div class="description">{{ product.masterData?.current.description['en-US'] }}</div>
       <button class="add-button">Add to Cart</button>
     </div>
     <div class="modal-wrapper" v-show="isModalOpen"></div>
@@ -45,7 +45,7 @@
       <button class="arrow modal-arrow" @click="previousImage">❮</button>
       <img
         class="modal-content"
-        :src="product.masterData.staged.masterVariant.images[currentImageIndex]?.url"
+        :src="product.masterData?.staged.masterVariant.images[currentImageIndex]?.url"
         alt="Pokemon"
       />
       <span class="close" @click="closeModal">&times;</span>
@@ -57,6 +57,7 @@
 <script lang="ts">
 import { useUserStore } from '@/stores/authorization'
 import { type Product } from '@/stores/types'
+import router from '@/router'
 
 export default {
   name: 'ProductInfoView',
@@ -68,7 +69,7 @@ export default {
       isModalOpen: false
     }
   },
-  async mounted() {
+  async beforeMount() {
     this.store.isLoading = true
     const productId = this.$route.params.id as string
     if (await this.store.checkProductExistsById(productId)) {
@@ -76,7 +77,6 @@ export default {
     } else {
       await router.push({ name: '404' })
     }
-
     this.store.isLoading = false
   },
   methods: {
@@ -155,7 +155,7 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 30px;
-  align-items: right;
+  align-items: flex-end;
   font-size: 1.5rem;
   width: 40%;
   @media screen and (max-width: 1000px) {
