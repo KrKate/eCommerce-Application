@@ -3,8 +3,13 @@
     <h1>Choose your pokemon!</h1>
     <div class="setting-bar">
       <form class="search-form">
-        <input class="search-input" type="text" placeholder="Enter your search query" />
-        <button class="search-button" type="submit">Search</button>
+        <input
+          ref="search"
+          class="search-input"
+          type="text"
+          placeholder="Enter your search query"
+          @input.prevent="debounce(filterByName)"
+        />
       </form>
       <button class="category-btn" @click="toggleSelect">Category</button>
     </div>
@@ -21,7 +26,7 @@
       </div>
     </div>
     <div class="cards-container">
-      <div class="product-card" v-for="cart in products" :key="cart.id">
+      <div class="product-card" v-for="cart in filteredProducts" :key="cart.id">
         <h3 class="product-title">{{ cart.masterData.current.name['en-US'] }}</h3>
         <img :src="getImageUrl(cart)" alt="Product Image" class="product-image" />
         <div class="prices">
@@ -49,6 +54,7 @@ export default {
       store: useUserStore(),
       products: [] as Product[],
       categories: [] as Category[],
+      filteredProducts: [] as Product[],
       items: [
         { id: 'electric', value: 'electric', label: 'Electric' },
         { id: 'fire', value: 'fire', label: 'Fire' },
@@ -56,6 +62,7 @@ export default {
         { id: 'psychic', value: 'psychic', label: 'Psychic' },
         { id: 'water', value: 'water', label: 'Water' }
       ],
+      timerID: -1,
       showSelect: false
     }
   },
@@ -70,6 +77,7 @@ export default {
     async getProducts() {
       this.store.isLoading = true
       this.products = await this.store.getProducts()
+      this.filteredProducts = [...this.products]
       this.store.isLoading = false
     },
     getChildCategory(id: string) {
@@ -98,6 +106,17 @@ export default {
     },
     toggleSelect() {
       this.showSelect = !this.showSelect
+    },
+    filterByName() {
+      this.filteredProducts = this.products.filter((value) =>
+        value.masterData.current.name['en-US']
+          .toLowerCase()
+          .includes(this.$refs.search.value.toLowerCase())
+      )
+    },
+    debounce(func: Function) {
+      clearTimeout(this.timerID)
+      this.timerID = setTimeout(() => func(), 500)
     }
   },
   computed: {
@@ -334,8 +353,8 @@ main {
   cursor: pointer;
 }
 .search-input {
-  border-radius: 7px 0 0 7px;
-  width: 70%;
+  border-radius: 7px;
+  width: 50%;
   flex: 1;
   padding: 10px;
   border: none;
