@@ -6,6 +6,7 @@ import CartView from '@/views/CartView.vue'
 import RegistrationView from '@/views/RegistrationView.vue'
 import { useUserStore } from '@/stores/authorization'
 import ProductInfoView from '@/views/ProductInfoView.vue'
+import ProfileView from '@/views/ProfileView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,12 +37,21 @@ const router = createRouter({
       component: CartView
     },
     {
+      path: '/profile',
+      name: 'profile',
+      component: ProfileView,
+      beforeEnter: async () => {
+        if (!useUserStore().isLogin) await router.push('/login')
+        return useUserStore().isLogin
+      }
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('../views/AuthorizationView.vue'),
-      beforeEnter: () => {
+      beforeEnter: async () => {
         if (useUserStore().isLogin) {
-          router.push('/')
+          await router.push('/')
           return false
         }
         return !useUserStore().isLogin
@@ -51,9 +61,9 @@ const router = createRouter({
       path: '/registration',
       name: 'Registration',
       component: RegistrationView,
-      beforeEnter: () => {
+      beforeEnter: async () => {
         if (useUserStore().isLogin) {
-          router.push('/')
+          await router.push('/')
           return false
         }
         return !useUserStore().isLogin

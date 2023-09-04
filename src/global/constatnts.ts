@@ -36,3 +36,113 @@ export enum Countries {
   Spain = 'Spain',
   UnitedKingdom = 'United Kingdom'
 }
+
+export enum CountryCodes {
+  BY = 'Belarus',
+  IT = 'Italy',
+  FR = 'France',
+  DE = 'Germany',
+  KZ = 'Kazakhstan',
+  PL = 'Poland',
+  RU = 'Russia',
+  ES = 'Spain',
+  GB = 'UnitedKingdom'
+}
+
+export enum CountryCodesByCountry {
+  Belarus = 'BY',
+  Italy = 'IT',
+  France = 'FR',
+  Germany = 'DE',
+  Kazakhstan = 'KZ',
+  Poland = 'PL',
+  Russia = 'RU',
+  Spain = 'ES',
+  UnitedKingdom = 'GB'
+}
+
+export enum CustomerUpdateActions {
+  changeEmail = 'changeEmail',
+  setFirstName = 'setFirstName',
+  setLastName = 'setLastName',
+  setMiddleName = 'setMiddleName',
+  setTitle = 'setTitle',
+  setSalutation = 'setSalutation',
+  addAddress = 'addAddress',
+  changeAddress = 'changeAddress',
+  removeAddress = 'removeAddress',
+  setDefaultShippingAddress = 'setDefaultShippingAddress',
+  addShippingAddressId = 'addShippingAddressId',
+  removeShippingAddressId = 'removeShippingAddressId',
+  addBillingAddressId = 'addBillingAddressId',
+  removeBillingAddressId = 'removeBillingAddressId',
+  setCustomerGroup = 'setCustomerGroup',
+  setCustomerNumber = 'setCustomerNumber',
+  setExternalId = 'setExternalId',
+  setCompanyName = 'setCompanyName',
+  setDateOfBirth = 'setDateOfBirth',
+  setVatId = 'setVatId',
+  setCustomType = 'setCustomType',
+  setCustomField = 'setCustomField',
+  setAddressCustomType = 'setAddressCustomType',
+  setAddressCustomField = 'setAddressCustomField',
+  setLocale = 'setLocale',
+  setKey = 'setKey',
+  setStores = 'setStores'
+}
+
+export enum Salutations {
+  None = '',
+  Mr = 'Mr.',
+  Mrs = 'Mrs.',
+  Ms = 'Ms.',
+  Miss = 'Miss',
+  Dr = 'Dr.',
+  Sr = 'Sr.',
+  Fr = 'Fr.',
+  Rev = 'Rev.',
+  Pastor = 'Pastor',
+  Judge = 'Judge',
+  Rabbi = 'Rabbi',
+  Mayor = 'Mayor',
+  Dear = 'Dear',
+  Comrade = 'Comrade',
+  Khaleesi = 'Khaleesi'
+}
+
+export const userProfileLeftSideFields = [
+  ['title', 'Title'],
+  ['firstName', 'First name'],
+  ['middleName', 'Middle name'],
+  ['lastName', 'Last name'],
+  ['dateOfBirth', 'Date of birth'],
+  ['companyName', 'Company name'],
+  ['email', 'E-mail']
+]
+
+export const contactDetails = [
+  ['title', 'Title'],
+  ['firstName', 'First name'],
+  ['lastName', 'Last name'],
+  ['company', 'Company'],
+  ['department', 'Department'],
+  ['phone', 'Phone'],
+  ['mobile', 'Mobile'],
+  ['email', 'E-mail'],
+  ['fax', 'Fax']
+]
+
+export const addressDetails = [
+  ['streetName', 'Street name'],
+  ['streetNumber', 'Street number'],
+  ['postalCode', 'Postal code'],
+  ['city', 'City'],
+  ['region', 'Region'],
+  ['state', 'State'],
+  ['company', 'Company'],
+  ['building', 'Building'],
+  ['apartment', 'Apartment'],
+  ['pOBox', 'PO Box'],
+  ['additionalAddressInfo', 'Additional address info'],
+  ['additionalStreetInfo', 'Additional street info']
+]

@@ -24,7 +24,19 @@
           <li><RouterLink to="/catalog">Catalog</RouterLink></li>
           <li><RouterLink to="/about">About</RouterLink></li>
         </ul>
-        <input type="text" placeholder="Find them all!" />
+        <!--        <input type="text" placeholder="Find them all!" />-->
+        <div class="settings">
+          <img
+            v-if="store.isLogin"
+            src="@/assets/icons/profile.png"
+            alt="profile"
+            @click="router.push('/profile')"
+          />
+          <img src="@/assets/icons/lang.png" alt="language" />
+          <img src="@/assets/icons/chat.png" alt="chat" />
+          <img src="@/assets/icons/theme.png" alt="theme" />
+          <img src="@/assets/icons/settings.png" alt="settings" />
+        </div>
       </div>
     </nav>
   </header>
@@ -32,11 +44,13 @@
 
 <script lang="ts">
 import { useUserStore } from '@/stores/authorization'
+import router from '@/router'
 export default {
   name: 'AppHeader',
   data() {
     return {
-      store: useUserStore()
+      store: useUserStore(),
+      router: router
     }
   }
 }
@@ -138,12 +152,18 @@ header {
     z-index: 100;
   }
 
-  input {
+  .settings {
     @include view(30%, auto, relative, flex);
     background-color: $app-gray;
-    padding: 10px 10px;
     color: $app-black;
-    border: 1px solid $app-white;
+    justify-content: space-evenly;
+
+    & img {
+      max-height: 30px;
+      &:hover {
+        transform: scale(1.4);
+      }
+    }
   }
 }
 
@@ -194,7 +214,7 @@ header {
       left: calc(0% + 20px);
     }
 
-    input {
+    .settings {
       @include view(40%, auto, relative, flex);
     }
   }
@@ -241,7 +261,7 @@ header {
       }
     }
 
-    input {
+    .settings {
       @include view(50%, auto, relative, flex);
       padding: 5px 10px;
     }
@@ -313,7 +333,7 @@ header {
       justify-content: space-around;
     }
 
-    input {
+    .settings {
       @include view(100%, auto, relative, flex);
     }
   }

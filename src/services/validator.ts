@@ -1,19 +1,30 @@
 import { Countries, EmailError, PasswordError } from '@/global/constatnts'
 
-export default class Validator {
+class Expressions {
+  protected emailFormat = new RegExp(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/)
+  protected emailDomain = new RegExp(/^\s*[^\s@]+@[^\s@]+\.[^\s@]{2,}\s?$/)
+  protected hasUppercase = new RegExp(/[A-Z]/)
+  protected hasLowercase = new RegExp(/[a-z]/)
+  protected hasDigit = new RegExp(/\d/)
+  protected hasSpecial = new RegExp(/^(?=.*[!@#$%^&*()+=._-])/)
+  protected onlyLetters = new RegExp(/^[a-zA-Zа-яА-Я]+$/)
+  protected postalCodeUSSR = new RegExp(/^\d{6}$/)
+  protected postalCodeGerFrItSp = new RegExp(/^\d{5}$/)
+  protected postalCodeUK = new RegExp(/^[a-zA-Z]{1,2}[0-9][a-zA-Z0-9]? ?[0-9][a-zA-Z]{2}$/)
+  protected postalCodePoland = new RegExp(/^\d{2}[- ]?\d{3}$/)
+  protected companyName = new RegExp(
+    /^[a-zA-Z0-9-@.{}#&!()]+(\s[a-zA-Z0-9-@{}.#&!()]+)+(\s[a-zA-Z-@.#&!()]+)?$/
+  )
+  protected phoneNumber = new RegExp(/^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/)
+  protected onlyNumbers = new RegExp(/^[0-9]*$/)
+  protected poBox = new RegExp(
+    /^ *((#\d+)|((box|bin)[-. \\]?\d+)|(.*p?([o0])[-. \\]? *-?((box|bin)|b|(#|n|num|number)?\d+))|(p(ost|ostal)? *(o(ff(ice)?)?)? *((box|bin)|b)? *(#|n|num|number)*\d+)|(p *-?\/?(o)? *-?box)|post office box|((box|bin)|b) *(#|n|num|number)? *\d+|(#|n|num|number) *\d+)/
+  )
+}
+
+export default class Validator extends Expressions {
   public errorsEmail: EmailError[] = []
   public errorsPassword: PasswordError[] = []
-  private emailFormat = new RegExp(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/)
-  private emailDomain = new RegExp(/^\s*[^\s@]+@[^\s@]+\.[^\s@]{2,}\s?$/)
-  private hasUppercase = new RegExp(/[A-Z]/)
-  private hasLowercase = new RegExp(/[a-z]/)
-  private hasDigit = new RegExp(/\d/)
-  private hasSpecial = new RegExp(/^(?=.*[!@#$%^&*()+=._-])/)
-  private onlyLetters = new RegExp(/^[a-zA-Zа-яА-Я]+$/)
-  private postalCodeUSSR = new RegExp(/^\d{6}$/)
-  private postalCodeGerFrItSp = new RegExp(/^\d{5}$/)
-  private postalCodeUK = new RegExp(/^[a-zA-Z]{1,2}[0-9][a-zA-Z0-9]? ?[0-9][a-zA-Z]{2}$/)
-  private postalCodePoland = new RegExp(/^\d{2}[- ]?\d{3}$/)
 
   public validateEmail(email: string) {
     this.errorsEmail = []
@@ -70,5 +81,21 @@ export default class Validator {
       return this.postalCodePoland.test(code)
     }
     return true
+  }
+
+  validateCompanyName(name: string) {
+    return this.companyName.test(name)
+  }
+
+  validatePhoneNumber(phone: string) {
+    return this.phoneNumber.test(phone)
+  }
+
+  validateOnlyNumbers(str: string) {
+    return this.onlyNumbers.test(str)
+  }
+
+  validatePOBox(box: string) {
+    return this.poBox.test(box)
   }
 }

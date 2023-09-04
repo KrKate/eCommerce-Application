@@ -1,17 +1,6 @@
 <template>
   <div class="registration-page">
-    <form
-      :novalidate="true"
-      ref="reg"
-      @submit.prevent="
-        signIn({
-          email: this.email,
-          password: this.password,
-          firstName: this.firstName,
-          lastName: this.lastName
-        })
-      "
-    >
+    <form :novalidate="true" ref="reg" @submit.prevent="signIn(userDTO)">
       <h2>{{ store.isLogin ? 'Successful registration!' : 'Registration' }}</h2>
       <div class="registration-item" v-if="!store.isLogin">
         <label for="email">Email:</label>
@@ -94,14 +83,15 @@
           </ul>
         </div>
       </div>
-      <div class="separator">
+      <div class="separator" v-if="!store.isLogin">
         <span> Shipping Address </span>
       </div>
       <div class="registration-item" v-if="!store.isLogin">
-        <label for="street">Street:</label>
+        <label for="street-shipping">Street:</label>
         <input
           type="text"
-          id="street"
+          id="street-shipping"
+          ref="streetShipping"
           required
           v-model="shippingStreet"
           @input.prevent="validateShippingStreet"
@@ -114,18 +104,18 @@
         </div>
       </div>
       <div class="registration-item" v-if="!store.isLogin">
-        <label for="country">Country:</label>
-        <select id="country" required v-model="shippingCountry">
+        <label for="country-shipping">Country:</label>
+        <select id="country-shipping" required v-model="shippingCountry">
           <option v-for="item in countries" v-bind:value="item" v-bind:key="item">
             {{ item }}
           </option>
         </select>
       </div>
       <div class="registration-item" v-if="!store.isLogin">
-        <label for="city">City:</label>
+        <label for="city-shipping">City:</label>
         <input
           type="text"
-          id="city"
+          id="city-shipping"
           required
           v-model="shippingCity"
           @input.prevent="validateShippingCity"
@@ -138,10 +128,10 @@
         </div>
       </div>
       <div class="registration-item" v-if="!store.isLogin">
-        <label for="postalCode">Postal Code:</label>
+        <label for="postalCode-shipping">Postal Code:</label>
         <input
           type="text"
-          id="postalCode"
+          id="postalCode-shipping"
           required
           v-model="shippingPostalCode"
           @input.prevent="validateShippingPostalCode"
@@ -155,84 +145,92 @@
         </div>
       </div>
 
-      <div class="check-item">
+      <div class="check-item" v-if="!store.isLogin">
         <input class="check" type="checkbox" id="saveDefaultShippingAddress" />
         <label for="saveDefaultShippingAddress">Save as default shipping address</label>
       </div>
 
-      <div class="check-item">
+      <div class="check-item" v-if="!store.isLogin">
         <input
           class="check"
           type="checkbox"
           id="also"
           @change="copyShippingToBilling"
+          ref="isAlsoBilling"
           v-model="also"
         />
         <label for="also">This is also my billing address</label>
       </div>
+      <div v-show="!$refs.isAlsoBilling?.checked" style="display: contents">
+        <div class="separator" v-if="!store.isLogin">
+          <span> Billing Address </span>
+        </div>
+        <div class="registration-item" v-if="!store.isLogin">
+          <label for="street-billing">Street:</label>
+          <input
+            type="text"
+            id="street-billing"
+            required
+            v-model="billingStreet"
+            :disabled="$refs.isAlsoBilling?.checked"
+            @input.prevent="validateBillingStreet"
+            :class="{ 'invalid-input': billingStreetError.length }"
+          />
+          <div v-if="billingStreetError.length" class="error">
+            <ul>
+              <li v-for="error in billingStreetError" :key="error">{{ error }}</li>
+            </ul>
+          </div>
+        </div>
+        <div class="registration-item" v-if="!store.isLogin">
+          <label for="country-billing">Country:</label>
+          <select
+            id="country-billing"
+            required
+            v-model="billingCountry"
+            :disabled="$refs.isAlsoBilling?.checked"
+          >
+            <option v-for="item in countries" v-bind:value="item" v-bind:key="item">
+              {{ item }}
+            </option>
+          </select>
+        </div>
+        <div class="registration-item" v-if="!store.isLogin">
+          <label for="city-billing">City:</label>
+          <input
+            type="text"
+            id="city-billing"
+            required
+            v-model="billingCity"
+            @input.prevent="validateBillingCity"
+            :class="{ 'invalid-input': billingCityError.length }"
+          />
+          <div v-if="billingCityError.length" class="error">
+            <ul>
+              <li v-for="error in billingCityError" :key="error">{{ error }}</li>
+            </ul>
+          </div>
+        </div>
+        <div class="registration-item" v-if="!store.isLogin">
+          <label for="postalCode-billing">Postal Code:</label>
+          <input
+            type="text"
+            id="postalCode-billing"
+            required
+            v-model="billingPostalCode"
+            @input.prevent="validateBillingPostalCode"
+            :class="{ 'invalid-input': billingPostalCodeError.length }"
+            :disabled="!billingCountry"
+          />
+          <div v-if="billingPostalCodeError.length" class="error">
+            <ul>
+              <li v-for="error in billingPostalCodeError" :key="error">{{ error }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
 
-      <div class="separator">
-        <span> Billing Address </span>
-      </div>
-      <div class="registration-item" v-if="!store.isLogin">
-        <label for="street">Street:</label>
-        <input
-          type="text"
-          id="street"
-          required
-          v-model="billingStreet"
-          @input.prevent="validateBillingStreet"
-          :class="{ 'invalid-input': billingStreetError.length }"
-        />
-        <div v-if="billingStreetError.length" class="error">
-          <ul>
-            <li v-for="error in billingStreetError" :key="error">{{ error }}</li>
-          </ul>
-        </div>
-      </div>
-      <div class="registration-item" v-if="!store.isLogin">
-        <label for="country">Country:</label>
-        <select id="country" required v-model="billingCountry">
-          <option v-for="item in countries" v-bind:value="item" v-bind:key="item">
-            {{ item }}
-          </option>
-        </select>
-      </div>
-      <div class="registration-item" v-if="!store.isLogin">
-        <label for="city">City:</label>
-        <input
-          type="text"
-          id="city"
-          required
-          v-model="billingCity"
-          @input.prevent="validateBillingCity"
-          :class="{ 'invalid-input': billingCityError.length }"
-        />
-        <div v-if="billingCityError.length" class="error">
-          <ul>
-            <li v-for="error in billingCityError" :key="error">{{ error }}</li>
-          </ul>
-        </div>
-      </div>
-      <div class="registration-item" v-if="!store.isLogin">
-        <label for="postalCode">Postal Code:</label>
-        <input
-          type="text"
-          id="postalCode"
-          required
-          v-model="billingPostalCode"
-          @input.prevent="validateBillingPostalCode"
-          :class="{ 'invalid-input': billingPostalCodeError.length }"
-          :disabled="!billingCountry"
-        />
-        <div v-if="billingPostalCodeError.length" class="error">
-          <ul>
-            <li v-for="error in billingPostalCodeError" :key="error">{{ error }}</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="check-item">
+      <div class="check-item" v-if="!store.isLogin">
         <input class="check" type="checkbox" id="saveDefaultBillingAddress" />
         <label for="saveDefaultBillingAddress">Save as default billing address</label>
       </div>
@@ -252,11 +250,21 @@
 </template>
 
 <script lang="ts">
-import { UserRegistrationInfo } from '@/stores/types'
+import type {
+  ActionsDTO,
+  CustomerAddress,
+  UpdateUserInfoDTO,
+  UserRegistrationInfo
+} from '@/stores/types'
 import { useUserStore } from '@/stores/authorization'
-import router from '@/router'
-import { Countries, StaticErrors } from '@/global/constatnts'
+import {
+  Countries,
+  CountryCodesByCountry,
+  CustomerUpdateActions,
+  StaticErrors
+} from '@/global/constatnts'
 import Validator from '@/services/validator'
+
 const validator = new Validator()
 export default {
   name: 'AuthorizationView',
@@ -276,18 +284,18 @@ export default {
       billingPostalCode: '',
       shippingCountry: '',
       billingCountry: '',
-      emailErrors: [],
-      passwordErrors: [],
-      firstNameError: [],
-      lastNameError: [],
-      dateError: '',
-      shippingStreetError: [],
-      billingStreetError: [],
-      shippingCityError: [],
-      billingCityError: [],
-      shippingPostalCodeError: [],
-      billingPostalCodeError: [],
-      countryError: [],
+      emailErrors: [] as string[],
+      passwordErrors: [] as string[],
+      firstNameError: [] as string[],
+      lastNameError: [] as string[],
+      dateError: [] as string[],
+      shippingStreetError: [] as string[],
+      billingStreetError: [] as string[],
+      shippingCityError: [] as string[],
+      billingCityError: [] as string[],
+      shippingPostalCodeError: [] as string[],
+      billingPostalCodeError: [] as string[],
+      countryError: [] as string[],
       countries: Countries,
       isCorrectData: false,
       store: useUserStore()
@@ -322,6 +330,16 @@ export default {
         this.shippingCountry &&
         this.billingCountry
       )
+    },
+    userDTO: function () {
+      const userInfo: UserRegistrationInfo = {
+        email: this.email,
+        password: this.password,
+        firstName: this.firstName,
+        lastName: this.lastName,
+        dateOfBirth: this.dateOfBirth
+      }
+      return userInfo
     }
   },
   methods: {
@@ -385,14 +403,45 @@ export default {
       if (!validator.validatePostalCode(this.billingCountry, this.billingPostalCode))
         this.billingPostalCodeError = [StaticErrors.POSTAL_CODE]
     },
-    async signIn(user: UserRegistrationInfo) {
+    getAddressesForRegistration(): UpdateUserInfoDTO {
+      const updateData: UpdateUserInfoDTO = {
+        version: 1,
+        actions: [] as ActionsDTO[]
+      }
+      const adressShipping: Partial<CustomerAddress> = {
+        city: this.shippingCity,
+        country: CountryCodesByCountry[this.shippingCountry],
+        postalCode: this.shippingPostalCode,
+        streetName: this.shippingStreet
+      }
+      updateData.actions.push({
+        action: CustomerUpdateActions.addAddress,
+        address: adressShipping
+      })
+      if (!this.$refs.isAlsoBilling) {
+        const adressBilling: Partial<CustomerAddress> = {
+          city: this.billingCity,
+          country: CountryCodesByCountry[this.billingCountry],
+          postalCode: this.billingPostalCode,
+          streetName: this.billingStreet
+        }
+        updateData.actions.push({
+          action: CustomerUpdateActions.addAddress,
+          address: adressBilling
+        })
+      }
+      return updateData
+    },
+    signIn: async function (user: UserRegistrationInfo) {
       this.store.isLoading = true
       await this.store.fetchToken()
       if (await this.store.signup(user)) {
         if (await this.store.getTokens(user.email, user.password)) {
           if (await this.store.login(user.email, user.password)) {
-            this.store.changeLogin()
-            setTimeout(() => router.push('/'), 2000)
+            this.store.userInfo = await this.store.updateUserInfo(
+              this.getAddressesForRegistration()
+            )
+            await this.store.changeLogin()
           } else {
             this.isCorrectData = true
             setTimeout(() => (this.isCorrectData = false), 6000)
@@ -403,6 +452,9 @@ export default {
       }
       this.store.isLoading = false
     }
+  },
+  unmounted() {
+    if (this.store.redirectTimer > 0) clearTimeout(this.store.redirectTimer)
   }
 }
 </script>

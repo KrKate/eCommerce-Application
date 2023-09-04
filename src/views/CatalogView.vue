@@ -3,20 +3,46 @@
     <h1>Choose your pokemon!</h1>
     <div class="setting-bar">
       <form class="search-form">
-        <input class="search-input" type="text" placeholder="Enter your search query" />
-        <button class="search-button" type="submit">Search</button>
+        <input
+          ref="search"
+          class="search-input"
+          type="text"
+          placeholder="Enter your search query"
+          @input.prevent="debounce(sort)"
+        />
+        <select class="sort-options" @change.prevent="changeSorting" ref="sorting">
+          <option value="" selected>sort by...</option>
+          <option value="asc">Name ASC</option>
+          <option value="desc">Name DESC</option>
+        </select>
       </form>
       <button class="category-btn" @click="toggleSelect">Category</button>
     </div>
     <div class="select" :class="{ show: showSelect }">
-      <div class="item" v-for="item in items" :key="item.id">
-        <input type="checkbox" :id="item.id" :value="item.value" />
-        <label :for="item.id">{{ item.label }}</label>
+      <div class="item" v-for="item in getParentCategory" :key="item.id">
+        <input
+          type="checkbox"
+          @change="checkCategory($event)"
+          :id="item.id"
+          :value="item.name['en-US']"
+        />
+        <label :for="item.externalId">{{ item.name['en-US'] }}</label>
+        <ul>
+          <li v-for="sub in getChildCategory(item.id)" :key="sub.id">
+            <input
+              type="checkbox"
+              @change="checkCategory($event)"
+              :id="sub.id"
+              :value="sub.name['en-US']"
+            />
+            <label :for="sub.externalId">{{ sub.name['en-US'] }}</label>
+          </li>
+        </ul>
       </div>
     </div>
     <div class="cards-container">
-      <div class="product-card" v-for="cart in products" :key="cart.id">
-        <h3 class="product-title">{{ cart.masterData.current.name['en-US'] }}</h3>
+      <div class="product-card" v-for="cart in filteredProducts" :key="cart.id">
+        <h3 class="product-title">{{ cart.name['en-US'] }}</h3>
         <img :src="getImageUrl(cart)" alt="Product Image" class="product-image" />
         <div class="prices">
           <div class="product-price" :class="{ 'crossed-out': getDiscount(cart) !== ' ' }">
@@ -24,10 +50,32 @@
           </div>
           <div class="product-discount">{{ getDiscount(cart) }}</div>
         </div>
-
         <RouterLink class="info-button" :to="{ name: 'product', params: { id: cart.id } }"
           >More info</RouterLink
         >
+      </div>
+      <div class="pagination-box">
+        <p class="title">{{ response.total }} products found</p>
+        <div class="pagination-buttons">
+          <button :disabled="currentPage === 0" @click="previousPage">previous</button>
+          Page <span>{{ currentPage + 1 }}</span> of
+          <span>{{ Math.ceil(response.total / response.limit) }}</span
+          ><button
+            @click="nextPage"
+            :disabled="currentPage >= Math.ceil(response.total / response.limit) - 1"
+          >
+            next
+          </button>
+          Show products on page
+          <input
+            ref="limit"
+            @change.prevent="changeLimit"
+            type="number"
+            min="1"
+            max="100"
+            :value="limit"
+          />
+        </div>
       </div>
     </div>
   </main>
@@ -35,53 +83,131 @@
 
 <script lang="ts">
 import { useUserStore } from '@/stores/authorization'
-import type { Product } from '@/stores/types'
+import type { Category, ProductProjections, ProductResponse } from '@/stores/types'
 
 export default {
   data() {
     return {
       store: useUserStore(),
-      products: [] as Product[],
-      items: [
-        { id: 'electric', value: 'electric', label: 'Electric' },
-        { id: 'fire', value: 'fire', label: 'Fire' },
-        { id: 'normal', value: 'normal', label: 'Normal' },
-        { id: 'psychic', value: 'psychic', label: 'Psychic' },
-        { id: 'water', value: 'water', label: 'Water' }
-      ],
+      products: [] as ProductProjections[],
+      currentPage: 0,
+      offset: 0,
+      limit: 30,
+      categories: [] as Category[],
+      response: {} as ProductResponse,
+      filteredProducts: [] as ProductProjections[],
+      filteredCategory: [] as string[],
+      timerID: -1,
       showSelect: false
     }
   },
-  mounted() {
-    this.getProducts()
+  async mounted() {
+    this.store.isLoading = true
+    if (!this.store.token) {
+      await this.store.readCookie()
+    }
+    this.response = await this.store.getSortedProducts(this.$refs.limit.value)
+    this.products = this.response.results as ProductProjections[]
+    this.filteredProducts = [...this.products]
+    this.categories = await this.store.getCategories()
+    this.store.isLoading = false
   },
   methods: {
-    async getProducts() {
-      this.store.isLoading = true
-      this.products = await this.store.getProducts()
-      this.store.isLoading = false
+    getChildCategory(id: string) {
+      return this.categories
+        .filter((value) => value.ancestors.length > 0)
+        .filter((value) => value.ancestors[0].id === id)
     },
-    getImageUrl(cart: Product) {
-      if (cart.masterData.current.masterVariant.images.length > 0) {
-        return cart.masterData.current.masterVariant.images[0].url
+    checkCategory(ev) {
+      if (ev.target.checked) {
+        this.filteredCategory.push(ev.target.id)
+      } else {
+        this.filteredCategory = this.filteredCategory.filter((value) => value !== ev.target.id)
+      }
+      this.sort()
+    },
+    getImageUrl(cart: ProductProjections) {
+      if (cart.masterVariant.images.length > 0) {
+        return cart.masterVariant.images[0].url
       } else {
         return '#'
       }
     },
-    getPriceValue(cart: Product) {
-      if (cart.masterData.current.masterVariant.prices.length > 0) {
-        return `€ ${(cart.masterData.current.masterVariant.prices[0].value.centAmount / 100).toFixed(2)}`
+    previousPage() {
+      this.currentPage = this.currentPage - 1
+      this.sort()
+    },
+    changeSorting() {
+      this.currentPage = 0
+      this.offset = 0
+      this.sort()
+    },
+    nextPage() {
+      this.currentPage = this.currentPage + 1
+      this.sort()
+    },
+    changeLimit() {
+      this.currentPage = 0
+      this.offset = 0
+      this.limit = parseInt(this.$refs?.limit.value || 0, 10)
+      this.sort()
+    },
+    async sort() {
+      this.store.isLoading = true
+      let cat = ``
+      let sort = ``
+      let search = ``
+      if (this.filteredCategory.length) {
+        this.filteredCategory.forEach((value) => {
+          cat += `"${value}",`
+        })
+        cat = `&filter.query=categories.id: ${cat.slice(0, -1)}`
+      }
+      if (this.$refs.search.value) {
+        search = `&text.en-us="${this.$refs.search.value}"&fuzzy=true`
+      }
+      if (this.$refs.sorting.value) {
+        sort = `&sort=name.en-us ${this.$refs.sorting.value}`
+      }
+      this.response = await this.store.getSortedProducts(
+        this.limit,
+        this.limit * this.currentPage,
+        `${sort}${cat}${search}`
+      )
+      this.products = this.response.results as ProductProjections[]
+      this.filteredProducts = this.products
+      this.store.isLoading = false
+    },
+    getPriceValue(cart: ProductProjections) {
+      if (cart.masterVariant.prices.length > 0) {
+        return `€ ${cart.masterVariant.prices[0].value.centAmount / 100}`
       } else {
         return 'free'
       }
     },
-    getDiscount(cart: Product) {
-      const discounted =
-        cart?.masterData?.current?.masterVariant?.prices[0]?.discounted?.value?.centAmount
-      return discounted ? `€ ${(discounted / 100).toFixed(2)}` : ' '
+    getDiscount(cart: ProductProjections) {
+      const discounted = cart?.masterVariant?.prices[0]?.discounted?.value?.centAmount
+      return discounted ? `€ ${discounted / 100}` : ' '
     },
     toggleSelect() {
       this.showSelect = !this.showSelect
+    },
+    filterByName() {
+      this.filteredProducts = this.products.filter((value) =>
+        value.name['en-US'].toLowerCase().includes(this.$refs.search.value.toLowerCase())
+      )
+    },
+    debounce(func: Function) {
+      clearTimeout(this.timerID)
+      this.timerID = setTimeout(() => func(), 500)
+    }
+  },
+  computed: {
+    getParentCategory() {
+      return this.categories.filter((value) => value.ancestors.length === 0)
+    },
+    getNumberOfPage() {
+      return Math.floor(this.response.total / this.response.limit) || 2
     }
   }
 }
@@ -125,6 +251,40 @@ main {
   align-content: center;
   align-items: center;
   justify-content: center;
+
+  .pagination-box {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    .title {
+      font-size: 0.8rem;
+    }
+
+    .pagination-buttons {
+      display: flex;
+      flex-direction: row;
+      font-size: 0.6rem;
+      gap: 5px;
+      align-items: center;
+
+      button {
+        border-radius: 7px;
+        max-width: 100px;
+        padding: 5px 10px;
+        border: none;
+        outline: none;
+      }
+
+      input {
+        max-width: 40px;
+        border: none;
+        text-align: center;
+      }
+    }
+  }
 }
 
 .product-card {
@@ -312,13 +472,19 @@ main {
   padding: 10px 15px;
   cursor: pointer;
 }
-.search-input {
-  border-radius: 7px 0 0 7px;
-  width: 70%;
+.search-input,
+.sort-options {
+  border-radius: 7px;
+  width: 50%;
   flex: 1;
   padding: 10px;
   border: none;
   outline: none;
+}
+
+.sort-options {
+  max-width: 100px;
+  border: 1px solid gray;
 }
 
 .setting-bar {
@@ -337,9 +503,13 @@ main {
   font-size: 1rem;
   position: absolute;
   right: 2%;
-  top: 295px;
+  top: 340px;
   z-index: 10;
   background-color: #fbfafa;
+
+  ul {
+    list-style: none;
+  }
   @media screen and (max-width: 760px) {
     top: 280px;
   }

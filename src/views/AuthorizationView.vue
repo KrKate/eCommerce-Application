@@ -23,9 +23,7 @@
             @input.prevent="validateEmail"
             :class="{ 'invalid-input': emailErrors.length > 0 }"
           />
-          <div class="clear-cross" v-if="email.length" @click="$refs.email.value = ''">
-            &#x2715;
-          </div>
+          <div class="clear-cross" v-if="email.length" @click="clearEmail">&#x2715;</div>
         </div>
         <div class="form-group" v-if="!store.isLogin">
           <label for="password">Password</label>
@@ -41,34 +39,15 @@
           <img
             src="@/assets/icons/eye.png"
             class="password-toggle"
-            @click="
-              () => {
-                $refs.password.type = $refs.password.type === 'password' ? 'text' : 'password'
-                this.isShowPassword = !this.isShowPassword
-              }
-            "
+            @click="changePasswordVisibility"
             v-if="password.length"
             alt="show-password"
           />
           <div class="crossed" v-if="isShowPassword"></div>
-          <div class="clear-cross" v-if="password.length" @click="$refs.password.value = ''">
-            &#x2715;
-          </div>
+          <div class="clear-cross" v-if="password.length" @click="clearInput">&#x2715;</div>
         </div>
         <div class="signUpContainer" v-if="!store.isLogin">
-          <input
-            class="signUp"
-            type="submit"
-            value="SIGN IN"
-            :disabled="
-              !(
-                !this.emailErrors.length &&
-                !this.passwordErrors.length &&
-                this.email &&
-                this.password
-              )
-            "
-          />
+          <input class="signUp" type="submit" value="SIGN IN" :disabled="isSubmitDisabled" />
         </div>
         <div class="logout" v-if="store.isLogin">
           <img src="@/assets/gif/login_success.gif" alt="login_success" />
@@ -84,19 +63,20 @@
 
 <script lang="ts">
 import { useUserStore } from '@/stores/authorization'
-import router from '@/router'
 import Validator from '@/services/validator'
+import { defineComponent } from 'vue'
+import { EmailError, PasswordError } from '@/global/constatnts'
 
 const validator = new Validator()
 
-export default {
+export default defineComponent({
   name: 'AuthorizationView',
   data() {
     return {
       email: '',
       password: '',
-      emailErrors: [],
-      passwordErrors: [],
+      emailErrors: [] as EmailError[],
+      passwordErrors: [] as PasswordError[],
       isCorrectData: false,
       isEmailChanged: false,
       isPasswordChanged: false,
@@ -113,9 +93,32 @@ export default {
             (this.isPasswordChanged && this.passwordErrors.length > 0))) ||
         this.isCorrectData
       )
+    },
+    isSubmitDisabled() {
+      return !(
+        !this.emailErrors.length &&
+        !this.passwordErrors.length &&
+        this.email &&
+        this.password
+      )
     }
   },
   methods: {
+    changePasswordVisibility() {
+      const pass = this.$refs.password as HTMLInputElement
+      if (pass) {
+        pass.type = pass.type === 'password' ? 'text' : 'password'
+        this.isShowPassword = !this.isShowPassword
+      }
+    },
+    clearInput() {
+      const pass = this.$refs.password as HTMLInputElement
+      if (pass) pass.value = ''
+    },
+    clearEmail() {
+      const email = this.$refs.email as HTMLInputElement
+      email.value = ''
+    },
     validateEmail() {
       if (!this.isEmailChanged) this.isEmailChanged = true
       validator.validateEmail(this.email)
@@ -145,7 +148,6 @@ export default {
         if (await this.store.getTokens(this.email, this.password)) {
           if (await this.store.login(this.email, this.password)) {
             this.store.changeLogin()
-            setTimeout(() => router.push('/'), 2000)
           } else {
             this.isCorrectData = true
             setTimeout(() => (this.isCorrectData = false), 6000)
@@ -157,8 +159,11 @@ export default {
       }
       this.store.isLoading = false
     }
+  },
+  unmounted() {
+    if (this.store.redirectTimer > 0) clearTimeout(this.store.redirectTimer)
   }
-}
+})
 </script>
 
 <style scoped lang="scss">
