@@ -8,16 +8,12 @@
           class="search-input"
           type="text"
           placeholder="Enter your search query"
-          @input.prevent="debounce(filterByName)"
+          @input.prevent="debounce(sort)"
         />
         <select class="sort-options" @change.prevent="changeSorting" ref="sorting">
           <option value="" selected>sort by...</option>
           <option value="asc">Name ASC</option>
           <option value="desc">Name DESC</option>
-          <option value="asc">Price ASC</option>
-          <option value="desc">Price DESC</option>
-          <option value="asc">Discount ASC</option>
-          <option value="desc">Discount DESC</option>
         </select>
       </form>
       <button class="category-btn" @click="toggleSelect">Category</button>
@@ -64,7 +60,12 @@
           <button :disabled="currentPage === 0" @click="previousPage">previous</button>
           Page <span>{{ currentPage + 1 }}</span> of
           <span>{{ Math.ceil(response.total / response.limit) }}</span
-          ><button @click="nextPage" :disabled="currentPage >= 2">next</button>
+          ><button
+            @click="nextPage"
+            :disabled="currentPage >= Math.ceil(response.total / response.limit) - 1"
+          >
+            next
+          </button>
           Show products on page
           <input
             ref="limit"
@@ -72,7 +73,7 @@
             type="number"
             min="1"
             max="100"
-            value="10"
+            :value="limit"
           />
         </div>
       </div>
@@ -91,7 +92,7 @@ export default {
       products: [] as ProductProjections[],
       currentPage: 0,
       offset: 0,
-      limit: 10,
+      limit: 30,
       categories: [] as Category[],
       response: {} as ProductResponse,
       filteredProducts: [] as ProductProjections[],
@@ -155,11 +156,15 @@ export default {
       this.store.isLoading = true
       let cat = ``
       let sort = ``
+      let search = ``
       if (this.filteredCategory.length) {
         this.filteredCategory.forEach((value) => {
           cat += `"${value}",`
         })
         cat = `&filter.query=categories.id: ${cat.slice(0, -1)}`
+      }
+      if (this.$refs.search.value) {
+        search = `&text.en-us="${this.$refs.search.value}"&fuzzy=true`
       }
       if (this.$refs.sorting.value) {
         sort = `&sort=name.en-us ${this.$refs.sorting.value}`
@@ -167,7 +172,7 @@ export default {
       this.response = await this.store.getSortedProducts(
         this.limit,
         this.limit * this.currentPage,
-        `${sort}${cat}`
+        `${sort}${cat}${search}`
       )
       this.products = this.response.results as ProductProjections[]
       this.filteredProducts = this.products
