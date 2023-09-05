@@ -151,7 +151,7 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 30px;
-  align-items: flex-end;
+  align-items: flex-start;
   font-size: 1.5rem;
   width: 40%;
   @media screen and (max-width: 1000px) {
@@ -191,6 +191,7 @@ h1 {
   display: flex;
   gap: 10px;
   justify-content: center;
+  height: 120px;
   @media screen and (max-width: 600px) {
     justify-content: center;
     height: 120px;
@@ -338,10 +339,6 @@ h1 {
   cursor: pointer;
 }
 
-.modal-arrow {
-
-}
-
 .main-img-container {
   display: flex;
   align-items: center;
@@ -389,7 +386,7 @@ h1 {
 
 .close {
   position: absolute;
-  top: 10px;
+  top: -20px;
   right: 10px;
   font-size: 4rem;
   color: black;
@@ -410,5 +407,19 @@ h1 {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.modal-arrow:first-child {
+  left: 10px;
+}
+
+.modal-arrow:last-child {
+  right: 10px;
 }
 </style>
