@@ -2,7 +2,6 @@
   <main>
     <div id="pokedex">
       <div id="left">
-        <div id="logo"></div>
         <div id="bg_curve1_left"></div>
         <div id="bg_curve2_left"></div>
         <div id="curve1_left">
@@ -481,45 +480,45 @@ export default {
       }
       return [clearId, address]
     },
-    validate(event) {
-      let [field, address, isValid, bgColor] = [...this.separatePrefixes(event.target.id), true, '']
-      if (this.userInfo[field] !== event.target.value || address[field] === event.target.value) {
+    validate(event: Event) {
+      if (!event.target) throw new ReferenceError('Element not found!')
+      const target = event.target as HTMLInputElement
+      let [field, address, isValid, bgColor] = [...this.separatePrefixes(target.id), true, '']
+      if (this.userInfo[field] !== target.value || address[field] === target.value) {
         if (fieldsForValidation.includes(field)) {
-          isValid = validator.validateOnlyLetters(event.target.value)
+          isValid = validator.validateOnlyLetters(target.value)
         } else if (['dateOfBirth'].includes(field)) {
-          isValid = validator.validateAge(event.target?.value)
+          isValid = validator.validateAge(target.value)
         } else if (['companyName', 'company', 'company'].includes(field)) {
-          isValid = validator.validateCompanyName(event.target.value)
+          isValid = validator.validateCompanyName(target.value)
         } else if (['email'].includes(field)) {
-          validator.validateEmail(event.target.value)
+          validator.validateEmail(target.value)
           isValid = validator.errorsEmail.length === 0
         } else if (['phone', 'mobile', 'fax'].includes(field)) {
-          isValid = validator.validatePhoneNumber(event.target.value)
+          isValid = validator.validatePhoneNumber(target.value)
         } else if (['streetNumber'].includes(field)) {
-          isValid = validator.validateOnlyNumbers(event.target.value)
+          isValid = validator.validateOnlyNumbers(target.value)
         } else if (['postalCode'].includes(field)) {
-          isValid = validator.validatePostalCode(event.target.value, Countries.France)
+          isValid = validator.validatePostalCode(target.value, Countries.France)
         } else if (['streetName', 'building', 'apartment'].includes(field)) {
-          isValid = validator.validateStreet(event.target.value)
+          isValid = validator.validateStreet(target.value)
         } else if (['pOBox'].includes(field)) {
-          isValid = validator.validatePOBox(event.target.value)
+          isValid = validator.validatePOBox(target.value)
         }
         bgColor = isValid ? '#00FF007F' : '#FF00007F'
-        this.invalidFieldIds = [
-          ...this.invalidFieldIds.filter((value) => value !== event.target.id)
-        ]
-        if (!this.changedFields.includes(event.target.id)) this.changedFields.push(event.target.id)
-        if (!isValid && !this.invalidFieldIds.includes(event.target.id))
-          this.invalidFieldIds.push(event.target.id)
+        this.invalidFieldIds = [...this.invalidFieldIds.filter((value) => value !== target.id)]
+        if (!this.changedFields.includes(target.id)) this.changedFields.push(target.id)
+        if (!isValid && !this.invalidFieldIds.includes(target.id))
+          this.invalidFieldIds.push(target.id)
       } else {
-        this.changedFields = [...this.changedFields.filter((value) => value !== event.target.id)]
+        this.changedFields = [...this.changedFields.filter((value) => value !== target.id)]
       }
-      event.target.style.backgroundColor = bgColor
+      target.style.backgroundColor = bgColor
     },
-    validatePassword(ev) {
-      const checkPass = this.$refs.checkPassword
-      const newPass = this.$refs.newPassword
-      const currPass = this.$refs.currentPassword
+    validatePassword(ev: Event) {
+      const checkPass = this.$refs.checkPassword as HTMLInputElement
+      const newPass = this.$refs.newPassword as HTMLInputElement
+      const currPass = this.$refs.currentPassword as HTMLInputElement
       const el: HTMLInputElement = ev.target as HTMLInputElement
       const value = el.value as string
       if (el === currPass) {
@@ -569,48 +568,42 @@ export default {
                 obj.selected = obj.value === Countries[CountryCodes[address[field]]]
               }
             }
-            this.$refs[value][0].value = address[field]
+            ;((this.$refs[value] as HTMLElement[])[0] as HTMLInputElement).value = address[field]
           }
           this.$refs[value][0].style.backgroundColor = ''
         })
       }
     },
     getLeftSideAction(field: keyof ActionsDTO, val: string): ActionsDTO {
-      const action: ActionsDTO = {} as ActionsDTO
+      const action = {} as ActionsDTO
       switch (field) {
-        case 'salutation': {
+        case 'salutation':
           action.action = CustomerUpdateActions.setSalutation
           break
-        }
-        case 'firstName': {
+        case 'firstName':
           action.action = CustomerUpdateActions.setFirstName
           break
-        }
-        case 'middleName': {
+        case 'middleName':
           action.action = CustomerUpdateActions.setMiddleName
           break
-        }
-        case 'lastName': {
+        case 'lastName':
           action.action = CustomerUpdateActions.setLastName
           break
-        }
-        case 'dateOfBirth': {
+        case 'dateOfBirth':
           action.action = CustomerUpdateActions.setDateOfBirth
           break
-        }
-        case 'companyName': {
+        case 'companyName':
           action.action = CustomerUpdateActions.setCompanyName
           break
-        }
-        case 'title': {
+        case 'title':
           action.action = CustomerUpdateActions.setTitle
           break
-        }
-        case 'email': {
+        case 'email':
           action.action = CustomerUpdateActions.changeEmail
-        }
       }
-      action[field] = this.$refs[val][0]?.value || this.$refs[val]?.value
+      action[field] =
+        ((this.$refs[val] as HTMLElement[])[0] as HTMLOptionElement).value ||
+        (this.$refs[val] as HTMLInputElement).value
       return action
     },
     changeMode() {
@@ -630,16 +623,16 @@ export default {
       this.store.isLoading = true
       const passwordDTO: ChangePasswordDTO = {
         id: this.userInfo.id,
-        currentPassword: this.$refs.currentPassword.value,
-        newPassword: this.$refs.newPassword.value,
+        currentPassword: (this.$refs.currentPassword as HTMLInputElement).value,
+        newPassword: (this.$refs.newPassword as HTMLInputElement).value,
         version: this.userInfo.version
       }
       this.userInfo = await this.store.changePassword(passwordDTO)
       if (this.userInfo.id) {
         this.statusMessage = 'Password updated successfully!'
-        this.$refs.newPassword.value = ''
-        this.$refs.currentPassword.value = ''
-        this.$refs.checkPassword.value = ''
+        ;(this.$refs.newPassword as HTMLInputElement).value = ''
+        ;(this.$refs.currentPassword as HTMLInputElement).value = ''
+        ;(this.$refs.checkPassword as HTMLInputElement).value = ''
       } else {
         this.statusMessage = 'Check your old password and try again.'
       }
@@ -1539,23 +1532,19 @@ hr {
     width: 400px;
   }
 
-  div#logo {
-    width: 281px;
-    height: 99px;
-    background: url('@/assets/images/pokedex-logo.png') no-repeat left top;
-    z-index: 1;
-    position: absolute;
-    top: 220px;
-    left: 30px;
-  }
-
   #left {
-    width: 400px;
+    width: 320px;
     height: 500px;
-    float: left;
     position: relative;
     z-index: 1;
+    float: initial;
     margin: 0 auto;
+  }
+
+  #right {
+    width: 320px;
+    margin: 0 auto;
+    float: initial;
   }
 
   #curve1_left {
@@ -1581,13 +1570,45 @@ hr {
     @include border-top-left-radius(30px, 30px);
   }
 
-  #right,
-  #screen,
-  #bigbluebutton,
-  #barbutton1,
-  #barbutton2,
-  #cross {
+  #junction,
+  #curve1_right,
+  #curve2_right,
+  #curve2_left {
     display: none;
+  }
+  #bg_curve1_left,
+  #bg_curve2_left,
+  #left,
+  #bg_curve2_right {
+    width: 320px;
+  }
+
+  #stats {
+    left: 8px;
+  }
+
+  #barbutton3 {
+    left: 180px;
+  }
+  #barbutton4 {
+    left: 240px;
+  }
+  #yellowBox1,
+  #yellowBox3 {
+    left: 5px;
+  }
+
+  #yellowBox4,
+  #yellowBox2 {
+    left: 165px;
+  }
+
+  #screen {
+    left: 8px;
+  }
+  #cross {
+    top: 400px;
+    left: 215px;
   }
 }
 </style>
