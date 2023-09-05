@@ -27,13 +27,13 @@
     <div class="main-description">
       <h1 class="title">{{ product.masterData?.current.name['en-US'] }}</h1>
       <div class="price-container">
-        <div class="price">
+        <div class="price"  :class="{ 'crossed-out': getDiscount(product) !== ' ' }">
           €
           {{
             (product.masterData?.current.masterVariant.prices[0].value.centAmount / 100).toFixed(2)
           }}
         </div>
-        <div class="discount" :class="{ 'crossed-out': getDiscount(product) !== ' ' }">
+        <div class="discount" >
           {{ getDiscount(product) }}
         </div>
       </div>
@@ -338,6 +338,10 @@ h1 {
   cursor: pointer;
 }
 
+.modal-arrow {
+
+}
+
 .main-img-container {
   display: flex;
   align-items: center;
@@ -364,24 +368,24 @@ h1 {
   }
 }
 
-// .modal-content {
-//   max-width: 50%;
-//   @media screen and (max-width: 1200px) {
-//     max-width: 60%;
-//   }
-//   @media screen and (max-width: 850px) {
-//     max-width: 70%;
-//   }
-//   @media screen and (max-width: 650px) {
-//     max-width: 80%;
-//   }
-//   @media screen and (max-width: 500px) {
-//     max-width: 85%;
-//   }
-//   @media screen and (max-width: 490px) {
-//     max-width: 80%;
-//   }
-// }
+.modal-content {
+  max-width: 50%;
+  @media screen and (max-width: 1200px) {
+    max-width: 60%;
+  }
+  @media screen and (max-width: 850px) {
+    max-width: 70%;
+  }
+  @media screen and (max-width: 650px) {
+    max-width: 80%;
+  }
+  @media screen and (max-width: 500px) {
+    max-width: 85%;
+  }
+  @media screen and (max-width: 490px) {
+    max-width: 80%;
+  }
+}
 
 .close {
   position: absolute;
