@@ -192,11 +192,6 @@ export default {
     toggleSelect() {
       this.showSelect = !this.showSelect
     },
-    filterByName() {
-      this.filteredProducts = this.products.filter((value) =>
-        value.name['en-US'].toLowerCase().includes(this.$refs.search.value.toLowerCase())
-      )
-    },
     debounce(func: Function) {
       clearTimeout(this.timerID)
       this.timerID = setTimeout(() => func(), 500)
@@ -205,9 +200,6 @@ export default {
   computed: {
     getParentCategory() {
       return this.categories.filter((value) => value.ancestors.length === 0)
-    },
-    getNumberOfPage() {
-      return Math.floor(this.response.total / this.response.limit) || 2
     }
   }
 }

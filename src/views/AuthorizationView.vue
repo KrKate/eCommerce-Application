@@ -147,7 +147,7 @@ export default defineComponent({
         await this.store.fetchToken()
         if (await this.store.getTokens(this.email, this.password)) {
           if (await this.store.login(this.email, this.password)) {
-            this.store.changeLogin()
+            await this.store.changeLogin()
           } else {
             this.isCorrectData = true
             setTimeout(() => (this.isCorrectData = false), 6000)

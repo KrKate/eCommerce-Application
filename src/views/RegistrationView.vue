@@ -408,7 +408,7 @@ export default {
         version: 1,
         actions: [] as ActionsDTO[]
       }
-      const adressShipping: Partial<CustomerAddress> = {
+      const addressShipping: Partial<CustomerAddress> = {
         city: this.shippingCity,
         country: CountryCodesByCountry[this.shippingCountry],
         postalCode: this.shippingPostalCode,
@@ -416,10 +416,10 @@ export default {
       }
       updateData.actions.push({
         action: CustomerUpdateActions.addAddress,
-        address: adressShipping
+        address: addressShipping
       })
       if (!this.$refs.isAlsoBilling) {
-        const adressBilling: Partial<CustomerAddress> = {
+        const addressBilling: Partial<CustomerAddress> = {
           city: this.billingCity,
           country: CountryCodesByCountry[this.billingCountry],
           postalCode: this.billingPostalCode,
@@ -427,7 +427,7 @@ export default {
         }
         updateData.actions.push({
           action: CustomerUpdateActions.addAddress,
-          address: adressBilling
+          address: addressBilling
         })
       }
       return updateData
