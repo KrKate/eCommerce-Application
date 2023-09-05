@@ -610,6 +610,7 @@ export default {
       if (!this.isInfoMode && this.changedFields.length) {
         if (!this.invalidFieldIds.length) {
           this.acceptChanges()
+          this.isInfoMode = !this.isInfoMode
         } else {
           this.statusMessage = 'Check the correctness of the entered data'
           this.isShowUpdateMessage = true
