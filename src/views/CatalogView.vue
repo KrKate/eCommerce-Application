@@ -84,6 +84,7 @@
 <script lang="ts">
 import { useUserStore } from '@/stores/authorization'
 import type { Category, ProductProjections, ProductResponse } from '@/stores/types'
+import type HTMLSelectElement from "happy-dom/lib/nodes/html-select-element/HTMLSelectElement";
 
 export default {
   data() {
@@ -106,7 +107,7 @@ export default {
     if (!this.store.token) {
       await this.store.readCookie()
     }
-    this.response = await this.store.getSortedProducts(this.$refs.limit.value)
+    this.response = await this.store.getSortedProducts(this.limit.toString())
     this.products = this.response.results as ProductProjections[]
     this.filteredProducts = [...this.products]
     this.categories = await this.store.getCategories()
@@ -118,11 +119,12 @@ export default {
         .filter((value) => value.ancestors.length > 0)
         .filter((value) => value.ancestors[0].id === id)
     },
-    checkCategory(ev) {
-      if (ev.target.checked) {
-        this.filteredCategory.push(ev.target.id)
+    checkCategory(ev: Event) {
+      const target = ev.target as HTMLInputElement
+      if (target.checked) {
+        this.filteredCategory.push(target.id)
       } else {
-        this.filteredCategory = this.filteredCategory.filter((value) => value !== ev.target.id)
+        this.filteredCategory = this.filteredCategory.filter((value) => value !== target.id)
       }
       this.sort()
     },
@@ -149,7 +151,7 @@ export default {
     changeLimit() {
       this.currentPage = 0
       this.offset = 0
-      this.limit = parseInt(this.$refs?.limit.value || 0, 10)
+      this.limit = parseInt((this.$refs.limit as HTMLInputElement).value, 10)
       this.sort()
     },
     async sort() {
@@ -163,15 +165,15 @@ export default {
         })
         cat = `&filter.query=categories.id: ${cat.slice(0, -1)}`
       }
-      if (this.$refs.search.value) {
-        search = `&text.en-us="${this.$refs.search.value}"&fuzzy=true`
+      if ((this.$refs.search as HTMLInputElement).value) {
+        search = `&text.en-us="${(this.$refs.search as HTMLInputElement).value}"&fuzzy=true`
       }
-      if (this.$refs.sorting.value) {
-        sort = `&sort=name.en-us ${this.$refs.sorting.value}`
+      if ((this.$refs.sorting as HTMLSelectElement).value) {
+        sort = `&sort=name.en-us ${(this.$refs.sorting as HTMLSelectElement).value}`
       }
       this.response = await this.store.getSortedProducts(
-        this.limit,
-        this.limit * this.currentPage,
+        this.limit.toString(),
+        (this.limit * this.currentPage).toString(),
         `${sort}${cat}${search}`
       )
       this.products = this.response.results as ProductProjections[]

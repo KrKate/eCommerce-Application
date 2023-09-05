@@ -162,7 +162,7 @@ export type ActionsDTO = {
   middleName?: string
   title?: string
   salutation?: string
-  address?: Omit<CustomerAddress, 'id'>
+  address?: Partial<CustomerAddress>
   addressId?: string
   customerNumber?: string
   externalId?: string
