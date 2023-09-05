@@ -14,6 +14,8 @@
           <option value="" selected disabled>sort by...</option>
           <option value="asc">Name ASC</option>
           <option value="desc">Name DESC</option>
+          <option value="prasc">Price ASC</option>
+          <option value="prdesc">Price DESC</option>
         </select>
       </form>
       <button class="category-btn" @click="toggleSelect">Category</button>
@@ -28,7 +30,7 @@
         </select>
         <p>&DoubleLongRightArrow;</p>
         <select @change.prevent="changeChildCategory" ref="selectedCategoryGen">
-          <option selected>Generation</option>
+          <option value="" selected disabled>Generation</option>
           <option
             v-for="catChild in getChildCategory(parentCategories)"
             :value="catChild.id"
@@ -160,9 +162,8 @@ export default {
       this.sort()
     },
     clearFilters() {
-      ;(this.$refs.selectedCategoryType as HTMLSelectElement).value = ''(
-        this.$refs.selectedCategoryGen as HTMLSelectElement
-      ).value = ''
+      (this.$refs.selectedCategoryType as HTMLSelectElement).value = '';
+      (this.$refs.selectedCategoryGen as HTMLSelectElement).value = '';
       this.filteredCategory = []
       this.sort()
     },
@@ -207,7 +208,11 @@ export default {
         search = `&text.en-us="${(this.$refs.search as HTMLInputElement).value}"&fuzzy=true`
       }
       if ((this.$refs.sorting as HTMLSelectElement).value) {
-        sort = `&sort=name.en-us ${(this.$refs.sorting as HTMLSelectElement).value}`
+        if ((this.$refs.sorting as HTMLSelectElement).value.includes('pr')) {
+          sort = `&sort=price ${(this.$refs.sorting as HTMLSelectElement).value.replace('pr', '')}`
+        } else {
+          sort = `&sort=name.en-us ${(this.$refs.sorting as HTMLSelectElement).value}`
+        }
       }
       this.response = await this.store.getSortedProducts(
         this.limit.toString(),
