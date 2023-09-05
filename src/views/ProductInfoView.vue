@@ -40,7 +40,7 @@
       <div class="description">{{ product.masterData?.current.description['en-US'] }}</div>
       <button class="add-button">Add to Cart</button>
     </div>
-    <div class="modal-wrapper" v-show="isModalOpen"></div>
+    <div class="modal-wrapper" v-show="isModalOpen">
     <div v-show="isModalOpen" class="modal">
       <button class="arrow modal-arrow" @click="previousImage">❮</button>
       <img
@@ -51,6 +51,7 @@
       <span class="close" @click="closeModal">&times;</span>
       <button class="arrow modal-arrow" @click="nextImage">❯</button>
     </div>
+  </div>
   </main>
 </template>
 
@@ -133,11 +134,6 @@ main {
   }
 }
 
-img {
-  object-fit: cover;
-  width: 100%;
-}
-
 h1 {
   @include pokemon-text($app-yellow, $app-dark-blue);
   font-size: 3rem;
@@ -181,7 +177,7 @@ h1 {
   }
 }
 
-.main-image img {
+.central-img {
   height: 40vh;
   object-fit: contain;
   width: 100%;
@@ -190,12 +186,7 @@ h1 {
   }
 }
 
-.main-img {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+
 .alternate-images {
   display: flex;
   gap: 10px;
@@ -344,6 +335,7 @@ h1 {
   background: none;
   border: none;
   font-size: 2rem;
+  cursor: pointer;
 }
 
 .main-img-container {
@@ -352,54 +344,44 @@ h1 {
   justify-content: space-between;
 }
 
-.central-img {
-  max-width: 100%;
-  max-height: 100%;
-}
-
 .modal {
   display: flex;
   justify-content: center;
-  align-items: center;
   position: fixed;
   z-index: 999;
-  width: 70%;
-  height: 80%;
+  width: 60%;
+  height: 70%;
   background: white;
   border-radius: 20px;
   border: 3px solid #cccccc;
-  object-fit: contain;
-  @media screen and (max-width: 1200px) {
-    width: 60%;
-    height: 70%;
-  }
-  @media screen and (max-width: 650px) {
-    margin-top: -200px;
+  object-fit: cover;
+  overflow: hidden;
+  @media screen and (max-width: 900px) {
     height: 60%;
   }
-  @media screen and (max-width: 460px) {
-    height: 50%;
+  @media screen and (max-width: 500px) {
+    height: 40%;
   }
 }
 
-.modal-content {
-  max-width: 50%;
-  @media screen and (max-width: 1200px) {
-    max-width: 60%;
-  }
-  @media screen and (max-width: 850px) {
-    max-width: 70%;
-  }
-  @media screen and (max-width: 650px) {
-    max-width: 80%;
-  }
-  @media screen and (max-width: 500px) {
-    max-width: 85%;
-  }
-  @media screen and (max-width: 490px) {
-    max-width: 80%;
-  }
-}
+// .modal-content {
+//   max-width: 50%;
+//   @media screen and (max-width: 1200px) {
+//     max-width: 60%;
+//   }
+//   @media screen and (max-width: 850px) {
+//     max-width: 70%;
+//   }
+//   @media screen and (max-width: 650px) {
+//     max-width: 80%;
+//   }
+//   @media screen and (max-width: 500px) {
+//     max-width: 85%;
+//   }
+//   @media screen and (max-width: 490px) {
+//     max-width: 80%;
+//   }
+// }
 
 .close {
   position: absolute;
@@ -415,6 +397,9 @@ h1 {
 
 .modal-wrapper {
   position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 997;
   top: 0;
   left: 0;
