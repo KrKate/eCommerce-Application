@@ -183,6 +183,14 @@
                   @change.prevent="validate($event)"
                 />
               </label>
+              <div class="question" v-if="addressShip !== userInfo.defaultShippingAddressId">
+                Set as default shipping address?
+                <input type="checkbox" :disabled="isInfoMode">
+              </div>
+              <div class="question" v-if="addressShip !== userInfo.defaultShippingAddressId">
+                Remove address?
+                <input type="checkbox" :disabled="isInfoMode">
+              </div>
             </div>
           </div>
           <div class="billing-address" v-if="isShowBillingAddresses">
@@ -614,7 +622,9 @@ export default {
         } else {
           this.statusMessage = 'Check the correctness of the entered data'
           this.isShowUpdateMessage = true
-          setTimeout(() => (this.isShowUpdateMessage = false), 2000)
+          setTimeout(() => {
+            this.isShowUpdateMessage = false
+          }, 2000)
         }
       } else {
         this.isInfoMode = !this.isInfoMode
@@ -1257,6 +1267,13 @@ main {
     -webkit-box-shadow: 0 0 20px #003300 inset;
     -moz-box-shadow: 0 0 20px #003300 inset;
     -o-box-shadow: 0 0 20px #003300 inset;
+
+    .question {
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+      margin: 5px auto;
+    }
 
     &::-webkit-scrollbar {
       width: 5px;

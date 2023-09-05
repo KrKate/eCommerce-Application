@@ -11,12 +11,33 @@
           @input.prevent="debounce(sort)"
         />
         <select class="sort-options" @change.prevent="changeSorting" ref="sorting">
-          <option value="" selected>sort by...</option>
+          <option value="" selected disabled>sort by...</option>
           <option value="asc">Name ASC</option>
           <option value="desc">Name DESC</option>
         </select>
       </form>
       <button class="category-btn" @click="toggleSelect">Category</button>
+      <div class="breadcrumbs">
+        <button @click="clearFilters">All pokemons</button>
+        <p>&DoubleLongRightArrow;</p>
+        <select ref="selectedCategoryType" @change.prevent="changeParenCategory">
+          <option value="" selected disabled>Type</option>
+          <option v-for="cat in getParentCategory" :value="cat.id" :key="cat.id">
+            {{ cat.name['en-US'] }}
+          </option>
+        </select>
+        <p>&DoubleLongRightArrow;</p>
+        <select @change.prevent="changeChildCategory" ref="selectedCategoryGen">
+          <option selected>Generation</option>
+          <option
+            v-for="catChild in getChildCategory(parentCategories)"
+            :value="catChild.id"
+            :key="catChild.id"
+          >
+            {{ catChild.name['en-US'] }}
+          </option>
+        </select>
+      </div>
     </div>
     <div class="select" :class="{ show: showSelect }">
       <div class="item" v-for="item in getParentCategory" :key="item.id">
@@ -84,7 +105,7 @@
 <script lang="ts">
 import { useUserStore } from '@/stores/authorization'
 import type { Category, ProductProjections, ProductResponse } from '@/stores/types'
-import type HTMLSelectElement from "happy-dom/lib/nodes/html-select-element/HTMLSelectElement";
+import type HTMLSelectElement from 'happy-dom/lib/nodes/html-select-element/HTMLSelectElement'
 
 export default {
   data() {
@@ -94,6 +115,7 @@ export default {
       currentPage: 0,
       offset: 0,
       limit: 30,
+      parentCategories: '',
       categories: [] as Category[],
       response: {} as ProductResponse,
       filteredProducts: [] as ProductProjections[],
@@ -119,6 +141,15 @@ export default {
         .filter((value) => value.ancestors.length > 0)
         .filter((value) => value.ancestors[0].id === id)
     },
+    changeParenCategory() {
+      this.parentCategories = (this.$refs.selectedCategoryType as HTMLSelectElement).value
+      this.filteredCategory = [this.parentCategories]
+      this.sort()
+    },
+    changeChildCategory() {
+      this.filteredCategory = [(this.$refs.selectedCategoryGen as HTMLSelectElement).value]
+      this.sort()
+    },
     checkCategory(ev: Event) {
       const target = ev.target as HTMLInputElement
       if (target.checked) {
@@ -126,6 +157,13 @@ export default {
       } else {
         this.filteredCategory = this.filteredCategory.filter((value) => value !== target.id)
       }
+      this.sort()
+    },
+    clearFilters() {
+      ;(this.$refs.selectedCategoryType as HTMLSelectElement).value = ''(
+        this.$refs.selectedCategoryGen as HTMLSelectElement
+      ).value = ''
+      this.filteredCategory = []
       this.sort()
     },
     getImageUrl(cart: ProductProjections) {
@@ -485,6 +523,32 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
+  row-gap: 10px;
+
+  .breadcrumbs {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+
+    button,
+    select {
+      background: transparent;
+      border: none;
+      color: $app-dark-blue;
+      font-size: 0.8rem;
+
+      &:hover {
+        scale: 1.2;
+      }
+    }
+
+    p {
+      margin: 0 20px;
+    }
+  }
 }
 .select {
   display: none;
