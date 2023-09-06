@@ -99,6 +99,7 @@
         <input
           type="checkbox"
           @change="checkCategory($event)"
+          :ref="item.id"
           :id="item.id"
           :value="item.name['en-US']"
         />
@@ -108,6 +109,7 @@
             <input
               type="checkbox"
               @change="checkCategory($event)"
+              :ref="sub.id"
               :id="sub.id"
               :value="sub.name['en-US']"
             />
@@ -115,6 +117,7 @@
           </li>
         </ul>
       </div>
+      <button @click="clearFilters">Clear filters</button>
     </div>
     <div class="cards-container">
       <div class="product-card" v-for="cart in filteredProducts" :key="cart.id">
@@ -242,6 +245,7 @@ export default {
       ;(this.$refs.all as HTMLInputElement).checked = true
       this.minPrice = 0
       this.maxPrice = 1200
+      this.categories.forEach((value) => (this.$refs[value.id][0].checked = false))
       this.filteredCategory = []
       this.sort()
     },

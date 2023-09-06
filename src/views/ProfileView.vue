@@ -185,11 +185,11 @@
               </label>
               <div class="question" v-if="addressShip !== userInfo.defaultShippingAddressId">
                 Set as default shipping address?
-                <input type="checkbox" :disabled="isInfoMode">
+                <input type="checkbox" :disabled="isInfoMode" />
               </div>
               <div class="question" v-if="addressShip !== userInfo.defaultShippingAddressId">
                 Remove address?
-                <input type="checkbox" :disabled="isInfoMode">
+                <input type="checkbox" :disabled="isInfoMode" />
               </div>
             </div>
           </div>
@@ -467,7 +467,6 @@ export default {
     changePasswordVisibility(el: string) {
       const pass = this.$refs[el] as HTMLInputElement
       if (pass) {
-        console.log(pass)
         pass.type = pass.type === 'password' ? 'text' : 'password'
         if (pass === this.$refs.currentPassword)
           this.isShowPasswordCurrent = !this.isShowPasswordCurrent

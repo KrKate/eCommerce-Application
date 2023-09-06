@@ -27,13 +27,13 @@
     <div class="main-description">
       <h1 class="title">{{ product.masterData?.current.name['en-US'] }}</h1>
       <div class="price-container">
-        <div class="price"  :class="{ 'crossed-out': getDiscount(product) !== ' ' }">
+        <div class="price" :class="{ 'crossed-out': getDiscount(product) !== ' ' }">
           €
           {{
             (product.masterData?.current.masterVariant.prices[0].value.centAmount / 100).toFixed(2)
           }}
         </div>
-        <div class="discount" >
+        <div class="discount">
           {{ getDiscount(product) }}
         </div>
       </div>
@@ -41,17 +41,17 @@
       <button class="add-button">Add to Cart</button>
     </div>
     <div class="modal-wrapper" v-show="isModalOpen">
-    <div v-show="isModalOpen" class="modal">
-      <button class="arrow modal-arrow" @click="previousImage">❮</button>
-      <img
-        class="modal-content"
-        :src="product.masterData?.staged.masterVariant.images[currentImageIndex]?.url"
-        alt="Pokemon"
-      />
-      <span class="close" @click="closeModal">&times;</span>
-      <button class="arrow modal-arrow" @click="nextImage">❯</button>
+      <div v-show="isModalOpen" class="modal">
+        <button class="arrow modal-arrow" @click="previousImage">❮</button>
+        <img
+          class="modal-content"
+          :src="product.masterData?.staged.masterVariant.images[currentImageIndex]?.url"
+          alt="Pokemon"
+        />
+        <span class="close" @click="closeModal">&times;</span>
+        <button class="arrow modal-arrow" @click="nextImage">❯</button>
+      </div>
     </div>
-  </div>
   </main>
 </template>
 
@@ -73,6 +73,7 @@ export default {
   async beforeMount() {
     this.store.isLoading = true
     const productId = this.$route.params.id as string
+    if (!this.store.token) await this.store.readCookie()
     if (await this.store.checkProductExistsById(productId)) {
       this.product = await this.store.getProductById(productId)
     } else {
@@ -185,7 +186,6 @@ h1 {
     height: 30vh;
   }
 }
-
 
 .alternate-images {
   display: flex;

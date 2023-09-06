@@ -161,7 +161,7 @@
         />
         <label for="also">This is also my billing address</label>
       </div>
-      <div v-show="!isCheckedAlsoBilling" style="display: contents">
+      <div v-show="!also" style="display: contents">
         <div class="separator" v-if="!store.isLogin">
           <span> Billing Address </span>
         </div>
@@ -172,7 +172,7 @@
             id="street-billing"
             required
             v-model="billingStreet"
-            :disabled="isCheckedAlsoBilling"
+            :disabled="also"
             @input.prevent="validateBillingStreet"
             :class="{ 'invalid-input': billingStreetError.length }"
           />
@@ -184,12 +184,7 @@
         </div>
         <div class="registration-item" v-if="!store.isLogin">
           <label for="country-billing">Country:</label>
-          <select
-            id="country-billing"
-            required
-            v-model="billingCountry"
-            :disabled="isCheckedAlsoBilling"
-          >
+          <select id="country-billing" required v-model="billingCountry" :disabled="also">
             <option v-for="item in countries" v-bind:value="item" v-bind:key="item">
               {{ item }}
             </option>
@@ -262,7 +257,7 @@ import {
   CountryCodesByCountry,
   CustomerUpdateActions,
   StaticErrors
-} from "@/global/constatnts";
+} from '@/global/constatnts'
 import Validator from '@/services/validator'
 
 const validator = new Validator()
@@ -302,9 +297,6 @@ export default {
     }
   },
   computed: {
-    isCheckedAlsoBilling() {
-      return (this.$refs.isAlsoBilling as HTMLInputElement).checked
-    },
     formIsValid: function () {
       return (
         this.emailErrors.length === 0 &&
@@ -343,15 +335,11 @@ export default {
         dateOfBirth: this.dateOfBirth
       }
       return userInfo
-    },
-    getCountyCode(countryName: string) {
-      const indexOfCountry = Object.keys(CountryCodesByCountry).indexOf(countryName)
-      return Object.values(CountryCodesByCountry)[indexOfCountry]
     }
   },
   methods: {
     copyShippingToBilling() {
-      if (this.also) {
+      if (!this.also) {
         this.billingStreet = this.shippingStreet
         this.billingCountry = this.shippingCountry
         this.billingCity = this.shippingCity
@@ -417,7 +405,7 @@ export default {
       }
       const addressShipping: Partial<CustomerAddress> = {
         city: this.shippingCity,
-        country: this.getCountyCode(this.shippingCountry),
+        country: CountryCodesByCountry[this.shippingCountry],
         postalCode: this.shippingPostalCode,
         streetName: this.shippingStreet
       }
