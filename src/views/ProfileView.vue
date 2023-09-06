@@ -283,6 +283,7 @@
                 class="user-main-info"
                 :class="isInfoMode ? '' : 'edit-mode'"
                 :disabled="isInfoMode"
+                ref="NA-country"
               >
                 <option v-for="item in countries" v-bind:value="item" v-bind:key="item">
                   {{ item }}
@@ -299,11 +300,20 @@
                 @change.prevent="validate($event)"
               />
             </label>
-
+            <label v-for="[item, value] in contactDetails" v-bind:key="item">
+              {{ value }}
+              <input
+                class="user-main-info"
+                :class="isInfoMode ? '' : 'edit-mode'"
+                :disabled="isInfoMode"
+                :ref="`NA-${item}`"
+                @change.prevent="validate($event)"
+              />
+            </label>
             <fieldset :class="isInfoMode ? '' : 'edit-mode'" :disabled="isInfoMode">
-              <label>Billing <input type="radio" name="addressType" /></label>
-              <label>Shipping <input type="radio" name="addressType" /></label>
-              <label>Both <input type="radio" name="addressType" /></label>
+              <label>Billing <input ref="setBilling" type="radio" name="addressType" /></label>
+              <label>Shipping <input ref="setShipping" type="radio" name="addressType" /></label>
+              <label>Both <input ref="setBoth" type="radio" name="addressType" /></label>
             </fieldset>
             <label
               >Set default shipping
@@ -313,7 +323,13 @@
               >Set default billing
               <input type="checkbox" :class="isInfoMode ? '' : 'edit-mode'" :disabled="isInfoMode"
             /></label>
-            <button>Add address</button>
+            <button
+              @click="addNewAddress"
+              :class="isInfoMode ? '' : 'edit-mode'"
+              :disabled="isInfoMode"
+            >
+              Add address
+            </button>
           </div>
 
           <div class="change-password" v-if="isShowChangePassword">
@@ -439,25 +455,20 @@
 </template>
 
 <script lang="ts">
-import { useUserStore } from '@/stores/authorization'
+import { useUserStore } from "@/stores/authorization";
 import {
   addressDetails,
   contactDetails,
   Countries,
   CountryCodes,
+  CountryCodesByCountry,
   CustomerUpdateActions,
   Salutations,
   userProfileLeftSideFields
-} from '@/global/constatnts'
-import Validator from '@/services/validator'
-import type {
-  ActionsDTO,
-  ChangePasswordDTO,
-  CustomerAddress,
-  CustomerInfo,
-  UpdateUserInfoDTO
-} from '@/stores/types'
-import router from '@/router'
+} from "@/global/constatnts";
+import Validator from "@/services/validator";
+import type { ActionsDTO, ChangePasswordDTO, CustomerAddress, CustomerInfo, UpdateUserInfoDTO } from "@/stores/types";
+import router from "@/router";
 
 const validator = new Validator()
 const fieldsForValidation = [
@@ -506,6 +517,74 @@ export default {
     this.store.isLoading = false
   },
   methods: {
+    userProfileLeftSideFields() {
+      return userProfileLeftSideFields
+    },
+    createAddressObject(){
+      const newAddress: Omit<CustomerAddress, 'id', 'key', 'externalId'> = {
+        additionalAddressInfo: this.$refs['NA-additionalAddressInfo'][0].value,
+        additionalStreetInfo: this.$refs['NA-additionalStreetInfo'][0].value,
+        apartment: this.$refs['NA-apartment'][0].value,
+        building: this.$refs['NA-building'][0].value,
+        city: this.$refs['NA-city'][0].value,
+        company: this.$refs['NA-company'][0].value,
+        country:CountryCodesByCountry[this.$refs['NA-country'][0].value],
+        email: this.$refs['NA-email'][0].value,
+        fax: this.$refs['NA-fax'][0].value,
+        department: this.$refs['NA-department'][0].value,
+        firstName: this.$refs['NA-firstName'][0].value,
+        lastName: this.$refs['NA-lastName'][0].value,
+        pOBox: this.$refs['NA-pOBox'][0].value,
+        phone: this.$refs['NA-additionalAddressInfo'][0].value,
+        postalCode: this.$refs['NA-postalCode'][0].value,
+        region: this.$refs['NA-region'][0].value,
+        salutation: this.$refs['NA-additionalAddressInfo'][0].value,
+        state: this.$refs['NA-state'][0].value,
+        streetName: this.$refs['NA-streetName'][0].value,
+        streetNumber: this.$refs['NA-streetNumber'][0].value,
+        title: this.$refs['NA-additionalAddressInfo'][0].value
+      }
+      return newAddress
+    },
+    async addBilingAddress() {
+      const action = { action: CustomerUpdateActions.addBillingAddressId, addressId: this.userInfo.addresses[this.userInfo.addresses.length - 1].id } as ActionsDTO
+      this.userInfo = await this.store.updateUserInfo({
+          version: this.userInfo.version,
+          actions: [action]
+        }
+      )
+    },
+    async addShippingAddress(){
+      const action = { action: CustomerUpdateActions.addShippingAddressId, addressId: this.userInfo.addresses[this.userInfo.addresses.length - 1].id } as ActionsDTO
+      this.userInfo = await this.store.updateUserInfo({
+          version: this.userInfo.version,
+          actions: [action]
+        }
+      )
+    },
+    async addNewAddress() {
+      this.store.isLoading = true
+      const action = { action: CustomerUpdateActions.addAddress, address: this.createAddressObject() } as ActionsDTO
+      this.userInfo = await this.store.updateUserInfo({
+          version: this.userInfo.version,
+          actions: [action]
+        }
+      )
+      if (this.userInfo.id) {
+        this.statusMessage = 'Successfully updated.'
+      } else {
+        this.statusMessage = 'An error occurred while executing the request. Try later.'
+      }
+      this.isShowUpdateMessage = true
+      if (this.$refs.setBilling.checked) await this.addBilingAddress()
+      if (this.$refs.setShipping.checked) await this.addShippingAddress()
+      if (this.$refs.setBoth.checked) {
+        await this.addShippingAddress()
+        await this.addBilingAddress()
+      }
+      setTimeout(() => (this.isShowUpdateMessage = false), 2000)
+      this.store.isLoading = false
+    },
     changePasswordVisibility(el: string) {
       const pass = this.$refs[el] as HTMLInputElement
       if (pass) {
@@ -516,8 +595,8 @@ export default {
         if (pass === this.$refs.newPassword) this.isShowPasswordNew = !this.isShowPasswordNew
       }
     },
-    clearInput(ev) {
-      ev.target.value = ''
+    clearInput(ev: Event) {
+      ;(ev.target as HTMLInputElement).value = ''
     },
     separatePrefixes(id: string): [string, CustomerAddress] {
       let addressID = ''
