@@ -20,7 +20,7 @@
             ref="email"
             placeholder="user@example.com"
             v-model="email"
-            @input.prevent="validateEmail"
+            @input.prevent="debounce(validateEmail)"
             :class="{ 'invalid-input': emailErrors.length > 0 }"
           />
           <div class="clear-cross" v-if="email.length" @click="clearEmail">&#x2715;</div>
@@ -32,7 +32,7 @@
             id="password"
             placeholder="Enter your password!"
             v-model="password"
-            @input.prevent="validatePassword"
+            @input.prevent="debounce(validatePassword)"
             ref="password"
             :class="{ 'invalid-input': passwordErrors.length > 0 }"
           />
@@ -82,7 +82,8 @@ export default defineComponent({
       isPasswordChanged: false,
       isFormValid: false,
       isShowPassword: false,
-      store: useUserStore()
+      store: useUserStore(),
+      timerID: -1
     }
   },
   computed: {
@@ -140,6 +141,10 @@ export default defineComponent({
         !!this.email &&
         !!this.password
       return this.passwordErrors.length === 0
+    },
+    debounce(func: Function) {
+      clearTimeout(this.timerID)
+      this.timerID = setTimeout(() => func(), 1000)
     },
     async login() {
       this.store.isLoading = true
