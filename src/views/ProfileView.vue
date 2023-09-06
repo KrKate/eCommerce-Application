@@ -275,22 +275,47 @@
               </label>
             </div>
           </div>
-          <div class="change-email" v-if="isShowChangeEmailAddresses">
-            <label> Current email address </label>
-            <input
-              placeholder="Current email address"
-              :class="isInfoMode ? '' : 'edit-mode'"
-              :disabled="true"
-              :value="userInfo.email"
-            />
-            <label> New email address </label>
-            <input
-              placeholder="example@mail.com"
-              :class="isInfoMode ? '' : 'edit-mode'"
-              :disabled="isInfoMode"
-            />
-            <button :disabled="isInfoMode">update</button>
+
+          <div class="add-address" v-if="isShowChangeEmailAddresses">
+            <label>
+              Country
+              <select
+                class="user-main-info"
+                :class="isInfoMode ? '' : 'edit-mode'"
+                :disabled="isInfoMode"
+              >
+                <option v-for="item in countries" v-bind:value="item" v-bind:key="item">
+                  {{ item }}
+                </option>
+              </select>
+            </label>
+            <label v-for="[item, value] in addressDetails" v-bind:key="item">
+              {{ value }}
+              <input
+                class="user-main-info"
+                :class="isInfoMode ? '' : 'edit-mode'"
+                :disabled="isInfoMode"
+                :ref="`NA-${item}`"
+                @change.prevent="validate($event)"
+              />
+            </label>
+
+            <fieldset :class="isInfoMode ? '' : 'edit-mode'" :disabled="isInfoMode">
+              <label>Billing <input type="radio" name="addressType" /></label>
+              <label>Shipping <input type="radio" name="addressType" /></label>
+              <label>Both <input type="radio" name="addressType" /></label>
+            </fieldset>
+            <label
+              >Set default shipping
+              <input type="checkbox" :class="isInfoMode ? '' : 'edit-mode'" :disabled="isInfoMode"
+            /></label>
+            <label
+              >Set default billing
+              <input type="checkbox" :class="isInfoMode ? '' : 'edit-mode'" :disabled="isInfoMode"
+            /></label>
+            <button>Add address</button>
           </div>
+
           <div class="change-password" v-if="isShowChangePassword">
             <label>
               Current password
@@ -1321,6 +1346,35 @@ main {
       margin: 5px auto;
     }
 
+    .add-address {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+
+      input,
+      select {
+        display: flex;
+        max-width: 50%;
+      }
+
+      fieldset {
+        margin: 10px auto;
+        display: flex;
+        width: 80%;
+        justify-content: space-evenly;
+        input {
+          margin: auto 5px;
+        }
+      }
+
+      button {
+        display: flex;
+        width: 80%;
+        justify-content: center;
+        margin: 10px auto;
+      }
+    }
+
     &::-webkit-scrollbar {
       width: 5px;
       background-color: transparent;
@@ -1359,7 +1413,6 @@ main {
       margin-top: 3px;
     }
 
-    .change-email,
     .change-password {
       display: flex;
       flex-direction: column;
