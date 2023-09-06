@@ -349,6 +349,21 @@
               />
               <div class="crossed" v-if="isShowPasswordCheck"></div>
             </label>
+            <fieldset :disabled="isInfoMode">
+              <label
+                >Auto login after changing<input
+                  checked
+                  name="option"
+                  type="radio"
+                  @change.prevent="isRelogin = !isRelogin"
+              /></label>
+              <label
+                >Logout after changing<input
+                  name="option"
+                  type="radio"
+                  @change.prevent="isRelogin = !isRelogin"
+              /></label>
+            </fieldset>
             <button
               @click="changePassword"
               :disabled="!(isCheckPasswordValid && isCurrentPasswordValid && isNewPasswordValid)"
@@ -380,7 +395,7 @@
           @click="yellowButtonsClick('email')"
           :class="!isShowChangeEmailAddresses ? '' : 'clickedYB'"
         >
-          Change email
+          Add address
         </div>
         <div
           id="yellowBox4"
@@ -417,6 +432,7 @@ import type {
   CustomerInfo,
   UpdateUserInfoDTO
 } from '@/stores/types'
+import router from '@/router'
 
 const validator = new Validator()
 const fieldsForValidation = [
@@ -455,7 +471,8 @@ export default {
       isCheckPasswordValid: false,
       isShowPasswordCurrent: false,
       isShowPasswordNew: false,
-      isShowPasswordCheck: false
+      isShowPasswordCheck: false,
+      isRelogin: true
     }
   },
   async beforeMount(): void {
@@ -629,6 +646,30 @@ export default {
         this.isInfoMode = !this.isInfoMode
       }
     },
+    async relogin() {
+      if (
+        await this.store.getTokens(
+          this.userInfo.email,
+          (this.$refs.newPassword as HTMLInputElement).value
+        )
+      ) {
+        if (
+          await this.store.login(
+            this.userInfo.email,
+            (this.$refs.newPassword as HTMLInputElement).value
+          )
+        ) {
+          this.store.isLogin = true
+          this.userInfo = await this.store.getMyCustomerDetails()
+        }
+      }
+      ;(this.$refs.newPassword as HTMLInputElement).value = ''
+      ;(this.$refs.currentPassword as HTMLInputElement).value = ''
+      ;(this.$refs.checkPassword as HTMLInputElement).value = ''
+      this.isShowUpdateMessage = true
+      setTimeout(() => (this.isShowUpdateMessage = false), 1500)
+      this.store.isLoading = false
+    },
     async changePassword() {
       this.store.isLoading = true
       const passwordDTO: ChangePasswordDTO = {
@@ -637,18 +678,24 @@ export default {
         newPassword: (this.$refs.newPassword as HTMLInputElement).value,
         version: this.userInfo.version
       }
+      this.store.clearCookie()
+      this.store.isLogin = false
       this.userInfo = await this.store.changePassword(passwordDTO)
       if (this.userInfo.id) {
         this.statusMessage = 'Password updated successfully!'
-        ;(this.$refs.newPassword as HTMLInputElement).value = ''
-        ;(this.$refs.currentPassword as HTMLInputElement).value = ''
-        ;(this.$refs.checkPassword as HTMLInputElement).value = ''
+        if (this.isRelogin) {
+          await this.relogin()
+        } else {
+          this.store.isLoading = false
+          await this.store.readCookie()
+          await router.push('/login')
+        }
       } else {
         this.statusMessage = 'Check your old password and try again.'
+        this.isShowUpdateMessage = true
+        setTimeout(() => (this.isShowUpdateMessage = false), 1500)
+        this.store.isLoading = false
       }
-      this.isShowUpdateMessage = true
-      setTimeout(() => (this.isShowUpdateMessage = false), 1500)
-      this.store.isLoading = false
     },
     async acceptChanges() {
       this.store.isLoading = true
@@ -1320,7 +1367,6 @@ main {
       height: 100%;
       width: 80%;
       margin: 0 auto;
-      gap: 10px;
       justify-content: center;
 
       label {
@@ -1329,6 +1375,19 @@ main {
         flex-wrap: wrap;
         gap: 5px;
         position: relative;
+      }
+
+      fieldset {
+        display: flex;
+        flex-direction: column;
+        padding: 2px 10px;
+        margin: 5px auto;
+        width: 100%;
+
+        input {
+          display: flex;
+          width: auto;
+        }
       }
 
       button {
