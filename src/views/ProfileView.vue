@@ -184,7 +184,7 @@
                 />
               </label>
               <div class="question">
-                <button :ref="`SA-remove-${addressShip}`" :disabled="isInfoMode">Remove</button>
+                <button @click="removeAddress(addressShip)" :ref="`SA-remove-${addressShip}`" :disabled="isInfoMode">Remove</button>
               </div>
               <div class="question" v-if="addressShip !== userInfo.defaultShippingAddressId">
                 <button :ref="`SA-setDefault-${addressShip}`" :disabled="isInfoMode">
@@ -274,7 +274,7 @@
                 />
               </label>
               <div class="question">
-                <button :ref="`BA-remove-${addressBil}`" :disabled="isInfoMode">Remove</button>
+                <button @click="removeAddress(addressBil)" :ref="`BA-remove-${addressBil}`" :disabled="isInfoMode">Remove</button>
               </div>
               <div class="question" v-if="addressBil !== userInfo.defaultBillingAddressId">
                 <button :ref="`BA-setDefault-${addressBil}`" :disabled="isInfoMode">
@@ -564,6 +564,25 @@ export default {
         version: this.userInfo.version,
         actions: [action]
       })
+    },
+    async removeAddress(addressID: string) {
+      this.store.isLoading = true
+      const action = {
+        action: CustomerUpdateActions.removeAddress,
+        addressId: addressID
+      } as ActionsDTO
+      this.userInfo = await this.store.updateUserInfo({
+        version: this.userInfo.version,
+        actions: [action]
+      })
+      if (this.userInfo.id) {
+        this.statusMessage = 'Successfully removed.'
+      } else {
+        this.statusMessage = 'An error occurred while executing the request. Try later.'
+      }
+      this.isShowUpdateMessage = true
+      setTimeout(() => (this.isShowUpdateMessage = false), 2000)
+      this.store.isLoading = false
     },
     async addShippingAddress() {
       const action = {

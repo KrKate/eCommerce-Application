@@ -156,7 +156,6 @@ export const useUserStore = defineStore('user', {
             }
           )
           .then((data) => data.data)
-        console.log(customerInfo)
         return customerInfo
       } catch (error) {
         return {} as CustomerInfo
