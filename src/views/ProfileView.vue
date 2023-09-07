@@ -183,13 +183,13 @@
                   @change.prevent="validate($event)"
                 />
               </label>
-              <div class="question" v-if="addressShip !== userInfo.defaultShippingAddressId">
-                Set as default shipping address?
-                <input type="checkbox" :disabled="isInfoMode" />
+              <div class="question">
+                <button :ref="`SA-remove-${addressShip}`" :disabled="isInfoMode">Remove</button>
               </div>
               <div class="question" v-if="addressShip !== userInfo.defaultShippingAddressId">
-                Remove address?
-                <input type="checkbox" :disabled="isInfoMode" />
+                <button :ref="`SA-setDefault-${addressShip}`" :disabled="isInfoMode">
+                  Set as default shipping address
+                </button>
               </div>
             </div>
           </div>
@@ -273,9 +273,16 @@
                   @change.prevent="validate($event)"
                 />
               </label>
+              <div class="question">
+                <button :ref="`BA-remove-${addressBil}`" :disabled="isInfoMode">Remove</button>
+              </div>
+              <div class="question" v-if="addressBil !== userInfo.defaultBillingAddressId">
+                <button :ref="`BA-setDefault-${addressBil}`" :disabled="isInfoMode">
+                  Set as default billing address
+                </button>
+              </div>
             </div>
           </div>
-
           <div class="add-address" v-if="isShowChangeEmailAddresses">
             <label>
               Country
@@ -331,7 +338,6 @@
               Add address
             </button>
           </div>
-
           <div class="change-password" v-if="isShowChangePassword">
             <label>
               Current password
@@ -455,7 +461,7 @@
 </template>
 
 <script lang="ts">
-import { useUserStore } from "@/stores/authorization";
+import { useUserStore } from '@/stores/authorization'
 import {
   addressDetails,
   contactDetails,
@@ -465,10 +471,16 @@ import {
   CustomerUpdateActions,
   Salutations,
   userProfileLeftSideFields
-} from "@/global/constatnts";
-import Validator from "@/services/validator";
-import type { ActionsDTO, ChangePasswordDTO, CustomerAddress, CustomerInfo, UpdateUserInfoDTO } from "@/stores/types";
-import router from "@/router";
+} from '@/global/constatnts'
+import Validator from '@/services/validator'
+import type {
+  ActionsDTO,
+  ChangePasswordDTO,
+  CustomerAddress,
+  CustomerInfo,
+  UpdateUserInfoDTO
+} from '@/stores/types'
+import router from '@/router'
 
 const validator = new Validator()
 const fieldsForValidation = [
@@ -517,10 +529,7 @@ export default {
     this.store.isLoading = false
   },
   methods: {
-    userProfileLeftSideFields() {
-      return userProfileLeftSideFields
-    },
-    createAddressObject(){
+    createAddressObject() {
       const newAddress: Omit<CustomerAddress, 'id', 'key', 'externalId'> = {
         additionalAddressInfo: this.$refs['NA-additionalAddressInfo'][0].value,
         additionalStreetInfo: this.$refs['NA-additionalStreetInfo'][0].value,
@@ -528,7 +537,7 @@ export default {
         building: this.$refs['NA-building'][0].value,
         city: this.$refs['NA-city'][0].value,
         company: this.$refs['NA-company'][0].value,
-        country:CountryCodesByCountry[this.$refs['NA-country'][0].value],
+        country: CountryCodesByCountry[this.$refs['NA-country'][0].value],
         email: this.$refs['NA-email'][0].value,
         fax: this.$refs['NA-fax'][0].value,
         department: this.$refs['NA-department'][0].value,
@@ -547,29 +556,35 @@ export default {
       return newAddress
     },
     async addBilingAddress() {
-      const action = { action: CustomerUpdateActions.addBillingAddressId, addressId: this.userInfo.addresses[this.userInfo.addresses.length - 1].id } as ActionsDTO
+      const action = {
+        action: CustomerUpdateActions.addBillingAddressId,
+        addressId: this.userInfo.addresses[this.userInfo.addresses.length - 1].id
+      } as ActionsDTO
       this.userInfo = await this.store.updateUserInfo({
-          version: this.userInfo.version,
-          actions: [action]
-        }
-      )
+        version: this.userInfo.version,
+        actions: [action]
+      })
     },
-    async addShippingAddress(){
-      const action = { action: CustomerUpdateActions.addShippingAddressId, addressId: this.userInfo.addresses[this.userInfo.addresses.length - 1].id } as ActionsDTO
+    async addShippingAddress() {
+      const action = {
+        action: CustomerUpdateActions.addShippingAddressId,
+        addressId: this.userInfo.addresses[this.userInfo.addresses.length - 1].id
+      } as ActionsDTO
       this.userInfo = await this.store.updateUserInfo({
-          version: this.userInfo.version,
-          actions: [action]
-        }
-      )
+        version: this.userInfo.version,
+        actions: [action]
+      })
     },
     async addNewAddress() {
       this.store.isLoading = true
-      const action = { action: CustomerUpdateActions.addAddress, address: this.createAddressObject() } as ActionsDTO
+      const action = {
+        action: CustomerUpdateActions.addAddress,
+        address: this.createAddressObject()
+      } as ActionsDTO
       this.userInfo = await this.store.updateUserInfo({
-          version: this.userInfo.version,
-          actions: [action]
-        }
-      )
+        version: this.userInfo.version,
+        actions: [action]
+      })
       if (this.userInfo.id) {
         this.statusMessage = 'Successfully updated.'
       } else {
