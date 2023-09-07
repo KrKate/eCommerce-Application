@@ -72,6 +72,7 @@ export enum CustomerUpdateActions {
   changeAddress = 'changeAddress',
   removeAddress = 'removeAddress',
   setDefaultShippingAddress = 'setDefaultShippingAddress',
+  setDefaultBillingAddress = 'setDefaultBillingAddress',
   addShippingAddressId = 'addShippingAddressId',
   removeShippingAddressId = 'removeShippingAddressId',
   addBillingAddressId = 'addBillingAddressId',
