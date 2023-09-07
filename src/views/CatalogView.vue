@@ -1,5 +1,6 @@
 <template>
   <main>
+    <AmBreadcrumbs :showCurrentCrumb="true" />
     <h1>Choose your pokemon!</h1>
     <div class="setting-bar">
       <form class="search-form">
@@ -364,12 +365,19 @@ h1 {
 main {
   display: flex;
   margin: auto;
-  padding-top: 200px;
+  padding-top: 160px;
   font-size: 2rem;
   font-weight: 700;
   font-style: italic;
   flex-direction: column;
   overflow-x: hidden;
+
+  nav {
+    display: flex;
+    font-size: 1rem;
+    width: 100%;
+    padding-left: 24px;
+  }
 }
 
 .cards-container {

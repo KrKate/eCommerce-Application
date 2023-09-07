@@ -23,6 +23,7 @@
     "pinia": "2.1.4",
     "swiper": "^10.2.0",
     "vue": "3.3.4",
+    "vue-3-breadcrumbs": "^2.0.0",
     "vue-multiselect": "^2.1.7",
     "vue-router": "4.2.4"
   },

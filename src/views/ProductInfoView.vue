@@ -1,5 +1,6 @@
 <template>
   <main>
+    <AmBreadcrumbs :showCurrentCrumb="true" />
     <div class="images-container">
       <div class="alternate-images">
         <img
@@ -125,10 +126,19 @@ main {
   padding-top: 200px;
   font-size: 2rem;
   font-weight: 700;
+  flex-wrap: wrap;
   font-style: italic;
   align-items: center;
   gap: 30px;
   justify-content: center;
+
+  nav {
+    display: flex;
+    font-size: 1rem;
+    width: 100%;
+    padding-left: 40px;
+  }
+
   @media screen and (max-width: 600px) {
     flex-direction: column;
     gap: 10px;

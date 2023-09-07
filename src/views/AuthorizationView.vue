@@ -1,5 +1,6 @@
 <template>
   <div class="login-page">
+    <AmBreadcrumbs :showCurrentCrumb="true" />
     <img src="@/assets/images/psyduck.svg" alt="error" :id="isShowErrors ? 'show' : 'error'" />
     <div v-if="isShowErrors" :class="isShowErrors ? 'showClip' : 'hideClip'"></div>
     <div v-if="isShowErrors" :class="isShowErrors ? 'showClip1' : 'hideClip1'"></div>
@@ -180,6 +181,16 @@ export default defineComponent({
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: relative;
+
+  nav {
+    display: flex;
+    position: absolute;
+    font-size: 1rem;
+    width: 100%;
+    padding-left: 40px;
+    top: 160px;
+  }
 }
 
 .container-forms {

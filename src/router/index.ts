@@ -14,27 +14,42 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: HomeView,
+      meta: {
+        breadcrumb: 'Home'
+      }
     },
     {
       path: '/about',
       name: 'about',
-      component: () => import('../views/AboutView.vue')
+      component: () => import('../views/AboutView.vue'),
+      meta: {
+        breadcrumb: 'About'
+      }
     },
     {
       path: '/catalog',
       name: 'catalog',
-      component: CatalogView
+      component: CatalogView,
+      meta: {
+        breadcrumb: 'Catalog'
+      }
     },
     {
       path: '/product/:id',
       name: 'product',
-      component: ProductInfoView
+      component: ProductInfoView,
+      meta: {
+        breadcrumb: 'Product'
+      }
     },
     {
       path: '/cart',
       name: 'cart',
-      component: CartView
+      component: CartView,
+      meta: {
+        breadcrumb: 'Cart'
+      }
     },
     {
       path: '/profile',
@@ -43,6 +58,9 @@ const router = createRouter({
       beforeEnter: async () => {
         if (!useUserStore().isLogin) await router.push('/login')
         return useUserStore().isLogin
+      },
+      meta: {
+        breadcrumb: 'Profile'
       }
     },
     {
@@ -55,6 +73,9 @@ const router = createRouter({
           return false
         }
         return !useUserStore().isLogin
+      },
+      meta: {
+        breadcrumb: 'Login'
       }
     },
     {
@@ -67,6 +88,9 @@ const router = createRouter({
           return false
         }
         return !useUserStore().isLogin
+      },
+      meta: {
+        breadcrumb: 'Registration'
       }
     },
     { path: '/:pathMatch(.*)*', name: '404', component: NotFoundView }

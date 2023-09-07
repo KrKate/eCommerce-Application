@@ -1,5 +1,6 @@
 <template>
   <div class="registration-page">
+    <AmBreadcrumbs :showCurrentCrumb="true" />
     <form :novalidate="true" ref="reg" @submit.prevent="signIn(userDTO)">
       <h2>{{ store.isLogin ? 'Successful registration!' : 'Registration' }}</h2>
       <div class="registration-item" v-if="!store.isLogin">
@@ -463,6 +464,16 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: relative;
+
+  nav {
+    display: flex;
+    position: absolute;
+    font-size: 1rem;
+    width: 100%;
+    padding-left: 40px;
+    top: 150px;
+  }
 }
 
 form {

@@ -1,5 +1,6 @@
 <template>
   <main>
+    <AmBreadcrumbs :showCurrentCrumb="true" />
     <div id="pokedex">
       <div id="left">
         <div id="bg_curve1_left"></div>
@@ -921,6 +922,14 @@ export default {
 }
 main {
   padding-top: 160px;
+
+  nav {
+    display: flex;
+    font-size: 1rem;
+    width: 100%;
+    padding-left: 24px;
+    font-style: italic;
+  }
 }
 
 @media all {
