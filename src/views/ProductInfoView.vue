@@ -123,7 +123,7 @@ export default {
 main {
   display: flex;
   margin: auto;
-  padding-top: 200px;
+  padding-top: 160px;
   font-size: 2rem;
   font-weight: 700;
   flex-wrap: wrap;
