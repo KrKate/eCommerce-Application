@@ -12,9 +12,7 @@
         <button @click="store.changeLogin()" v-if="store.isLogin" id="logout">
           Logout <img src="@/assets/icons/logout.webp" alt="logout" id="logout-img" />
         </button>
-        <router-link to="/cart" custom v-slot="{ navigate }">
-          <button @click="navigate" role="link">Cart</button>
-        </router-link>
+          <CatrIcon product-in-cart="0" />
       </div>
     </div>
     <nav>
@@ -45,6 +43,7 @@
 <script lang="ts">
 import { useUserStore } from '@/stores/authorization'
 import router from '@/router'
+import CatrIcon from '@/components/CartIcon.vue'
 export default {
   name: 'AppHeader',
   data() {
@@ -52,6 +51,9 @@ export default {
       store: useUserStore(),
       router: router
     }
+  },
+  components: {
+    CatrIcon
   }
 }
 </script>
