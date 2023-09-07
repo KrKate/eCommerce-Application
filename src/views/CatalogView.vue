@@ -246,7 +246,7 @@ export default {
       ;(this.$refs.all as HTMLInputElement).checked = true
       this.minPrice = 0
       this.maxPrice = 1200
-      this.categories.forEach((value) => (this.$refs[value.id][0].checked = false))
+      this.categories.forEach((value) => (((this.$refs[value.id] as HTMLElement[])[0] as HTMLInputElement).checked = false))
       this.filteredCategory = []
       this.sort()
     },
@@ -317,7 +317,7 @@ export default {
     },
     getPriceValue(cart: ProductProjections) {
       if (cart.masterVariant.prices.length > 0) {
-        const price = parseInt(cart.masterVariant.prices[0].value.centAmount / 100, 10)
+        const price = cart.masterVariant.prices[0].value.centAmount / 100
         return `€ ${price}`
       } else {
         return 'free'

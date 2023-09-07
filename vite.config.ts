@@ -5,7 +5,15 @@ import vue from '@vitejs/plugin-vue'
 import eslint from './node_modules/vite-plugin-eslint'
 
 export default defineConfig({
-  plugins: [vue(), eslint()],
+  plugins: [vue(
+    {
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag) => ['AmBreadcrumbs'].includes(tag),
+        }
+      }
+    }
+  ), eslint()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
