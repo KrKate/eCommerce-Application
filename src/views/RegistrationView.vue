@@ -156,6 +156,15 @@
           class="check"
           type="checkbox"
           id="also"
+          :disabled="
+            shippingPostalCodeError.length !== 0 ||
+            shippingCityError.length !== 0 ||
+            shippingStreetError.length !== 0 ||
+            shippingStreet === '' ||
+            shippingPostalCode === '' ||
+            shippingCity === '' ||
+            shippingCountry === ''
+          "
           @change="copyShippingToBilling"
           ref="isAlsoBilling"
           v-model="also"
