@@ -24,7 +24,6 @@ main {
   }
 }
 </style>
-<script lang="ts">
-export default {
-}
+<script lang="js">
+export default {}
 </script>
