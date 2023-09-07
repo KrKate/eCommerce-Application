@@ -179,12 +179,15 @@ h1 {
 }
 
 .images-container {
-  width: 30%;
+  width: 50%;
   display: flex;
   flex-direction: column-reverse;
   gap: 10px;
-  @media screen and (max-width: 600px) {
-    width: 60%;
+  @media screen and (max-width: 450px) {
+    width: 70%;
+  }
+  @media screen and (max-width: 450px) {
+    width: 80%;
   }
 }
 
@@ -201,11 +204,7 @@ h1 {
   display: flex;
   gap: 10px;
   justify-content: center;
-  height: 120px;
-  @media screen and (max-width: 600px) {
-    justify-content: center;
-    height: 120px;
-  }
+  height: auto;
 }
 
 .alternate-img {
@@ -216,6 +215,12 @@ h1 {
 .main-image {
   border: 3px solid #cccccc;
   border-radius: 10px;
+}
+
+.description {
+  @media screen and (max-width: 600px) {
+    text-align: justify;
+  }
 }
 
 .price-container {
