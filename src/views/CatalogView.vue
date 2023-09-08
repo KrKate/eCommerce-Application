@@ -121,7 +121,9 @@
       <button @click="clearFilters">Clear filters</button>
     </div>
     <div class="cards-container">
-      <div class="product-card" v-for="cart in filteredProducts" :key="cart.id">
+      <RouterLink class="product-card" v-for="cart in filteredProducts" :key="cart.id"
+      :to="{ name: 'product', params: { id: cart.id } }"
+      >
         <h3 class="product-title">{{ cart.name['en-US'] }}</h3>
         <img :src="getImageUrl(cart)" alt="Product Image" class="product-image" />
         <div class="prices">
@@ -130,10 +132,9 @@
           </div>
           <div class="product-discount">{{ getDiscount(cart) }}</div>
         </div>
-        <RouterLink class="info-button" :to="{ name: 'product', params: { id: cart.id } }"
-          >More info</RouterLink
-        >
-      </div>
+        <button class="info-button" :to="{ name: 'product', params: { id: cart.id } }"
+          >Add to Cart</button>
+      </RouterLink>
       <div class="pagination-box">
         <p class="title">{{ response.total }} products found</p>
         <div class="pagination-buttons">
@@ -378,6 +379,11 @@ main {
     width: 100%;
     padding-left: 24px;
   }
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
 }
 
 .cards-container {
