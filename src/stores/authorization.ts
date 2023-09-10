@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import type {
-  AnonymousToken,
   Category,
   CategoryResponse,
   ChangePasswordDTO,
@@ -196,7 +195,7 @@ export const useUserStore = defineStore('user', {
         this.refreshToken = data.refreshToken
         this.isLogin = true
       } else {
-        await this.fetchToken()
+        await this.getAnonymousToken()
       }
     },
     clearCookie() {
@@ -294,46 +293,24 @@ export const useUserStore = defineStore('user', {
         return false
       }
     },
-    // async getAnonymousToken() {
-    //   try {
-    //     const anonymous: AnonymousToken = await axios
-    //       .post(
-    //         `https://auth.europe-west1.gcp.commercetools.com/oauth/ecommerce_app_sloths/anonymous/token?grant_type=client_credentials`,
-    //         {},
-    //         {
-    //           headers: {
-    //             Authorization: `Basic ${this.token}`
-    //           }
-    //         }
-    //       )
-    //       .then((data) => data.data)
-    //     this.token = anonymous.access_token
-    //     this.refreshToken = anonymous.refresh_token
-    //     this.expires = anonymous.expires_in
-    //   } catch (error) {
-    //     console.log(error)
-    //   }
-    // },
     async getAnonymousToken()  {
       try {
-        const userData: AnonymousToken = await axios
+        const anonimousTokenData: PasswordFlowResponse = await axios
           .post(
-            `https://auth.europe-west1.gcp.commercetools.com/oauth/ecommerce_app_sloths/anonymous/token?grant_type=client_credentials
-
-            )}`,
+            `https://auth.europe-west1.gcp.commercetools.com/oauth/ecommerce_app_sloths/anonymous/token?grant_type=client_credentials`,
             {},
             {
               headers: {
                 Authorization: `Basic ${btoa(
-                  `ZGZsMlhXeEhMYld3djh5VThiWXdjdFdPOnJzSEVFd0V2TDMtY3BDRWxUZ2lyRGQ3UGVwOEhqVHdX`
+                  `dfl2XWxHLbWwv8yU8bYwctWO:rsHEEwEvL3-cpCElTgirDd7Pep8HjTwW`
                 )}`
               }
             }
           )
           .then((data) => data.data)
-        this.token = userData.access_token
-        this.refreshToken = userData.refresh_token
-        this.expires = userData.expires_in
+        this.token = anonimousTokenData.access_token
+        this.refreshToken = anonimousTokenData.refresh_token
+        this.expires = anonimousTokenData.expires_in
         return true
       } catch (error) {
         console.log(error)
@@ -355,7 +332,8 @@ export const useUserStore = defineStore('user', {
               },
             }
           )
-          .then((data) => data.status)
+          .then((data) => data.data)
+        console.log(status);
         return status === 200
       } catch (error) {
         return false
