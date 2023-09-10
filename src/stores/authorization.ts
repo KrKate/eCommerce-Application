@@ -340,5 +340,26 @@ export const useUserStore = defineStore('user', {
         return false
       }
     },
+    async createCart() {
+      try {
+        const body = {
+          currency: "EUR"
+        }
+        const status = await axios
+          .post(
+            "https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/carts",
+            body,
+            {
+              headers: {
+                Authorization: `Bearer ${this.token}`
+              },
+            }
+          )
+          .then((data) => data.status)
+        return status === 200
+      } catch (error) {
+        return false
+      }
+    },
   }
 })

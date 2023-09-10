@@ -112,9 +112,11 @@ export default {
     closeModal() {
       this.isModalOpen = false
     },
-    async addToCart() {
-      const anonymousToken = await this.store.getAnonymousToken()
-      console.log(anonymousToken)
+    addToCart() {
+      // const anonymousToken = this.store.getAnonymousToken()
+      // console.log(anonymousToken)
+      const cart = this.store.createCart()
+
     }
   }
 }
