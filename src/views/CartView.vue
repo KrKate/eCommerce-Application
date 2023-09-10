@@ -2,6 +2,7 @@
   <main>
     <AmBreadcrumbs :showCurrentCrumb="true" />
     <p>Users cart page</p>
+    <p></p>
   </main>
 </template>
 

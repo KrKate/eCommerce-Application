@@ -39,7 +39,7 @@
         </div>
       </div>
       <div class="description">{{ product.masterData?.current.description['en-US'] }}</div>
-      <button class="add-button">Add to Cart</button>
+      <button class="add-button" @click="addToCart">Add to Cart</button>
     </div>
     <div class="modal-wrapper" v-show="isModalOpen">
       <div v-show="isModalOpen" class="modal">
@@ -111,6 +111,10 @@ export default {
     },
     closeModal() {
       this.isModalOpen = false
+    },
+    async addToCart() {
+      const anonymousToken = await this.store.getAnonymousToken()
+      console.log(anonymousToken)
     }
   }
 }

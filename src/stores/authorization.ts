@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import type {
+  AnonymousToken,
   Category,
   CategoryResponse,
   ChangePasswordDTO,
@@ -292,6 +293,52 @@ export const useUserStore = defineStore('user', {
       } catch (error) {
         return false
       }
-    }
+    },
+    // async getAnonymousToken() {
+    //   try {
+    //     const anonymous: AnonymousToken = await axios
+    //       .post(
+    //         `https://auth.europe-west1.gcp.commercetools.com/oauth/ecommerce_app_sloths/anonymous/token?grant_type=client_credentials`,
+    //         {},
+    //         {
+    //           headers: {
+    //             Authorization: `Basic ${this.token}`
+    //           }
+    //         }
+    //       )
+    //       .then((data) => data.data)
+    //     this.token = anonymous.access_token
+    //     this.refreshToken = anonymous.refresh_token
+    //     this.expires = anonymous.expires_in
+    //   } catch (error) {
+    //     console.log(error)
+    //   }
+    // },
+    async getAnonymousToken()  {
+      try {
+        const userData: AnonymousToken = await axios
+          .post(
+            `https://auth.europe-west1.gcp.commercetools.com/oauth/ecommerce_app_sloths/anonymous/token?grant_type=client_credentials
+
+            )}`,
+            {},
+            {
+              headers: {
+                Authorization: `Basic ${btoa(
+                  `ZGZsMlhXeEhMYld3djh5VThiWXdjdFdPOnJzSEVFd0V2TDMtY3BDRWxUZ2lyRGQ3UGVwOEhqVHdX`
+                )}`
+              }
+            }
+          )
+          .then((data) => data.data)
+        this.token = userData.access_token
+        this.refreshToken = userData.refresh_token
+        this.expires = userData.expires_in
+        return true
+      } catch (error) {
+        console.log(error)
+        return false
+      }
+    },
   }
 })
