@@ -4,6 +4,7 @@ import type {
   Category,
   CategoryResponse,
   ChangePasswordDTO,
+  ChannelResponse,
   Customer,
   CustomerInfo,
   PasswordFlowResponse,
@@ -12,9 +13,11 @@ import type {
   SiteCookie,
   TokenResponse,
   UpdateUserInfoDTO,
-  UserRegistrationInfo
+  UserRegistrationInfo,
+  lineItem
 } from '@/stores/types'
 import router from '@/router'
+import type { Channel } from 'diagnostics_channel'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -337,6 +340,21 @@ export const useUserStore = defineStore('user', {
         return status === 200
       } catch (error) {
         return false
+      }
+    },
+    async getChannels() {
+      try {
+        const channelsData: ChannelResponse = await axios
+          .get(`https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/channels`, {
+            headers: {
+              Authorization: `Bearer ${this.token}`
+            }
+          })
+          .then((data) => data.data)
+          console.log(channelsData.results)
+        return channelsData.results
+      } catch (error) {
+        return [] as Channel[]
       }
     },
   }

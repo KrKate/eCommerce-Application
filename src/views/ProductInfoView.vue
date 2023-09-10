@@ -115,7 +115,9 @@ export default {
     addToCart() {
       // const anonymousToken = this.store.getAnonymousToken()
       // console.log(anonymousToken)
-      const cart = this.store.createCart()
+      const cart = this.store.createCart();
+      const channel = this.store.getChannels()
+    
 
     }
   }
