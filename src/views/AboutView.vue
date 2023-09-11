@@ -1,18 +1,15 @@
 <template>
-  <main>
-    <p>About page</p>
-  </main>
+  <div class="about">
+    <h1>This is an about page</h1>
+  </div>
 </template>
 
-<style scoped lang="scss">
-main {
-  display: flex;
-  margin: auto;
-  padding-top: 200px;
-  font-size: 2rem;
-  font-weight: 700;
-  font-style: italic;
-  flex-direction: column;
-  align-items: center;
+<style>
+@media (min-width: 1024px) {
+  .about {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+  }
 }
 </style>

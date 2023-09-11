@@ -95,11 +95,9 @@
 </template>
 
 <script lang="ts">
-
-
 import { useUserStore } from '@/stores/authorization'
 import router from '@/router'
-import {EmailError, PasswordError} from "@/global/constatnts";
+import { EmailError, PasswordError } from '@/global/constatnts'
 const formatEmailRegex = /^[a-zA-Z0-9._%+-\s]+@[a-zA-Z0-9.-\s]+\.[a-zA-Z\s]{1,}$/
 const uppercaseRegex = /[A-Z]/
 const lowercaseRegex = /[a-z]/
@@ -464,7 +462,6 @@ li {
       box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
     }
   }
-
 }
 
 .logout {
@@ -549,6 +546,5 @@ li {
     min-width: 300px;
     bottom: 55%;
   }
-
 }
 </style>
