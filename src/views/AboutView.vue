@@ -560,6 +560,41 @@ path {
 @media screen and (max-width: 880px) {
   main {
     flex-direction: column;
+
+    #img-container {
+      #rs-logo {
+        z-index: 10;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 424px) {
+  main {
+    #img-container {
+      img {
+        width: 200px;
+        margin: 40px auto;
+      }
+
+      #rs-logo {
+        width: 100px;
+        left: -55px;
+        top: -29px;
+      }
+
+      .effects {
+        top: 74%;
+        left: 25%;
+        height: 90px;
+        width: 90px;
+
+        svg {
+          height: 90px;
+          width: 90px;
+        }
+      }
+    }
   }
 }
 </style>
