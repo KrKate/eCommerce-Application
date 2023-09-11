@@ -1,0 +1,135 @@
+@font-face {
+  font-family: pokemon solid;
+  font-style: normal;
+  font-weight: 400;
+  src:
+    local('Pokemon Solid'),
+    url('@/assets/fonts/Pokemon Solid.woff') format('woff');
+}
+
+@mixin size($width, $height) {
+  width: $width;
+  height: $height;
+}
+
+@mixin view($width, $height, $position, $display) {
+  @include size($width, $height);
+  position: $position;
+  display: $display;
+}
+
+@mixin pokemon-text($color, $shadow) {
+  color: $color;
+  text-shadow: 2px 2px $shadow;
+  font-family: 'Pokemon Solid', sans-serif;
+}
+
+@mixin letters($animationName) {
+  animation: $animationName 4s forwards;
+  animation-delay: 4s;
+}
+
+@mixin fly-animation($left, $right, $rotate) {
+  from {
+    top: 55%;
+    left: 44%;
+    transform: rotate(360deg);
+  }
+  to {
+    left: $left;
+    top: $right;
+    transform: rotate($rotate);
+  }
+}
+
+@mixin yellow-button($top, $left) {
+  user-select: none;
+  width: 140px;
+  height: 40px;
+  z-index: 1;
+  background-color: #ffff00;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: $top;
+  font-size: 0.7rem;
+  left: $left;
+  font-family: 'Orbitron', sans-serif;
+  color: $app-black;
+  font-weight: 700;
+  border-radius: 15px;
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  -o-border-radius: 15px;
+  transform: scale(0.9);
+  box-shadow: 0 0 20px #ff6600 inset;
+  -webkit-box-shadow: 0 0 20px #ff6600 inset;
+  -moz-box-shadow: 0 0 20px #ff6600 inset;
+  -o-box-shadow: 0 0 20px #ff6600 inset;
+
+  &:hover {
+    transform: scale(1);
+  }
+
+  &.clickedYB {
+    border: 5px inset darkred;
+  }
+}
+
+@mixin box-shadow($x, $y, $color) {
+  box-shadow: $x $y $color;
+  -webkit-box-shadow: $x $color;
+  -moz-box-shadow: $x $y $color;
+  -o-box-shadow: $x $y $color;
+}
+
+@mixin border-radius($radius) {
+  border-radius: $radius;
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  -o-border-radius: $radius;
+}
+
+@mixin background-gradient($position, $color1, $percent1, $color2, $percent2, $color3, $percent3) {
+  background: linear-gradient($position, $color1 $percent1, $color2 $percent2, $color3 $percent3);
+  background: -webkit-linear-gradient(
+    $position,
+    $color1 $percent1,
+    $color2 $percent2,
+    $color3 $percent3
+  );
+  background: -moz-linear-gradient(
+    $position,
+    $color1 $percent1,
+    $color2 $percent2,
+    $color3 $percent3
+  );
+  background: -o-linear-gradient(
+    $position,
+    $color1 $percent1,
+    $color2 $percent2,
+    $color3 $percent3
+  );
+}
+
+@mixin border-bottom-right-radius($horizontal, $vertical) {
+  border-bottom-right-radius: $horizontal $vertical;
+  -webkit-border-bottom-right-radius: $horizontal $vertical;
+  -moz-border-bottom-right-radius: $horizontal $vertical;
+  -o-border-bottom-right-radius: $horizontal $vertical;
+}
+
+@mixin border-top-left-radius($horizontal, $vertical) {
+  border-top-left-radius: $horizontal $vertical;
+  -webkit-border-top-left-radius: $horizontal $vertical;
+  -moz-border-top-left-radius: $horizontal $vertical;
+  -o-border-top-left-radius: $horizontal $vertical;
+}
+
+@mixin border-bottom-left-radius($horizontal, $vertical) {
+  border-bottom-left-radius: $horizontal $vertical;
+  -webkit-border-bottom-left-radius: $horizontal $vertical;
+  -moz-border-bottom-left-radius: $horizontal $vertical;
+  -o-border-bottom-left-radius: $horizontal $vertical;
+}

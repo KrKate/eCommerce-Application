@@ -1,44 +1,81 @@
+import type { CustomerUpdateActions } from '@/global/constatnts'
+import { CountryCodes, Salutations } from '@/global/constatnts'
+
 export type Customer = {
-  customer: {
+  customer: CustomerInfo
+}
+
+export type CustomerInfo = {
+  id: string
+  version: number
+  versionModifiedAt: string
+  lastMessageSequenceNumber: number
+  createdAt: string
+  lastModifiedAt: string
+  lastModifiedBy: ModificationType
+  createdBy: ModificationType
+  customerNumber: string
+  email: string
+  firstName: string
+  lastName: string
+  middleName: string
+  title: string
+  salutation: string
+  dateOfBirth: string
+  companyName: string
+  password: string
+  addresses: CustomerAddress[]
+  defaultShippingAddressId: string
+  defaultBillingAddressId: string
+  shippingAddressIds: string[]
+  billingAddressIds: string[]
+  isEmailVerified: boolean
+  customerGroup: CustomerGroup
+  stores: []
+  authenticationMode: string
+}
+
+export type CustomerGroup = {
+  typeId: string
+  id: string
+}
+
+export type CustomerAddress = {
+  id: string
+  key: string
+  externalId: string
+  country: keyof CountryCodes
+  title: string
+  salutation: Salutations
+  firstName: string
+  lastName: string
+  streetName: string
+  streetNumber: string
+  additionalStreetInfo: string
+  postalCode: string
+  city: string
+  region: string
+  state: string
+  company: string
+  department: string
+  building: string
+  apartment: string
+  pOBox: string
+  phone: string
+  mobile: string
+  email: string
+  fax: string
+  additionalAddressInfo: string
+}
+
+export type ModificationType = {
+  isPlatformClient: boolean
+  user: {
+    typeId: string
     id: string
-    version: number
-    versionModifiedAt: string
-    lastMessageSequenceNumber: number
-    createdAt: string
-    lastModifiedAt: string
-    lastModifiedBy: {
-      isPlatformClient: boolean
-      user: {
-        typeId: string
-        id: string
-      }
-    }
-    createdBy: {
-      isPlatformClient: boolean
-      user: {
-        typeId: string
-        id: string
-      }
-    }
-    email: string
-    firstName: string
-    lastName: string
-    middleName: string
-    title: string
-    salutation: string
-    password: string
-    addresses: []
-    shippingAddressIds: []
-    billingAddressIds: []
-    isEmailVerified: boolean
-    customerGroup: {
-      typeId: string
-      id: string
-    }
-    stores: []
-    authenticationMode: string
   }
 }
+
 export type TokenResponse = {
   access_token: string
   token_type: string
@@ -54,6 +91,11 @@ export type CategoryResponse = {
   results: Category[]
 }
 
+type AncestorsType = {
+  typeId: string
+  id: string
+}
+
 export type Category = {
   id: string
   version: number
@@ -61,31 +103,22 @@ export type Category = {
   lastMessageSequenceNumber: number
   createdAt: string
   lastModifiedAt: string
-  lastModifiedBy: {
-    isPlatformClient: boolean
-    user: {
-      typeId: string
-      id: string
-    }
-  }
-  createdBy: {
-    isPlatformClient: boolean
-    user: {
-      typeId: string
-      id: string
-    }
-  }
+  lastModifiedBy: ModificationType
+  createdBy: ModificationType
   key: string
   name: {
     'en-US': string
+    ru: string
   }
   slug: {
     'en-US': string
+    ru: string
   }
   description: {
     'en-US': string
   }
-  ancestors: []
+  ancestors: AncestorsType[]
+  parent: AncestorsType[]
   orderHint: string
   externalId: string
   assets: []
@@ -113,4 +146,250 @@ export type UserRegistrationInfo = {
   firstName: string
   lastName: string
   password: string
+  dateOfBirth: string
+}
+
+export type UpdateUserInfoDTO = {
+  version: number
+  actions: ActionsDTO[]
+}
+
+export type ActionsDTO = {
+  action: CustomerUpdateActions
+  email?: string
+  firstName?: string
+  lastName?: string
+  middleName?: string
+  title?: string
+  salutation?: string
+  address?: Partial<CustomerAddress>
+  addressId?: string
+  customerNumber?: string
+  externalId?: string
+  companyName?: string
+  dateOfBirth?: string
+  vatId?: string
+}
+
+export type ChangePasswordDTO = {
+  id: string
+  version: number
+  currentPassword: string
+  newPassword: string
+}
+
+type ProductCategory = {
+  id: string
+  typeId: string
+}
+
+export type Product = {
+  id: string
+  version: number
+  productType: ProductCategory
+  masterData: {
+    current: {
+      categories: ProductCategory[]
+      description: {
+        'en-US': string
+      }
+      masterVariant: {
+        attributes: []
+        id: number
+        images: [
+          {
+            dimensions: {
+              h: number
+              w: number
+            }
+            url: string
+          }
+        ]
+        prices: [
+          {
+            value: {
+              type: string
+              fractionDigits: number
+              centAmount: number
+              currencyCode: string
+            }
+            id: string
+            discounted?: {
+              value?: {
+                type?: string
+                currencyCode?: string
+                centAmount?: number
+                fractionDigits?: number
+              }
+              discount?: {
+                typeId?: string
+                id?: string
+              }
+            }
+          }
+        ]
+        sku: string
+      }
+      name: {
+        'en-US': string
+      }
+      slug: {
+        'en-US': string
+      }
+      variants: []
+      searchKeywords: {}
+    }
+    hasStagedChanges: boolean
+    published: boolean
+    staged: {
+      categories: [
+        {
+          id: string
+          typeId: string
+        }
+      ]
+      description: {
+        'en-US': string
+      }
+      masterVariant: {
+        key: string
+        attributes: []
+        id: number
+        images: [
+          {
+            dimensions: {
+              h: number
+              w: number
+            }
+            url: string
+          },
+          {
+            dimensions?: {
+              h?: number
+              w?: number
+            }
+            url?: string
+          },
+          {
+            dimensions?: {
+              h?: number
+              w?: number
+            }
+            url?: string
+          }
+        ]
+        prices: [
+          {
+            value: {
+              type: string
+              fractionDigits: number
+              centAmount: number
+              currencyCode: string
+            }
+            id: string
+          }
+        ]
+        sku: string
+      }
+      name: {
+        'en-US': string
+      }
+      slug: {
+        'en-US': string
+      }
+      variants: []
+      searchKeywords: {}
+    }
+  }
+  taxCategory: {
+    id: string
+    typeId: string
+  }
+  createdAt: string
+  lastModifiedAt: string
+}
+
+export type ProductProjections = {
+  id: string
+  version: number
+  productType: ProductCategory
+  name: {
+    'en-US': string
+    ru: string
+  }
+  description: {
+    'en-US': string
+    ru: string
+  }
+  categories: ProductCategory[]
+  categoryOrderHints: {}
+  slug: {
+    'en-US': string
+    ru: string
+  }
+  metaTitle: {
+    'en-US': string
+    ru: string
+  }
+  metaDescription: {
+    'en-US': string
+    ru: string
+  }
+  masterVariant: {
+    id: number
+    sku: string
+    key: string
+    prices: [
+      {
+        id: string
+        value: {
+          type: string
+          currencyCode: string
+          centAmount: number
+          fractionDigits: number
+        }
+        discounted?: {
+          value?: {
+            type?: string
+            currencyCode?: string
+            centAmount?: number
+            fractionDigits?: number
+          }
+          discount?: {
+            typeId?: string
+            id?: string
+          }
+        }
+      }
+    ]
+    images: [
+      {
+        url: string
+        label: string
+        dimensions: {
+          w: number
+          h: number
+        }
+      }
+    ]
+    attributes: []
+    assets: []
+  }
+  variants: []
+  searchKeywords: {}
+  hasStagedChanges: boolean
+  published: boolean
+  key: string
+  taxCategory: ProductCategory
+  priceMode: string
+  createdAt: string
+  lastModifiedAt: string
+}
+
+export type ProductResponse = {
+  limit: number
+  offset: number
+  count: number
+  total: number
+  results: Product[] | ProductProjections[]
 }

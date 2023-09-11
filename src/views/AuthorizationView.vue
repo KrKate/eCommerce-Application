@@ -1,40 +1,18 @@
 <template>
   <div class="login-page">
-    <img
-      src="@/assets/images/psyduck.svg"
-      alt="error"
-      :id="emailErrors.length || passwordErrors.length || isCorrectData ? 'show' : 'error'"
-    />
-    <div
-      v-if="emailErrors.length || passwordErrors.length || isCorrectData"
-      :class="
-        emailErrors.length || passwordErrors.length || isCorrectData ? 'showClip' : 'hideClip'
-      "
-    ></div>
-    <div
-      v-if="emailErrors.length || passwordErrors.length || isCorrectData"
-      :class="
-        emailErrors.length || passwordErrors.length || isCorrectData ? 'showClip1' : 'hideClip1'
-      "
-    ></div>
-    <div
-      v-if="emailErrors.length || passwordErrors.length || isCorrectData"
-      :class="
-        emailErrors.length || passwordErrors.length || isCorrectData
-          ? 'show-error-message'
-          : 'hide-error-message'
-      "
-    >
-      <ul>
-        <li v-for="error in passwordErrors" :key="error">{{ error }}</li>
-        <li v-for="error in emailErrors" :key="error">{{ error }}</li>
+    <AmBreadcrumbs :showCurrentCrumb="true" />
+    <img src="@/assets/images/psyduck.svg" alt="error" :id="isShowErrors ? 'show' : 'error'" />
+    <div v-if="isShowErrors" :class="isShowErrors ? 'showClip' : 'hideClip'"></div>
+    <div v-if="isShowErrors" :class="isShowErrors ? 'showClip1' : 'hideClip1'"></div>
+    <div v-if="isShowErrors" :class="isShowErrors ? 'show-error-message' : 'hide-error-message'">
+      <ul v-if="isShowErrors">
+        <li v-for="error in [...emailErrors, ...passwordErrors]" :key="error">{{ error }}</li>
         <li v-if="isCorrectData">Wrong login or password!</li>
       </ul>
     </div>
     <div class="container-forms">
-      <h2 v-if="!store.isLogin">Login</h2>
-      <h2 v-if="store.isLogin">Successfully logged!</h2>
-      <form method="post" novalidate="true" ref="log" @submit.prevent="login">
+      <h2>{{ store.isLogin ? 'Successfully logged!' : 'Login' }}</h2>
+      <form :novalidate="true" @submit.prevent="login">
         <div class="form-group" v-if="!store.isLogin">
           <label for="email">Email</label>
           <input
@@ -43,51 +21,41 @@
             ref="email"
             placeholder="user@example.com"
             v-model="email"
-            @input.prevent="validateEmail"
-            required
+            @input.prevent="debounce(validateEmail)"
             :class="{ 'invalid-input': emailErrors.length > 0 }"
           />
-          <div class="clear-cross" v-if="email.length" @click="$refs.email.value = ''">
-            &#x2715;
-          </div>
+          <div class="clear-cross" v-if="email.length" @click="clearEmail">&#x2715;</div>
         </div>
         <div class="form-group" v-if="!store.isLogin">
           <label for="password">Password</label>
           <input
             type="password"
             id="password"
-            placeholder="Make it secure!"
+            placeholder="Enter your password!"
             v-model="password"
-            @input.prevent="validatePassword"
+            @input.prevent="debounce(validatePassword)"
             ref="password"
-            required
             :class="{ 'invalid-input': passwordErrors.length > 0 }"
           />
           <img
             src="@/assets/icons/eye.png"
             class="password-toggle"
-            @click="
-              () => {
-                $refs.password.type = $refs.password.type === 'password' ? 'text' : 'password'
-                this.isShowPassword = !this.isShowPassword
-              }
-            "
+            @click="changePasswordVisibility"
             v-if="password.length"
+            alt="show-password"
           />
           <div class="crossed" v-if="isShowPassword"></div>
-          <div class="clear-cross" v-if="password.length" @click="$refs.password.value = ''">
-            &#x2715;
-          </div>
+          <div class="clear-cross" v-if="password.length" @click="clearInput">&#x2715;</div>
         </div>
         <div class="signUpContainer" v-if="!store.isLogin">
-          <input class="signUp" type="submit" value="SIGN IN" :disabled="!formIsValid" />
+          <input class="signUp" type="submit" value="SIGN IN" :disabled="isSubmitDisabled" />
         </div>
         <div class="logout" v-if="store.isLogin">
           <img src="@/assets/gif/login_success.gif" alt="login_success" />
           <h2>Redirecting...</h2>
         </div>
       </form>
-      <p class="registration-link" v-if="!store.isLogin">
+      <p class="login-link" v-if="!store.isLogin">
         Not registered yet? <RouterLink to="/registration">Register here</RouterLink>
       </p>
     </div>
@@ -96,99 +64,96 @@
 
 <script lang="ts">
 import { useUserStore } from '@/stores/authorization'
-import router from '@/router'
+import Validator from '@/services/validator'
+import { defineComponent } from 'vue'
 import { EmailError, PasswordError } from '@/global/constatnts'
-const formatEmailRegex = /^[a-zA-Z0-9._%+-\s]+@[a-zA-Z0-9.-\s]+\.[a-zA-Z\s]{1,}$/
-const uppercaseRegex = /[A-Z]/
-const lowercaseRegex = /[a-z]/
-const digitRegex = /\d/
-const specialRegex = /^(?=.*[!@#$%^&*()+=._-])/
-const domainRegex = /^\s*[^\s@]+@[^\s@]+\.[^\s@]{2,}\s?$/
 
-export default {
+const validator = new Validator()
+
+export default defineComponent({
   name: 'AuthorizationView',
   data() {
     return {
       email: '',
       password: '',
-      emailErrors: [] as string[],
-      passwordErrors: [] as string[],
+      emailErrors: [] as EmailError[],
+      passwordErrors: [] as PasswordError[],
       isCorrectData: false,
+      isEmailChanged: false,
+      isPasswordChanged: false,
+      isFormValid: false,
       isShowPassword: false,
-      store: useUserStore()
+      store: useUserStore(),
+      timerID: -1
     }
   },
   computed: {
-    formIsValid: function () {
+    isShowErrors() {
       return (
-        this.emailErrors.length === 0 &&
-        this.passwordErrors.length === 0 &&
+        (!this.isFormValid &&
+          ((this.isEmailChanged && this.emailErrors.length > 0) ||
+            (this.isPasswordChanged && this.passwordErrors.length > 0))) ||
+        this.isCorrectData
+      )
+    },
+    isSubmitDisabled() {
+      return !(
+        !this.emailErrors.length &&
+        !this.passwordErrors.length &&
         this.email &&
         this.password
       )
     }
   },
   methods: {
-    validateEmail: function () {
-      this.emailErrors = []
-      if (!this.email) this.emailErrors.push(EmailError.REQUIRED)
-      if (!this.validEmailFormat(this.email)) this.emailErrors.push(EmailError.FORMAT)
-      if (this.validEmailWhitespace(this.email)) this.emailErrors.push(EmailError.WHITESPACE)
-      if (!this.validEmailDomain(this.email)) this.emailErrors.push(EmailError.DOMAIN)
-      if (!this.validEmailSymbol(this.email)) this.emailErrors.push(EmailError.SYMBOL)
+    changePasswordVisibility() {
+      const pass = this.$refs.password as HTMLInputElement
+      if (pass) {
+        pass.type = pass.type === 'password' ? 'text' : 'password'
+        this.isShowPassword = !this.isShowPassword
+      }
     },
-    validatePassword: function () {
-      this.passwordErrors = []
-      if (!this.password) this.passwordErrors.push(PasswordError.REQUIRED)
-      if (!this.validPasswordLength(this.password)) this.passwordErrors.push(PasswordError.LENGTH)
-      if (!this.validPasswordUppercase(this.password))
-        this.passwordErrors.push(PasswordError.UPPERCASE)
-      if (!this.validPasswordLowercase(this.password))
-        this.passwordErrors.push(PasswordError.LOWERCASE)
-      if (!this.validPasswordDigit(this.password)) this.passwordErrors.push(PasswordError.DIGIT)
-      if (!this.validPasswordSpecial(this.password))
-        this.passwordErrors.push(PasswordError.SPECIAL_CHARACTER)
-      if (this.validPasswordWhitespace(this.password))
-        this.passwordErrors.push(PasswordError.WHITESPACE)
+    clearInput() {
+      const pass = this.$refs.password as HTMLInputElement
+      if (pass) pass.value = ''
     },
-    validEmailFormat: function (email: string) {
-      return formatEmailRegex.test(email)
+    clearEmail() {
+      const email = this.$refs.email as HTMLInputElement
+      email.value = ''
     },
-    validEmailWhitespace: function (email: string) {
-      return email.trim() !== email
+    validateEmail() {
+      if (!this.isEmailChanged) this.isEmailChanged = true
+      validator.validateEmail(this.email)
+      this.emailErrors = validator.errorsEmail
+      this.isFormValid =
+        this.emailErrors.length === 0 &&
+        this.passwordErrors.length === 0 &&
+        !!this.email &&
+        !!this.password
+      return this.emailErrors.length === 0
     },
-    validEmailDomain: function (email: string) {
-      return domainRegex.test(email)
+    validatePassword() {
+      if (!this.isPasswordChanged) this.isPasswordChanged = true
+      validator.validatePassword(this.password)
+      this.passwordErrors = validator.errorsPassword
+      this.isFormValid =
+        this.emailErrors.length === 0 &&
+        this.passwordErrors.length === 0 &&
+        !!this.email &&
+        !!this.password
+      return this.passwordErrors.length === 0
     },
-    validEmailSymbol: function (email: string) {
-      return email.includes('@')
-    },
-
-    validPasswordLength: function (password: string) {
-      return password.length >= 8
-    },
-    validPasswordUppercase: function (password: string) {
-      return uppercaseRegex.test(password)
-    },
-    validPasswordLowercase: function (password: string) {
-      return lowercaseRegex.test(password)
-    },
-    validPasswordDigit: function (password: string) {
-      return digitRegex.test(password)
-    },
-    validPasswordSpecial: function (password: string) {
-      return specialRegex.test(password)
-    },
-    validPasswordWhitespace: function (password: string) {
-      return password.trim() !== password
+    debounce(func: Function) {
+      clearTimeout(this.timerID)
+      this.timerID = setTimeout(() => func(), 1000)
     },
     async login() {
+      this.store.isLoading = true
       if (this.email && this.password) {
         await this.store.fetchToken()
         if (await this.store.getTokens(this.email, this.password)) {
           if (await this.store.login(this.email, this.password)) {
-            this.store.changeLogin()
-            setTimeout(() => router.push('/'), 2000)
+            await this.store.changeLogin()
           } else {
             this.isCorrectData = true
             setTimeout(() => (this.isCorrectData = false), 6000)
@@ -198,32 +163,46 @@ export default {
           setTimeout(() => (this.isCorrectData = false), 6000)
         }
       }
+      this.store.isLoading = false
     }
+  },
+  unmounted() {
+    if (this.store.redirectTimer > 0) clearTimeout(this.store.redirectTimer)
   }
-}
+})
 </script>
 
 <style scoped lang="scss">
 @import '@/assets/styles/mixins';
 @import '@/assets/styles/colors';
+
 .login-page {
-  width: 100%;
-  display: flex;
+  @include view(100%, 100vh, relative, flex);
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
   position: relative;
+
+  nav {
+    display: flex;
+    position: absolute;
+    font-size: 1rem;
+    width: 100%;
+    padding-left: 40px;
+    top: 160px;
+  }
 }
+
 .container-forms {
   background-color: $app-gray;
-  z-index: 100;
   border-radius: 20px;
   margin: 150px auto 0 auto;
   padding: 15px 30px;
   max-height: fit-content;
-  min-height: 50vh;
   max-width: 500px;
+  min-height: 50vh;
+  z-index: 100;
+
   @media screen and (max-width: 500px) {
     max-width: 300px;
   }
@@ -256,7 +235,7 @@ export default {
   bottom: 58%;
   margin: 0 auto;
   overflow: hidden;
-  animation: showDiv1 4s forwards;
+  animation: showMessage 4s forwards;
   min-width: 640px;
 }
 
@@ -264,24 +243,12 @@ export default {
   position: absolute;
   z-index: 600;
   height: 0;
-  background-color: white;
+  background-color: $app-white;
   border-radius: 60px;
   padding: 0;
   border: none;
   bottom: 58%;
   left: 20%;
-}
-
-@keyframes showDiv1 {
-  0% {
-    opacity: 0;
-  }
-  60% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
 }
 
 .hideClip {
@@ -290,7 +257,7 @@ export default {
   clip-path: polygon(37% 12%, 9% 15%, 93% 111%);
   z-index: 605;
   left: 53%;
-  background-color: white;
+  background-color: $app-white;
 }
 
 .hideClip1 {
@@ -299,7 +266,7 @@ export default {
   clip-path: polygon(45% 20%, 5% 20%, 92% 110%);
   z-index: 604;
   left: 53%;
-  background-color: black;
+  background-color: $app-black;
 }
 
 .showClip {
@@ -311,7 +278,7 @@ export default {
   height: 100px;
   z-index: 605;
   left: 53%;
-  background-color: white;
+  background-color: $app-white;
   animation: showDiv 4s forwards;
 }
 
@@ -324,28 +291,17 @@ export default {
   height: 100px;
   z-index: 604;
   left: 53%;
-  background-color: black;
+  background-color: $app-black;
   animation: showDiv 5s forwards;
-}
-
-@keyframes showDiv {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
 }
 
 .invalid-input {
   border: 2px solid $app-red;
   box-shadow: 0 0 1rem $app-red;
 }
+
 h2 {
-  @include pokemon-text($app-yelow, $app-dark-blue);
+  @include pokemon-text($app-yellow, $app-dark-blue);
   -webkit-text-stroke: 1px $app-light-blue;
   text-align: center;
   font-size: 2rem;
@@ -364,7 +320,7 @@ h2 {
     right: 35px;
     top: 50px;
     transform: rotate(-45deg);
-    border: 1px solid black;
+    border: 1px solid $app-black;
   }
 
   .password-toggle {
@@ -410,12 +366,12 @@ input {
   }
 }
 
-.registration-link {
+.login-link {
   text-align: center;
 }
 
 .error {
-  color: red;
+  color: $app-red;
   font-size: 12px;
   text-align: left;
 }
@@ -437,26 +393,30 @@ li {
   display: flex;
   justify-content: center;
 }
-.signUp:disabled {
-  background-color: whitesmoke;
-  color: $app-red;
-  width: 50%;
-  cursor: default;
-}
 
 .signUp {
   width: 100%;
   padding: 10px;
   background-color: $app-red;
-  color: white;
+  color: $app-white;
   border: none;
   cursor: pointer;
   margin-bottom: 20px;
   border-radius: 8px;
+  font-size: 0.8rem;
   font-weight: 500;
   transition: all 2s ease;
-  &:hover {
+
+  &:disabled {
+    opacity: 0.5;
+    width: 50%;
+    cursor: default;
+    flex-grow: 0;
+  }
+
+  &:hover:not(:disabled) {
     font-weight: 700;
+
     &:active {
       transform: translateY(-1px);
       box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
@@ -468,6 +428,29 @@ li {
   img {
     display: flex;
     margin: 0 auto;
+  }
+}
+
+@keyframes showMessage {
+  0% {
+    opacity: 0;
+  }
+  60% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes showDiv {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }
 
@@ -488,10 +471,11 @@ li {
     max-height: 200px;
     left: 64%;
   }
+
   .show-error-message {
     border-radius: 60px;
     padding: 5px 20px;
-    border: 3px solid black;
+    border: 3px solid $app-black;
     font-size: 0.8rem;
     width: 80vw;
     min-width: 300px;
@@ -505,15 +489,17 @@ li {
     top: 79%;
     transform: rotate(180deg);
   }
+
   .show-error-message {
     border-radius: 60px;
     padding: 5px 20px;
-    border: 3px solid black;
+    border: 3px solid $app-black;
     font-size: 0.6rem;
     width: 95vw;
     min-width: 300px;
     bottom: 55%;
   }
+
   .showClip {
     position: absolute;
     top: 38%;
@@ -524,9 +510,10 @@ li {
     z-index: 605;
     left: 53%;
     background-color: white;
-    animation: showDiv-82752b24 4s forwards;
+    animation: showDiv 4s forwards;
   }
-  .showClip1[data-v-82752b24] {
+
+  .showClip1 {
     position: absolute;
     top: 38%;
     opacity: 1;
@@ -540,7 +527,7 @@ li {
   .show-error-message {
     border-radius: 60px;
     padding: 10px 10px;
-    border: 3px solid black;
+    border: 3px solid $app-black;
     font-size: 0.6rem;
     width: 95vw;
     min-width: 300px;

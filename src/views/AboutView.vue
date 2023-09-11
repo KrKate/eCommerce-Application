@@ -1,15 +1,27 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
-  </div>
+  <main>
+    <AmBreadcrumbs :showCurrentCrumb="true" />
+    <p>About page</p>
+  </main>
 </template>
 
-<style>
-@media (min-width: 1024px) {
-  .about {
-    min-height: 100vh;
+<style scoped lang="scss">
+main {
+  display: flex;
+  margin: auto;
+  padding-top: 160px;
+  font-size: 2rem;
+  font-weight: 700;
+  font-style: italic;
+  flex-direction: column;
+  align-items: center;
+
+  nav {
     display: flex;
-    align-items: center;
+    font-size: 1rem;
+    width: 100%;
+    padding-left: 40px;
   }
 }
 </style>
+<script setup lang="ts"></script>
