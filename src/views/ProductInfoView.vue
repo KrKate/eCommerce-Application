@@ -1,5 +1,6 @@
 <template>
   <main>
+    <AmBreadcrumbs :showCurrentCrumb="true" />
     <div class="images-container">
       <div class="alternate-images">
         <img
@@ -27,13 +28,13 @@
     <div class="main-description">
       <h1 class="title">{{ product.masterData?.current.name['en-US'] }}</h1>
       <div class="price-container">
-        <div class="price"  :class="{ 'crossed-out': getDiscount(product) !== ' ' }">
+        <div class="price" :class="{ 'crossed-out': getDiscount(product) !== ' ' }">
           €
           {{
             (product.masterData?.current.masterVariant.prices[0].value.centAmount / 100).toFixed(2)
           }}
         </div>
-        <div class="discount" >
+        <div class="discount">
           {{ getDiscount(product) }}
         </div>
       </div>
@@ -41,17 +42,17 @@
       <button class="add-button">Add to Cart</button>
     </div>
     <div class="modal-wrapper" v-show="isModalOpen">
-    <div v-show="isModalOpen" class="modal">
-      <button class="arrow modal-arrow" @click="previousImage">❮</button>
-      <img
-        class="modal-content"
-        :src="product.masterData?.staged.masterVariant.images[currentImageIndex]?.url"
-        alt="Pokemon"
-      />
-      <span class="close" @click="closeModal">&times;</span>
-      <button class="arrow modal-arrow" @click="nextImage">❯</button>
+      <div v-show="isModalOpen" class="modal">
+        <button class="arrow modal-arrow" @click="previousImage">❮</button>
+        <img
+          class="modal-content"
+          :src="product.masterData?.staged.masterVariant.images[currentImageIndex]?.url"
+          alt="Pokemon"
+        />
+        <span class="close" @click="closeModal">&times;</span>
+        <button class="arrow modal-arrow" @click="nextImage">❯</button>
+      </div>
     </div>
-  </div>
   </main>
 </template>
 
@@ -73,6 +74,7 @@ export default {
   async beforeMount() {
     this.store.isLoading = true
     const productId = this.$route.params.id as string
+    if (!this.store.token) await this.store.readCookie()
     if (await this.store.checkProductExistsById(productId)) {
       this.product = await this.store.getProductById(productId)
     } else {
@@ -121,13 +123,22 @@ export default {
 main {
   display: flex;
   margin: auto;
-  padding-top: 200px;
+  padding-top: 160px;
   font-size: 2rem;
   font-weight: 700;
+  flex-wrap: wrap;
   font-style: italic;
   align-items: center;
   gap: 30px;
   justify-content: center;
+
+  nav {
+    display: flex;
+    font-size: 1rem;
+    width: 100%;
+    padding-left: 40px;
+  }
+
   @media screen and (max-width: 600px) {
     flex-direction: column;
     gap: 10px;
@@ -168,12 +179,15 @@ h1 {
 }
 
 .images-container {
-  width: 30%;
+  width: 50%;
   display: flex;
   flex-direction: column-reverse;
   gap: 10px;
-  @media screen and (max-width: 600px) {
-    width: 60%;
+  @media screen and (max-width: 450px) {
+    width: 70%;
+  }
+  @media screen and (max-width: 450px) {
+    width: 80%;
   }
 }
 
@@ -186,16 +200,11 @@ h1 {
   }
 }
 
-
 .alternate-images {
   display: flex;
   gap: 10px;
   justify-content: center;
-  height: 120px;
-  @media screen and (max-width: 600px) {
-    justify-content: center;
-    height: 120px;
-  }
+  height: auto;
 }
 
 .alternate-img {
@@ -206,6 +215,12 @@ h1 {
 .main-image {
   border: 3px solid #cccccc;
   border-radius: 10px;
+}
+
+.description {
+  @media screen and (max-width: 600px) {
+    text-align: justify;
+  }
 }
 
 .price-container {

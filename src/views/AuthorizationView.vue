@@ -1,5 +1,6 @@
 <template>
   <div class="login-page">
+    <AmBreadcrumbs :showCurrentCrumb="true" />
     <img src="@/assets/images/psyduck.svg" alt="error" :id="isShowErrors ? 'show' : 'error'" />
     <div v-if="isShowErrors" :class="isShowErrors ? 'showClip' : 'hideClip'"></div>
     <div v-if="isShowErrors" :class="isShowErrors ? 'showClip1' : 'hideClip1'"></div>
@@ -20,7 +21,7 @@
             ref="email"
             placeholder="user@example.com"
             v-model="email"
-            @input.prevent="validateEmail"
+            @input.prevent="debounce(validateEmail)"
             :class="{ 'invalid-input': emailErrors.length > 0 }"
           />
           <div class="clear-cross" v-if="email.length" @click="clearEmail">&#x2715;</div>
@@ -32,7 +33,7 @@
             id="password"
             placeholder="Enter your password!"
             v-model="password"
-            @input.prevent="validatePassword"
+            @input.prevent="debounce(validatePassword)"
             ref="password"
             :class="{ 'invalid-input': passwordErrors.length > 0 }"
           />
@@ -82,7 +83,8 @@ export default defineComponent({
       isPasswordChanged: false,
       isFormValid: false,
       isShowPassword: false,
-      store: useUserStore()
+      store: useUserStore(),
+      timerID: -1
     }
   },
   computed: {
@@ -141,13 +143,17 @@ export default defineComponent({
         !!this.password
       return this.passwordErrors.length === 0
     },
+    debounce(func: Function) {
+      clearTimeout(this.timerID)
+      this.timerID = setTimeout(() => func(), 1000)
+    },
     async login() {
       this.store.isLoading = true
       if (this.email && this.password) {
         await this.store.fetchToken()
         if (await this.store.getTokens(this.email, this.password)) {
           if (await this.store.login(this.email, this.password)) {
-            this.store.changeLogin()
+            await this.store.changeLogin()
           } else {
             this.isCorrectData = true
             setTimeout(() => (this.isCorrectData = false), 6000)
@@ -175,6 +181,16 @@ export default defineComponent({
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: relative;
+
+  nav {
+    display: flex;
+    position: absolute;
+    font-size: 1rem;
+    width: 100%;
+    padding-left: 40px;
+    top: 160px;
+  }
 }
 
 .container-forms {

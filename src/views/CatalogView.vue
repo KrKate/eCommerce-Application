@@ -1,5 +1,6 @@
 <template>
   <main>
+    <AmBreadcrumbs :showCurrentCrumb="true" />
     <h1>Choose your pokemon!</h1>
     <div class="setting-bar">
       <form class="search-form">
@@ -11,18 +12,95 @@
           @input.prevent="debounce(sort)"
         />
         <select class="sort-options" @change.prevent="changeSorting" ref="sorting">
-          <option value="" selected>sort by...</option>
+          <option value="" selected disabled>sort by...</option>
           <option value="asc">Name ASC</option>
           <option value="desc">Name DESC</option>
+          <option value="prasc">Price ASC</option>
+          <option value="prdesc">Price DESC</option>
         </select>
       </form>
       <button class="category-btn" @click="toggleSelect">Category</button>
+      <div class="breadcrumbs">
+        <button @click="clearFilters">All pokemons</button>
+        <p>&DoubleLongRightArrow;</p>
+        <select ref="selectedCategoryType" @change.prevent="changeParenCategory">
+          <option value="" selected disabled>Type</option>
+          <option v-for="cat in getParentCategory" :value="cat.id" :key="cat.id">
+            {{ cat.name['en-US'] }}
+          </option>
+        </select>
+        <p>&DoubleLongRightArrow;</p>
+        <select @change.prevent="changeChildCategory" ref="selectedCategoryGen">
+          <option value="" selected disabled>Generation</option>
+          <option
+            v-for="catChild in getChildCategory(parentCategories)"
+            :value="catChild.id"
+            :key="catChild.id"
+          >
+            {{ catChild.name['en-US'] }}
+          </option>
+        </select>
+      </div>
     </div>
     <div class="select" :class="{ show: showSelect }">
+      <fieldset>
+        <legend>Select size:</legend>
+        <div>
+          <label
+            >all<input checked name="drone" @change.prevent="sort" type="radio" value="" ref="all"
+          /></label>
+        </div>
+        <div>
+          <label
+            >small<input name="drone" @change.prevent="sort" type="radio" value="small" ref="small"
+          /></label>
+        </div>
+        <div>
+          <label
+            >big<input name="drone" @change.prevent="sort" type="radio" value="small" ref="big"
+          /></label>
+        </div>
+        <div>
+          <label
+            >middle<input
+              name="drone"
+              @change.prevent="sort"
+              type="radio"
+              value="small"
+              ref="middle"
+          /></label>
+        </div>
+      </fieldset>
+      <div class="price-range">
+        <span class="leftRange">{{ minPrice }}</span>
+        <input
+          id="minRange"
+          type="range"
+          min="0"
+          max="1200"
+          step="10"
+          @change="sort"
+          @input="changeRangeValue($event)"
+          :value="minPrice"
+        />
+        <input
+          id="maxRange"
+          type="range"
+          min="0"
+          max="1200"
+          step="10"
+          @change="sort"
+          @input="changeRangeValue($event)"
+          :value="maxPrice"
+        />
+        <span class="rightRange">{{ maxPrice }}</span>
+      </div>
+      <label>Categories</label>
       <div class="item" v-for="item in getParentCategory" :key="item.id">
         <input
           type="checkbox"
           @change="checkCategory($event)"
+          :ref="item.id"
           :id="item.id"
           :value="item.name['en-US']"
         />
@@ -32,6 +110,7 @@
             <input
               type="checkbox"
               @change="checkCategory($event)"
+              :ref="sub.id"
               :id="sub.id"
               :value="sub.name['en-US']"
             />
@@ -39,6 +118,7 @@
           </li>
         </ul>
       </div>
+      <button @click="clearFilters">Clear filters</button>
     </div>
     <div class="cards-container">
       <div class="product-card" v-for="cart in filteredProducts" :key="cart.id">
@@ -84,6 +164,7 @@
 <script lang="ts">
 import { useUserStore } from '@/stores/authorization'
 import type { Category, ProductProjections, ProductResponse } from '@/stores/types'
+import type HTMLSelectElement from 'happy-dom/lib/nodes/html-select-element/HTMLSelectElement'
 
 export default {
   data() {
@@ -93,12 +174,15 @@ export default {
       currentPage: 0,
       offset: 0,
       limit: 30,
+      parentCategories: '',
       categories: [] as Category[],
       response: {} as ProductResponse,
       filteredProducts: [] as ProductProjections[],
       filteredCategory: [] as string[],
       timerID: -1,
-      showSelect: false
+      showSelect: false,
+      minPrice: 0,
+      maxPrice: 1200
     }
   },
   async mounted() {
@@ -106,11 +190,22 @@ export default {
     if (!this.store.token) {
       await this.store.readCookie()
     }
-    this.response = await this.store.getSortedProducts(this.$refs.limit.value)
+    this.response = await this.store.getSortedProducts(this.limit.toString())
     this.products = this.response.results as ProductProjections[]
     this.filteredProducts = [...this.products]
     this.categories = await this.store.getCategories()
-    this.store.isLoading = false
+    Promise.all(
+      Array.from(document.images)
+        .filter((img) => !img.complete)
+        .map(
+          (img) =>
+            new Promise((resolve) => {
+              img.onload = img.onerror = resolve
+            })
+        )
+    ).then(() => {
+      this.store.isLoading = false
+    })
   },
   methods: {
     getChildCategory(id: string) {
@@ -118,12 +213,41 @@ export default {
         .filter((value) => value.ancestors.length > 0)
         .filter((value) => value.ancestors[0].id === id)
     },
-    checkCategory(ev) {
-      if (ev.target.checked) {
-        this.filteredCategory.push(ev.target.id)
+    changeParenCategory() {
+      this.parentCategories = (this.$refs.selectedCategoryType as HTMLSelectElement).value
+      this.filteredCategory = [this.parentCategories]
+      this.sort()
+    },
+    changeChildCategory() {
+      this.filteredCategory = [(this.$refs.selectedCategoryGen as HTMLSelectElement).value]
+      this.sort()
+    },
+    checkCategory(ev: Event) {
+      const target = ev.target as HTMLInputElement
+      if (target.checked) {
+        this.filteredCategory.push(target.id)
       } else {
-        this.filteredCategory = this.filteredCategory.filter((value) => value !== ev.target.id)
+        this.filteredCategory = this.filteredCategory.filter((value) => value !== target.id)
       }
+      this.sort()
+    },
+    changeRangeValue(ev: Event) {
+      const target = ev.target as HTMLInputElement
+      const val = parseInt(target.value, 10)
+      if (target.id === 'minRange') {
+        if (val < this.maxPrice) this.minPrice = val
+      } else {
+        if (val > this.minPrice) this.maxPrice = val
+      }
+    },
+    clearFilters() {
+      ;(this.$refs.selectedCategoryType as HTMLSelectElement).value = ''
+      ;(this.$refs.selectedCategoryGen as HTMLSelectElement).value = ''
+      ;(this.$refs.all as HTMLInputElement).checked = true
+      this.minPrice = 0
+      this.maxPrice = 1200
+      this.categories.forEach((value) => (this.$refs[value.id][0].checked = false))
+      this.filteredCategory = []
       this.sort()
     },
     getImageUrl(cart: ProductProjections) {
@@ -149,7 +273,7 @@ export default {
     changeLimit() {
       this.currentPage = 0
       this.offset = 0
-      this.limit = parseInt(this.$refs?.limit.value || 0, 10)
+      this.limit = parseInt((this.$refs.limit as HTMLInputElement).value, 10)
       this.sort()
     },
     async sort() {
@@ -163,15 +287,28 @@ export default {
         })
         cat = `&filter.query=categories.id: ${cat.slice(0, -1)}`
       }
-      if (this.$refs.search.value) {
-        search = `&text.en-us="${this.$refs.search.value}"&fuzzy=true`
+      if ((this.$refs.small as HTMLInputElement).checked)
+        cat += `&filter.query=variants.attributes.Size:"small"`
+      if ((this.$refs.big as HTMLInputElement).checked)
+        cat += `&filter.query=variants.attributes.Size:"big"`
+      if ((this.$refs.middle as HTMLInputElement).checked)
+        cat += `&filter.query=variants.attributes.Size:"middle"`
+      if ((this.$refs.search as HTMLInputElement).value) {
+        search = `&text.en-us="${(this.$refs.search as HTMLInputElement).value}"&fuzzy=true`
       }
-      if (this.$refs.sorting.value) {
-        sort = `&sort=name.en-us ${this.$refs.sorting.value}`
+      cat += `&filter=variants.price.centAmount:range (${this.minPrice * 100} to ${
+        this.maxPrice * 100
+      })`
+      if ((this.$refs.sorting as HTMLSelectElement).value) {
+        if ((this.$refs.sorting as HTMLSelectElement).value.includes('pr')) {
+          sort = `&sort=price ${(this.$refs.sorting as HTMLSelectElement).value.replace('pr', '')}`
+        } else {
+          sort = `&sort=name.en-us ${(this.$refs.sorting as HTMLSelectElement).value}`
+        }
       }
       this.response = await this.store.getSortedProducts(
-        this.limit,
-        this.limit * this.currentPage,
+        this.limit.toString(),
+        (this.limit * this.currentPage).toString(),
         `${sort}${cat}${search}`
       )
       this.products = this.response.results as ProductProjections[]
@@ -180,7 +317,8 @@ export default {
     },
     getPriceValue(cart: ProductProjections) {
       if (cart.masterVariant.prices.length > 0) {
-        return `€ ${cart.masterVariant.prices[0].value.centAmount / 100}`
+        const price = parseInt(cart.masterVariant.prices[0].value.centAmount / 100, 10)
+        return `€ ${price}`
       } else {
         return 'free'
       }
@@ -192,11 +330,6 @@ export default {
     toggleSelect() {
       this.showSelect = !this.showSelect
     },
-    filterByName() {
-      this.filteredProducts = this.products.filter((value) =>
-        value.name['en-US'].toLowerCase().includes(this.$refs.search.value.toLowerCase())
-      )
-    },
     debounce(func: Function) {
       clearTimeout(this.timerID)
       this.timerID = setTimeout(() => func(), 500)
@@ -205,9 +338,6 @@ export default {
   computed: {
     getParentCategory() {
       return this.categories.filter((value) => value.ancestors.length === 0)
-    },
-    getNumberOfPage() {
-      return Math.floor(this.response.total / this.response.limit) || 2
     }
   }
 }
@@ -235,12 +365,19 @@ h1 {
 main {
   display: flex;
   margin: auto;
-  padding-top: 200px;
+  padding-top: 160px;
   font-size: 2rem;
   font-weight: 700;
   font-style: italic;
   flex-direction: column;
   overflow-x: hidden;
+
+  nav {
+    display: flex;
+    font-size: 1rem;
+    width: 100%;
+    padding-left: 24px;
+  }
 }
 
 .cards-container {
@@ -491,7 +628,34 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
+  row-gap: 10px;
+
+  .breadcrumbs {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+
+    button,
+    select {
+      background: transparent;
+      border: none;
+      color: $app-dark-blue;
+      font-size: 0.8rem;
+
+      &:hover {
+        scale: 1.2;
+      }
+    }
+
+    p {
+      margin: 0 20px;
+    }
+  }
 }
+
 .select {
   display: none;
   flex-direction: column;
@@ -510,6 +674,71 @@ main {
   ul {
     list-style: none;
   }
+
+  label {
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+
+  .item {
+    label {
+      font-weight: 400;
+    }
+  }
+
+  fieldset {
+    margin-bottom: 20px;
+
+    legend {
+      font-weight: 700;
+    }
+    label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0;
+      font-weight: 400;
+    }
+  }
+
+  .price-range {
+    display: flex;
+    position: relative;
+    min-height: 20px;
+    justify-content: center;
+    align-items: center;
+
+    .leftRange {
+      display: flex;
+      position: absolute;
+      left: 0;
+    }
+
+    .rightRange {
+      display: flex;
+      position: absolute;
+      right: 0;
+    }
+
+    input {
+      position: absolute;
+      display: flex;
+      width: 70%;
+      height: 1px;
+      pointer-events: none;
+    }
+
+    input[type='range']::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      pointer-events: all;
+      width: 5px;
+      height: 5px;
+      background-color: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px #c6c6c6;
+      cursor: pointer;
+    }
+  }
+
   @media screen and (max-width: 760px) {
     top: 280px;
   }

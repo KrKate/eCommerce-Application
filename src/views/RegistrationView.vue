@@ -1,5 +1,6 @@
 <template>
   <div class="registration-page">
+    <AmBreadcrumbs :showCurrentCrumb="true" />
     <form :novalidate="true" ref="reg" @submit.prevent="signIn(userDTO)">
       <h2>{{ store.isLogin ? 'Successful registration!' : 'Registration' }}</h2>
       <div class="registration-item" v-if="!store.isLogin">
@@ -161,7 +162,7 @@
         />
         <label for="also">This is also my billing address</label>
       </div>
-      <div v-show="!$refs.isAlsoBilling?.checked" style="display: contents">
+      <div v-show="!also" style="display: contents">
         <div class="separator" v-if="!store.isLogin">
           <span> Billing Address </span>
         </div>
@@ -172,7 +173,7 @@
             id="street-billing"
             required
             v-model="billingStreet"
-            :disabled="$refs.isAlsoBilling?.checked"
+            :disabled="also"
             @input.prevent="validateBillingStreet"
             :class="{ 'invalid-input': billingStreetError.length }"
           />
@@ -184,12 +185,7 @@
         </div>
         <div class="registration-item" v-if="!store.isLogin">
           <label for="country-billing">Country:</label>
-          <select
-            id="country-billing"
-            required
-            v-model="billingCountry"
-            :disabled="$refs.isAlsoBilling?.checked"
-          >
+          <select id="country-billing" required v-model="billingCountry" :disabled="also">
             <option v-for="item in countries" v-bind:value="item" v-bind:key="item">
               {{ item }}
             </option>
@@ -344,7 +340,7 @@ export default {
   },
   methods: {
     copyShippingToBilling() {
-      if (this.also) {
+      if (!this.also) {
         this.billingStreet = this.shippingStreet
         this.billingCountry = this.shippingCountry
         this.billingCity = this.shippingCity
@@ -408,7 +404,7 @@ export default {
         version: 1,
         actions: [] as ActionsDTO[]
       }
-      const adressShipping: Partial<CustomerAddress> = {
+      const addressShipping: Partial<CustomerAddress> = {
         city: this.shippingCity,
         country: CountryCodesByCountry[this.shippingCountry],
         postalCode: this.shippingPostalCode,
@@ -416,10 +412,10 @@ export default {
       }
       updateData.actions.push({
         action: CustomerUpdateActions.addAddress,
-        address: adressShipping
+        address: addressShipping
       })
       if (!this.$refs.isAlsoBilling) {
-        const adressBilling: Partial<CustomerAddress> = {
+        const addressBilling: Partial<CustomerAddress> = {
           city: this.billingCity,
           country: CountryCodesByCountry[this.billingCountry],
           postalCode: this.billingPostalCode,
@@ -427,7 +423,7 @@ export default {
         }
         updateData.actions.push({
           action: CustomerUpdateActions.addAddress,
-          address: adressBilling
+          address: addressBilling
         })
       }
       return updateData
@@ -468,6 +464,16 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: relative;
+
+  nav {
+    display: flex;
+    position: absolute;
+    font-size: 1rem;
+    width: 100%;
+    padding-left: 40px;
+    top: 150px;
+  }
 }
 
 form {

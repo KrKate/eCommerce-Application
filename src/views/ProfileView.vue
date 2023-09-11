@@ -1,8 +1,8 @@
 <template>
   <main>
+    <AmBreadcrumbs :showCurrentCrumb="true" />
     <div id="pokedex">
       <div id="left">
-        <div id="logo"></div>
         <div id="bg_curve1_left"></div>
         <div id="bg_curve2_left"></div>
         <div id="curve1_left">
@@ -184,6 +184,24 @@
                   @change.prevent="validate($event)"
                 />
               </label>
+              <div class="question">
+                <button
+                  @click="removeAddress(addressShip)"
+                  :ref="`SA-remove-${addressShip}`"
+                  :disabled="isInfoMode"
+                >
+                  Remove
+                </button>
+              </div>
+              <div class="question" v-if="addressShip !== userInfo.defaultShippingAddressId">
+                <button
+                  @click="setAsDefault('shipping', addressShip)"
+                  :ref="`SA-setDefault-${addressShip}`"
+                  :disabled="isInfoMode"
+                >
+                  Set as default shipping address
+                </button>
+              </div>
             </div>
           </div>
           <div class="billing-address" v-if="isShowBillingAddresses">
@@ -266,23 +284,81 @@
                   @change.prevent="validate($event)"
                 />
               </label>
+              <div class="question">
+                <button
+                  @click="removeAddress(addressBil)"
+                  :ref="`BA-remove-${addressBil}`"
+                  :disabled="isInfoMode"
+                >
+                  Remove
+                </button>
+              </div>
+              <div class="question" v-if="addressBil !== userInfo.defaultBillingAddressId">
+                <button
+                  @click="setAsDefault('billing', addressBil)"
+                  setAsDefault
+                  :ref="`BA-setDefault-${addressBil}`"
+                  :disabled="isInfoMode"
+                >
+                  Set as default billing address
+                </button>
+              </div>
             </div>
           </div>
-          <div class="change-email" v-if="isShowChangeEmailAddresses">
-            <label> Current email address </label>
-            <input
-              placeholder="Current email address"
-              :class="isInfoMode ? '' : 'edit-mode'"
-              :disabled="true"
-              :value="userInfo.email"
-            />
-            <label> New email address </label>
-            <input
-              placeholder="example@mail.com"
+          <div class="add-address" v-if="isShowChangeEmailAddresses">
+            <label>
+              Country
+              <select
+                class="user-main-info"
+                :class="isInfoMode ? '' : 'edit-mode'"
+                :disabled="isInfoMode"
+                ref="NA-country"
+              >
+                <option v-for="item in countries" v-bind:value="item" v-bind:key="item">
+                  {{ item }}
+                </option>
+              </select>
+            </label>
+            <label v-for="[item, value] in addressDetails" v-bind:key="item">
+              {{ value }}
+              <input
+                class="user-main-info"
+                :class="isInfoMode ? '' : 'edit-mode'"
+                :disabled="isInfoMode"
+                :ref="`NA-${item}`"
+                @change.prevent="validate($event)"
+              />
+            </label>
+            <label v-for="[item, value] in contactDetails" v-bind:key="item">
+              {{ value }}
+              <input
+                class="user-main-info"
+                :class="isInfoMode ? '' : 'edit-mode'"
+                :disabled="isInfoMode"
+                :ref="`NA-${item}`"
+                @change.prevent="validate($event)"
+              />
+            </label>
+            <fieldset :class="isInfoMode ? '' : 'edit-mode'" :disabled="isInfoMode">
+              <label>Billing <input ref="setBilling" type="radio" name="addressType" /></label>
+              <label>Shipping <input ref="setShipping" type="radio" name="addressType" /></label>
+              <label>Both <input ref="setBoth" type="radio" name="addressType" /></label>
+            </fieldset>
+            <label
+              >Set default shipping
+              <input type="checkbox" :class="isInfoMode ? '' : 'edit-mode'" :disabled="isInfoMode"
+            /></label>
+            <label
+              >Set default billing
+              <input type="checkbox" :class="isInfoMode ? '' : 'edit-mode'" :disabled="isInfoMode"
+            /></label>
+            <button
+              @click="addNewAddress"
               :class="isInfoMode ? '' : 'edit-mode'"
               :disabled="isInfoMode"
-            />
-            <button :disabled="isInfoMode">update</button>
+            >
+              Add address
+            </button>
           </div>
           <div class="change-password" v-if="isShowChangePassword">
             <label>
@@ -342,6 +418,21 @@
               />
               <div class="crossed" v-if="isShowPasswordCheck"></div>
             </label>
+            <fieldset :disabled="isInfoMode">
+              <label
+                >Auto login after changing<input
+                  checked
+                  name="option"
+                  type="radio"
+                  @change.prevent="isRelogin = !isRelogin"
+              /></label>
+              <label
+                >Logout after changing<input
+                  name="option"
+                  type="radio"
+                  @change.prevent="isRelogin = !isRelogin"
+              /></label>
+            </fieldset>
             <button
               @click="changePassword"
               :disabled="!(isCheckPasswordValid && isCurrentPasswordValid && isNewPasswordValid)"
@@ -373,7 +464,7 @@
           @click="yellowButtonsClick('email')"
           :class="!isShowChangeEmailAddresses ? '' : 'clickedYB'"
         >
-          Change email
+          Add address
         </div>
         <div
           id="yellowBox4"
@@ -398,6 +489,7 @@ import {
   contactDetails,
   Countries,
   CountryCodes,
+  CountryCodesByCountry,
   CustomerUpdateActions,
   Salutations,
   userProfileLeftSideFields
@@ -410,6 +502,7 @@ import type {
   CustomerInfo,
   UpdateUserInfoDTO
 } from '@/stores/types'
+import router from '@/router'
 
 const validator = new Validator()
 const fieldsForValidation = [
@@ -448,7 +541,8 @@ export default {
       isCheckPasswordValid: false,
       isShowPasswordCurrent: false,
       isShowPasswordNew: false,
-      isShowPasswordCheck: false
+      isShowPasswordCheck: false,
+      isRelogin: true
     }
   },
   async beforeMount(): void {
@@ -457,10 +551,121 @@ export default {
     this.store.isLoading = false
   },
   methods: {
+    createAddressObject() {
+      const newAddress: Omit<CustomerAddress, 'id', 'key', 'externalId'> = {
+        additionalAddressInfo: this.$refs['NA-additionalAddressInfo'][0].value,
+        additionalStreetInfo: this.$refs['NA-additionalStreetInfo'][0].value,
+        apartment: this.$refs['NA-apartment'][0].value,
+        building: this.$refs['NA-building'][0].value,
+        city: this.$refs['NA-city'][0].value,
+        company: this.$refs['NA-company'][0].value,
+        country: CountryCodesByCountry[this.$refs['NA-country'][0].value],
+        email: this.$refs['NA-email'][0].value,
+        fax: this.$refs['NA-fax'][0].value,
+        department: this.$refs['NA-department'][0].value,
+        firstName: this.$refs['NA-firstName'][0].value,
+        lastName: this.$refs['NA-lastName'][0].value,
+        pOBox: this.$refs['NA-pOBox'][0].value,
+        phone: this.$refs['NA-additionalAddressInfo'][0].value,
+        postalCode: this.$refs['NA-postalCode'][0].value,
+        region: this.$refs['NA-region'][0].value,
+        salutation: this.$refs['NA-additionalAddressInfo'][0].value,
+        state: this.$refs['NA-state'][0].value,
+        streetName: this.$refs['NA-streetName'][0].value,
+        streetNumber: this.$refs['NA-streetNumber'][0].value,
+        title: this.$refs['NA-additionalAddressInfo'][0].value
+      }
+      return newAddress
+    },
+    async addBilingAddress() {
+      const action = {
+        action: CustomerUpdateActions.addBillingAddressId,
+        addressId: this.userInfo.addresses[this.userInfo.addresses.length - 1].id
+      } as ActionsDTO
+      this.userInfo = await this.store.updateUserInfo({
+        version: this.userInfo.version,
+        actions: [action]
+      })
+    },
+    async setAsDefault(type: string, addressID: string) {
+      this.store.isLoading = true
+      const action = {
+        action:
+          type === 'billing'
+            ? CustomerUpdateActions.setDefaultBillingAddress
+            : CustomerUpdateActions.setDefaultShippingAddress,
+        addressId: addressID
+      } as ActionsDTO
+      this.userInfo = await this.store.updateUserInfo({
+        version: this.userInfo.version,
+        actions: [action]
+      })
+      if (this.userInfo.id) {
+        this.statusMessage = 'Successfully set as default.'
+      } else {
+        this.statusMessage = 'An error occurred while executing the request. Try later.'
+      }
+      this.isShowUpdateMessage = true
+      setTimeout(() => (this.isShowUpdateMessage = false), 2000)
+      this.store.isLoading = false
+    },
+    async removeAddress(addressID: string) {
+      this.store.isLoading = true
+      const action = {
+        action: CustomerUpdateActions.removeAddress,
+        addressId: addressID
+      } as ActionsDTO
+      this.userInfo = await this.store.updateUserInfo({
+        version: this.userInfo.version,
+        actions: [action]
+      })
+      if (this.userInfo.id) {
+        this.statusMessage = 'Successfully removed.'
+      } else {
+        this.statusMessage = 'An error occurred while executing the request. Try later.'
+      }
+      this.isShowUpdateMessage = true
+      setTimeout(() => (this.isShowUpdateMessage = false), 2000)
+      this.store.isLoading = false
+    },
+    async addShippingAddress() {
+      const action = {
+        action: CustomerUpdateActions.addShippingAddressId,
+        addressId: this.userInfo.addresses[this.userInfo.addresses.length - 1].id
+      } as ActionsDTO
+      this.userInfo = await this.store.updateUserInfo({
+        version: this.userInfo.version,
+        actions: [action]
+      })
+    },
+    async addNewAddress() {
+      this.store.isLoading = true
+      const action = {
+        action: CustomerUpdateActions.addAddress,
+        address: this.createAddressObject()
+      } as ActionsDTO
+      this.userInfo = await this.store.updateUserInfo({
+        version: this.userInfo.version,
+        actions: [action]
+      })
+      if (this.userInfo.id) {
+        this.statusMessage = 'Successfully updated.'
+      } else {
+        this.statusMessage = 'An error occurred while executing the request. Try later.'
+      }
+      this.isShowUpdateMessage = true
+      if (this.$refs.setBilling.checked) await this.addBilingAddress()
+      if (this.$refs.setShipping.checked) await this.addShippingAddress()
+      if (this.$refs.setBoth.checked) {
+        await this.addShippingAddress()
+        await this.addBilingAddress()
+      }
+      setTimeout(() => (this.isShowUpdateMessage = false), 2000)
+      this.store.isLoading = false
+    },
     changePasswordVisibility(el: string) {
       const pass = this.$refs[el] as HTMLInputElement
       if (pass) {
-        console.log(pass)
         pass.type = pass.type === 'password' ? 'text' : 'password'
         if (pass === this.$refs.currentPassword)
           this.isShowPasswordCurrent = !this.isShowPasswordCurrent
@@ -468,8 +673,8 @@ export default {
         if (pass === this.$refs.newPassword) this.isShowPasswordNew = !this.isShowPasswordNew
       }
     },
-    clearInput(ev) {
-      ev.target.value = ''
+    clearInput(ev: Event) {
+      ;(ev.target as HTMLInputElement).value = ''
     },
     separatePrefixes(id: string): [string, CustomerAddress] {
       let addressID = ''
@@ -481,45 +686,45 @@ export default {
       }
       return [clearId, address]
     },
-    validate(event) {
-      let [field, address, isValid, bgColor] = [...this.separatePrefixes(event.target.id), true, '']
-      if (this.userInfo[field] !== event.target.value || address[field] === event.target.value) {
+    validate(event: Event) {
+      if (!event.target) throw new ReferenceError('Element not found!')
+      const target = event.target as HTMLInputElement
+      let [field, address, isValid, bgColor] = [...this.separatePrefixes(target.id), true, '']
+      if (this.userInfo[field] !== target.value || address[field] === target.value) {
         if (fieldsForValidation.includes(field)) {
-          isValid = validator.validateOnlyLetters(event.target.value)
+          isValid = validator.validateOnlyLetters(target.value)
         } else if (['dateOfBirth'].includes(field)) {
-          isValid = validator.validateAge(event.target?.value)
+          isValid = validator.validateAge(target.value)
         } else if (['companyName', 'company', 'company'].includes(field)) {
-          isValid = validator.validateCompanyName(event.target.value)
+          isValid = validator.validateCompanyName(target.value)
         } else if (['email'].includes(field)) {
-          validator.validateEmail(event.target.value)
+          validator.validateEmail(target.value)
           isValid = validator.errorsEmail.length === 0
         } else if (['phone', 'mobile', 'fax'].includes(field)) {
-          isValid = validator.validatePhoneNumber(event.target.value)
+          isValid = validator.validatePhoneNumber(target.value)
         } else if (['streetNumber'].includes(field)) {
-          isValid = validator.validateOnlyNumbers(event.target.value)
+          isValid = validator.validateOnlyNumbers(target.value)
         } else if (['postalCode'].includes(field)) {
-          isValid = validator.validatePostalCode(event.target.value, Countries.France)
+          isValid = validator.validatePostalCode(target.value, Countries.France)
         } else if (['streetName', 'building', 'apartment'].includes(field)) {
-          isValid = validator.validateStreet(event.target.value)
+          isValid = validator.validateStreet(target.value)
         } else if (['pOBox'].includes(field)) {
-          isValid = validator.validatePOBox(event.target.value)
+          isValid = validator.validatePOBox(target.value)
         }
         bgColor = isValid ? '#00FF007F' : '#FF00007F'
-        this.invalidFieldIds = [
-          ...this.invalidFieldIds.filter((value) => value !== event.target.id)
-        ]
-        if (!this.changedFields.includes(event.target.id)) this.changedFields.push(event.target.id)
-        if (!isValid && !this.invalidFieldIds.includes(event.target.id))
-          this.invalidFieldIds.push(event.target.id)
+        this.invalidFieldIds = [...this.invalidFieldIds.filter((value) => value !== target.id)]
+        if (!this.changedFields.includes(target.id)) this.changedFields.push(target.id)
+        if (!isValid && !this.invalidFieldIds.includes(target.id))
+          this.invalidFieldIds.push(target.id)
       } else {
-        this.changedFields = [...this.changedFields.filter((value) => value !== event.target.id)]
+        this.changedFields = [...this.changedFields.filter((value) => value !== target.id)]
       }
-      event.target.style.backgroundColor = bgColor
+      target.style.backgroundColor = bgColor
     },
-    validatePassword(ev) {
-      const checkPass = this.$refs.checkPassword
-      const newPass = this.$refs.newPassword
-      const currPass = this.$refs.currentPassword
+    validatePassword(ev: Event) {
+      const checkPass = this.$refs.checkPassword as HTMLInputElement
+      const newPass = this.$refs.newPassword as HTMLInputElement
+      const currPass = this.$refs.currentPassword as HTMLInputElement
       const el: HTMLInputElement = ev.target as HTMLInputElement
       const value = el.value as string
       if (el === currPass) {
@@ -569,83 +774,110 @@ export default {
                 obj.selected = obj.value === Countries[CountryCodes[address[field]]]
               }
             }
-            this.$refs[value][0].value = address[field]
+            ;((this.$refs[value] as HTMLElement[])[0] as HTMLInputElement).value = address[field]
           }
           this.$refs[value][0].style.backgroundColor = ''
         })
       }
     },
     getLeftSideAction(field: keyof ActionsDTO, val: string): ActionsDTO {
-      const action: ActionsDTO = {} as ActionsDTO
+      const action = {} as ActionsDTO
       switch (field) {
-        case 'salutation': {
+        case 'salutation':
           action.action = CustomerUpdateActions.setSalutation
           break
-        }
-        case 'firstName': {
+        case 'firstName':
           action.action = CustomerUpdateActions.setFirstName
           break
-        }
-        case 'middleName': {
+        case 'middleName':
           action.action = CustomerUpdateActions.setMiddleName
           break
-        }
-        case 'lastName': {
+        case 'lastName':
           action.action = CustomerUpdateActions.setLastName
           break
-        }
-        case 'dateOfBirth': {
+        case 'dateOfBirth':
           action.action = CustomerUpdateActions.setDateOfBirth
           break
-        }
-        case 'companyName': {
+        case 'companyName':
           action.action = CustomerUpdateActions.setCompanyName
           break
-        }
-        case 'title': {
+        case 'title':
           action.action = CustomerUpdateActions.setTitle
           break
-        }
-        case 'email': {
+        case 'email':
           action.action = CustomerUpdateActions.changeEmail
-        }
       }
-      action[field] = this.$refs[val][0]?.value || this.$refs[val]?.value
+      action[field] =
+        ((this.$refs[val] as HTMLElement[])[0] as HTMLOptionElement).value ||
+        (this.$refs[val] as HTMLInputElement).value
       return action
     },
     changeMode() {
       if (!this.isInfoMode && this.changedFields.length) {
         if (!this.invalidFieldIds.length) {
           this.acceptChanges()
+          this.isInfoMode = !this.isInfoMode
         } else {
           this.statusMessage = 'Check the correctness of the entered data'
           this.isShowUpdateMessage = true
-          setTimeout(() => (this.isShowUpdateMessage = false), 2000)
+          setTimeout(() => {
+            this.isShowUpdateMessage = false
+          }, 2000)
         }
       } else {
         this.isInfoMode = !this.isInfoMode
       }
     },
+    async relogin() {
+      if (
+        await this.store.getTokens(
+          this.userInfo.email,
+          (this.$refs.newPassword as HTMLInputElement).value
+        )
+      ) {
+        if (
+          await this.store.login(
+            this.userInfo.email,
+            (this.$refs.newPassword as HTMLInputElement).value
+          )
+        ) {
+          this.store.isLogin = true
+          this.userInfo = await this.store.getMyCustomerDetails()
+        }
+      }
+      ;(this.$refs.newPassword as HTMLInputElement).value = ''
+      ;(this.$refs.currentPassword as HTMLInputElement).value = ''
+      ;(this.$refs.checkPassword as HTMLInputElement).value = ''
+      this.isShowUpdateMessage = true
+      setTimeout(() => (this.isShowUpdateMessage = false), 1500)
+      this.store.isLoading = false
+    },
     async changePassword() {
       this.store.isLoading = true
       const passwordDTO: ChangePasswordDTO = {
         id: this.userInfo.id,
-        currentPassword: this.$refs.currentPassword.value,
-        newPassword: this.$refs.newPassword.value,
+        currentPassword: (this.$refs.currentPassword as HTMLInputElement).value,
+        newPassword: (this.$refs.newPassword as HTMLInputElement).value,
         version: this.userInfo.version
       }
+      this.store.clearCookie()
+      this.store.isLogin = false
       this.userInfo = await this.store.changePassword(passwordDTO)
       if (this.userInfo.id) {
         this.statusMessage = 'Password updated successfully!'
-        this.$refs.newPassword.value = ''
-        this.$refs.currentPassword.value = ''
-        this.$refs.checkPassword.value = ''
+        if (this.isRelogin) {
+          await this.relogin()
+        } else {
+          this.store.isLoading = false
+          await this.store.readCookie()
+          await router.push('/login')
+        }
       } else {
         this.statusMessage = 'Check your old password and try again.'
+        this.isShowUpdateMessage = true
+        setTimeout(() => (this.isShowUpdateMessage = false), 1500)
+        this.store.isLoading = false
       }
-      this.isShowUpdateMessage = true
-      setTimeout(() => (this.isShowUpdateMessage = false), 1500)
-      this.store.isLoading = false
     },
     async acceptChanges() {
       this.store.isLoading = true
@@ -690,6 +922,14 @@ export default {
 }
 main {
   padding-top: 160px;
+
+  nav {
+    display: flex;
+    font-size: 1rem;
+    width: 100%;
+    padding-left: 24px;
+    font-style: italic;
+  }
 }
 
 @media all {
@@ -1264,6 +1504,42 @@ main {
     -moz-box-shadow: 0 0 20px #003300 inset;
     -o-box-shadow: 0 0 20px #003300 inset;
 
+    .question {
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+      margin: 5px auto;
+    }
+
+    .add-address {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+
+      input,
+      select {
+        display: flex;
+        max-width: 50%;
+      }
+
+      fieldset {
+        margin: 10px auto;
+        display: flex;
+        width: 80%;
+        justify-content: space-evenly;
+        input {
+          margin: auto 5px;
+        }
+      }
+
+      button {
+        display: flex;
+        width: 80%;
+        justify-content: center;
+        margin: 10px auto;
+      }
+    }
+
     &::-webkit-scrollbar {
       width: 5px;
       background-color: transparent;
@@ -1302,7 +1578,6 @@ main {
       margin-top: 3px;
     }
 
-    .change-email,
     .change-password {
       display: flex;
       flex-direction: column;
@@ -1310,7 +1585,6 @@ main {
       height: 100%;
       width: 80%;
       margin: 0 auto;
-      gap: 10px;
       justify-content: center;
 
       label {
@@ -1319,6 +1593,19 @@ main {
         flex-wrap: wrap;
         gap: 5px;
         position: relative;
+      }
+
+      fieldset {
+        display: flex;
+        flex-direction: column;
+        padding: 2px 10px;
+        margin: 5px auto;
+        width: 100%;
+
+        input {
+          display: flex;
+          width: auto;
+        }
       }
 
       button {
@@ -1539,23 +1826,19 @@ hr {
     width: 400px;
   }
 
-  div#logo {
-    width: 281px;
-    height: 99px;
-    background: url('@/assets/images/pokedex-logo.png') no-repeat left top;
-    z-index: 1;
-    position: absolute;
-    top: 220px;
-    left: 30px;
-  }
-
   #left {
-    width: 400px;
+    width: 320px;
     height: 500px;
-    float: left;
     position: relative;
     z-index: 1;
+    float: initial;
     margin: 0 auto;
+  }
+
+  #right {
+    width: 320px;
+    margin: 0 auto;
+    float: initial;
   }
 
   #curve1_left {
@@ -1581,13 +1864,45 @@ hr {
     @include border-top-left-radius(30px, 30px);
   }
 
-  #right,
-  #screen,
-  #bigbluebutton,
-  #barbutton1,
-  #barbutton2,
-  #cross {
+  #junction,
+  #curve1_right,
+  #curve2_right,
+  #curve2_left {
     display: none;
+  }
+  #bg_curve1_left,
+  #bg_curve2_left,
+  #left,
+  #bg_curve2_right {
+    width: 320px;
+  }
+
+  #stats {
+    left: 8px;
+  }
+
+  #barbutton3 {
+    left: 180px;
+  }
+  #barbutton4 {
+    left: 240px;
+  }
+  #yellowBox1,
+  #yellowBox3 {
+    left: 5px;
+  }
+
+  #yellowBox4,
+  #yellowBox2 {
+    left: 165px;
+  }
+
+  #screen {
+    left: 8px;
+  }
+  #cross {
+    top: 400px;
+    left: 215px;
   }
 }
 </style>
