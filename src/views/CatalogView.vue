@@ -173,7 +173,7 @@ export default {
       products: [] as ProductProjections[],
       currentPage: 0,
       offset: 0,
-      limit: 30,
+      limit: 10,
       parentCategories: '',
       categories: [] as Category[],
       response: {} as ProductResponse,
@@ -246,7 +246,10 @@ export default {
       ;(this.$refs.all as HTMLInputElement).checked = true
       this.minPrice = 0
       this.maxPrice = 1200
-      this.categories.forEach((value) => (((this.$refs[value.id] as HTMLElement[])[0] as HTMLInputElement).checked = false))
+      this.categories.forEach(
+        (value) =>
+          (((this.$refs[value.id] as HTMLElement[])[0] as HTMLInputElement).checked = false)
+      )
       this.filteredCategory = []
       this.sort()
     },
