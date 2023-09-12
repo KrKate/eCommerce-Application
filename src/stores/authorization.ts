@@ -28,7 +28,8 @@ export const useUserStore = defineStore('user', {
     id: '',
     email: '',
     userInfo: {} as CustomerInfo,
-    redirectTimer: -1
+    redirectTimer: -1,
+    productsInCart: 0
   }),
   actions: {
     async fetchToken() {

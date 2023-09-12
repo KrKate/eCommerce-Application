@@ -12,7 +12,7 @@
         <button @click="store.changeLogin()" v-if="store.isLogin" id="logout">
           Logout <img src="@/assets/icons/logout.webp" alt="logout" id="logout-img" />
         </button>
-          <CatrIcon product-in-cart="0" />
+          <CatrIcon :product-in-cart=store.productsInCart />
       </div>
     </div>
     <nav>

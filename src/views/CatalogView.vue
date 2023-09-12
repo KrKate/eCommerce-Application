@@ -137,14 +137,32 @@
       <div class="pagination-box">
         <p class="title">{{ response.total }} products found</p>
         <div class="pagination-buttons">
-          <button :disabled="currentPage === 0" @click="previousPage">previous</button>
+          <button :disabled="currentPage === 0" @click="previousPage">
+            <img v-if="currentPage !== 0" src="@/assets/icons/left.png" alt="previous" />
+            <img
+              v-if="currentPage === 0"
+              class="dis"
+              src="@/assets/icons/left_dis.png"
+              alt="previous"
+            />
+          </button>
           Page <span>{{ currentPage + 1 }}</span> of
           <span>{{ Math.ceil(response.total / response.limit) }}</span
           ><button
             @click="nextPage"
             :disabled="currentPage >= Math.ceil(response.total / response.limit) - 1"
           >
-            next
+            <img
+              v-if="currentPage < Math.ceil(response.total / response.limit) - 1"
+              src="@/assets/icons/right.png"
+              alt="next"
+            />
+            <img
+              v-if="currentPage >= Math.ceil(response.total / response.limit) - 1"
+              src="@/assets/icons/right_dis.png"
+              alt="next"
+              class="dis"
+            />
           </button>
           Show products on page
           <input
@@ -173,7 +191,7 @@ export default {
       products: [] as ProductProjections[],
       currentPage: 0,
       offset: 0,
-      limit: 30,
+      limit: 10,
       parentCategories: '',
       categories: [] as Category[],
       response: {} as ProductResponse,
@@ -246,7 +264,10 @@ export default {
       ;(this.$refs.all as HTMLInputElement).checked = true
       this.minPrice = 0
       this.maxPrice = 1200
-      this.categories.forEach((value) => (((this.$refs[value.id] as HTMLElement[])[0] as HTMLInputElement).checked = false))
+      this.categories.forEach(
+        (value) =>
+          (((this.$refs[value.id] as HTMLElement[])[0] as HTMLInputElement).checked = false)
+      )
       this.filteredCategory = []
       this.sort()
     },
@@ -407,18 +428,43 @@ main {
       gap: 5px;
       align-items: center;
 
+      span {
+        font-weight: 700;
+        font-size: 0.8rem;
+      }
+
       button {
-        border-radius: 7px;
-        max-width: 100px;
-        padding: 5px 10px;
+        background-color: transparent;
         border: none;
-        outline: none;
+        display: contents;
+
+        img {
+          display: flex;
+          height: 30px;
+          margin: auto 10px;
+          cursor: pointer;
+
+          &:hover {
+            scale: 1.1;
+          }
+
+          &.dis {
+            cursor: not-allowed;
+            &:hover {
+              scale: 1;
+            }
+          }
+        }
       }
 
       input {
-        max-width: 40px;
+        width: 60px;
+        outline: none;
         border: none;
         text-align: center;
+        color: $app_orange;
+        font-weight: 900;
+        font-size: 1.3rem;
       }
     }
   }
