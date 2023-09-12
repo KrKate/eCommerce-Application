@@ -20,6 +20,7 @@
   "dependencies": {
     "@vueform/multiselect": "^2.6.2",
     "axios": "^1.4.0",
+    "bootstrap-icons": "^1.10.5",
     "pinia": "2.1.4",
     "swiper": "^10.2.0",
     "vue": "3.3.4",

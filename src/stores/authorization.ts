@@ -1,21 +1,22 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-import type {
-  Category,
-  CategoryResponse,
-  ChangePasswordDTO,
-  ChannelResponse,
-  Customer,
-  CustomerInfo,
-  PasswordFlowResponse,
-  Product,
-  ProductResponse,
-  SiteCookie,
-  TokenResponse,
-  UpdateUserInfoDTO,
-  UserRegistrationInfo,
-  lineItem
-} from '@/stores/types'
+import {
+  type Cart,
+  type CartResponse,
+  type Category,
+  type CategoryResponse,
+  type ChangePasswordDTO,
+  type ChannelResponse,
+  type Customer,
+  type CustomerInfo,
+  type LineItem,
+  type PasswordFlowResponse,
+  type Product,
+  type ProductResponse,
+  type SiteCookie,
+  type TokenResponse,
+  type UpdateUserInfoDTO,
+  type UserRegistrationInfo} from '@/stores/types'
 import router from '@/router'
 import type { Channel } from 'diagnostics_channel'
 
@@ -31,7 +32,8 @@ export const useUserStore = defineStore('user', {
     id: '',
     email: '',
     userInfo: {} as CustomerInfo,
-    redirectTimer: -1
+    redirectTimer: -1,
+    cartID: ''
   }),
   actions: {
     async fetchToken() {
@@ -325,7 +327,7 @@ export const useUserStore = defineStore('user', {
         const body = {
           currency: "EUR"
         }
-        const status = await axios
+        const cart: Cart = await axios
           .post(
             "https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/carts",
             body,
@@ -336,10 +338,25 @@ export const useUserStore = defineStore('user', {
             }
           )
           .then((data) => data.data)
-        console.log(status);
-        return status === 200
+        console.log(cart);
+        console.log(cart.id)
+        return cart
       } catch (error) {
-        return false
+        return {} as Cart
+      }
+    },
+    async getCarts() {
+      try {
+        const cartData: CartResponse = await axios
+          .get(`https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/carts`, {
+            headers: {
+              Authorization: `Bearer ${this.token}`
+            }
+          })
+          .then((data) => data.data)
+        return cartData.results
+      } catch (error) {
+        return [] as Cart[]
       }
     },
     async getChannels() {
@@ -357,5 +374,31 @@ export const useUserStore = defineStore('user', {
         return [] as Channel[]
       }
     },
+    async addLineItem(cartID: string) {
+      try {
+        const lineItemData: LineItem = await axios
+          .post(
+            `https://auth.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/carts/${cartID}
+            )}`,
+            {
+              action: "addLineItem",
+              supplyChannel: {
+                typeId: 1,
+              }
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${this.token}`
+              }
+            }
+          )
+          .then((data) => data.data)
+          console.log(lineItemData)
+          return lineItemData
+        } catch (error) {
+          return false
+        }
+      },
+
   }
 })

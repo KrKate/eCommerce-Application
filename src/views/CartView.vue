@@ -6,6 +6,29 @@
   </main>
 </template>
 
+<script lang="ts">
+import { useUserStore } from '@/stores/authorization'
+import { type Product } from '@/stores/types'
+import {type Cart} from '@/stores/types'
+
+ export default {
+  name: 'CartView',
+  data() {
+    return {
+      store: useUserStore(),
+      product: {} as Product,
+      cart: {} as Cart,
+    }
+  },
+  async beforeMount() {
+    const cart = await this.store.getCarts();
+    console.log(cart)
+  }
+ }
+
+</script>
+
+
 <style scoped lang="scss">
 main {
   display: flex;
@@ -24,4 +47,4 @@ main {
   }
 }
 </style>
-<script setup lang="ts"></script>
+

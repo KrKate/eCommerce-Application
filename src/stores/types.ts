@@ -434,27 +434,27 @@ export type LineItem = {
   variantId: number,
   quantity: number,
   supplyChannel: {
-    typeId: string,
+    typeId: number,
     id: string
   },
-  distributionChannel: {
-    typeId: string,
-    id: number
-  },
+  // distributionChannel: {
+  //   typeId: string,
+  //   id: number
+  // },
   externalTaxRate: {
     name: string,
     amount: number,
     country: string,
     state: string
   },
-  shippingDetails: {
-    targets: [
-      {
-        addressKey: string,
-        quantity: number
-      }
-    ]
-  }
+  // shippingDetails: {
+  //   targets: [
+  //     {
+  //       addressKey: string,
+  //       quantity: number
+  //     }
+  //   ]
+  // }
 }
 
 export type ChannelResponse = {
@@ -464,6 +464,15 @@ export type ChannelResponse = {
   total: number,
   results: Channel[]
 }
+
+export type CartResponse = {
+  limit: number,
+  offset: number,
+  count: number,
+  total: number,
+  results: Cart[]
+}
+
 
 export type Channel = {
     results: [
@@ -485,3 +494,7 @@ export type Channel = {
       }
     ]
 }
+
+export type ExistingTokenMiddlewareOptions = {
+  force?: boolean;
+};

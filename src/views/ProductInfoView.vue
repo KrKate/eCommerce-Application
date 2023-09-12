@@ -39,7 +39,8 @@
         </div>
       </div>
       <div class="description">{{ product.masterData?.current.description['en-US'] }}</div>
-      <button class="add-button" @click="addToCart">Add to Cart</button>
+      <!-- <button class="add-button" @click="addToCart">Add to Cart</button> -->
+      <AddToCart />
     </div>
     <div class="modal-wrapper" v-show="isModalOpen">
       <div v-show="isModalOpen" class="modal">
@@ -59,68 +60,76 @@
 <script lang="ts">
 import { useUserStore } from '@/stores/authorization'
 import { type Product } from '@/stores/types'
+import {type Cart} from '@/stores/types'
 import router from '@/router'
+import AddToCart from '@/components/AddToCart.vue'
 
 export default {
-  name: 'ProductInfoView',
-  data() {
-    return {
-      store: useUserStore(),
-      product: {} as Product,
-      currentImageIndex: 0,
-      isModalOpen: false
-    }
-  },
-  async beforeMount() {
-    this.store.isLoading = true
-    const productId = this.$route.params.id as string
-    if (!this.store.token) await this.store.readCookie()
-    if (await this.store.checkProductExistsById(productId)) {
-      this.product = await this.store.getProductById(productId)
-    } else {
-      await router.push({ name: '404' })
-    }
-    this.store.isLoading = false
-  },
-  methods: {
-    getDiscount(product: Product) {
-      const discounted =
-        product.masterData?.current?.masterVariant?.prices[0]?.discounted?.value?.centAmount
-      return discounted ? `€ ${(discounted / 100).toFixed(2)}` : ' '
+    name: 'ProductInfoView',
+    data() {
+        return {
+            store: useUserStore(),
+            product: {} as Product,
+            cart: {} as Cart,
+            currentImageIndex: 0,
+            isModalOpen: false
+        };
     },
-    changeImage(index: number) {
-      this.currentImageIndex = index
+    async beforeMount() {
+        this.store.isLoading = true;
+        const productId = this.$route.params.id as string;
+        if (!this.store.token)
+            await this.store.readCookie();
+        if (await this.store.checkProductExistsById(productId)) {
+            this.product = await this.store.getProductById(productId);
+        }
+        else {
+            await router.push({ name: '404' });
+        }
+        this.store.isLoading = false;
     },
-    nextImage() {
-      if (this.currentImageIndex < this.product.masterData.staged.masterVariant.images.length - 1) {
-        this.currentImageIndex++
-      } else {
-        this.currentImageIndex = 0
-      }
+    methods: {
+        getDiscount(product: Product) {
+            const discounted = product.masterData?.current?.masterVariant?.prices[0]?.discounted?.value?.centAmount;
+            return discounted ? `€ ${(discounted / 100).toFixed(2)}` : ' ';
+        },
+        changeImage(index: number) {
+            this.currentImageIndex = index;
+        },
+        nextImage() {
+            if (this.currentImageIndex < this.product.masterData.staged.masterVariant.images.length - 1) {
+                this.currentImageIndex++;
+            }
+            else {
+                this.currentImageIndex = 0;
+            }
+        },
+        previousImage() {
+            if (this.currentImageIndex > 0) {
+                this.currentImageIndex--;
+            }
+            else {
+                this.currentImageIndex = this.product.masterData.staged.masterVariant.images.length - 1;
+            }
+        },
+        openModal(index: number) {
+            this.isModalOpen = true;
+            this.currentImageIndex = index;
+        },
+        closeModal() {
+            this.isModalOpen = false;
+        },
+        async addToCart() {
+            const cart = await this.store.createCart();
+            await this.store.getChannels();
+            const carts = await this.store.getCarts();
+            console.log(carts);
+            if (cart && cart.id) {
+                await this.store.addLineItem(cart.id);
+            }
+        }
     },
-    previousImage() {
-      if (this.currentImageIndex > 0) {
-        this.currentImageIndex--
-      } else {
-        this.currentImageIndex = this.product.masterData.staged.masterVariant.images.length - 1
-      }
-    },
-    openModal(index: number) {
-      this.isModalOpen = true
-      this.currentImageIndex = index
-    },
-    closeModal() {
-      this.isModalOpen = false
-    },
-    addToCart() {
-      // const anonymousToken = this.store.getAnonymousToken()
-      // console.log(anonymousToken)
-      const cart = this.store.createCart();
-      const channel = this.store.getChannels()
-    
-
-    }
-  }
+    components: { AddToCart }
 }
 </script>
 
