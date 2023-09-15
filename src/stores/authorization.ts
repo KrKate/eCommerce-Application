@@ -339,7 +339,6 @@ export const useUserStore = defineStore('user', {
           )
           .then((data) => data.data)
         console.log(cart);
-        console.log(cart.id)
         return cart
       } catch (error) {
         return {} as Cart
@@ -374,31 +373,33 @@ export const useUserStore = defineStore('user', {
         return [] as Channel[]
       }
     },
-    async addLineItem(cartID: string) {
+    async addLineItem(cartID: string, version: number) {
       try {
-        const lineItemData: LineItem = await axios
-          .post(
-            `https://auth.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/carts/${cartID}
-            )}`,
-            {
-              action: "addLineItem",
-              supplyChannel: {
-                typeId: 1,
+        const lineItemData: LineItem = await axios.post(
+          `https://auth.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/carts/${cartID}`,
+          {
+            version: version,
+            actions: [
+              {
+                action: "addLineItem",
+                productId: "17f9ff5a-8bdb-48b7-a123-b8f6ae4767f0",
+                variantId: 1,
+                quantity: 1
               }
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${this.token}`
-              }
+            ]
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.token}`
             }
-          )
-          .then((data) => data.data)
-          console.log(lineItemData)
-          return lineItemData
-        } catch (error) {
-          return false
-        }
-      },
+          }
+        ).then((data) => data.data);
+        console.log(lineItemData);
+        return lineItemData;
+      } catch (error) {
+        console.log(error)
+      }
+    }
 
   }
 })

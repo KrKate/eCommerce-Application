@@ -1,5 +1,5 @@
 <template>
-      <button class="add-button" @click="addToCart">Add to Cart</button>
+      <button class="add-button">Add to Cart</button>
 </template>
 
   <script lang="ts">
@@ -15,19 +15,17 @@ import { useUserStore } from '@/stores/authorization';
             cart: {} as Cart,
       }
     },
-    methods: {
-        async addToCart() {
-            const cart = await this.store.createCart();
-            await this.store.getChannels();
-            const carts = await this.store.getCarts();
-            console.log(carts);
-            if (cart && cart.id) {
-                await this.store.addLineItem(cart.id);
-            }
-        }
-    }
-
-   }
+  methods: {
+    // async addToCart(event: MouseEvent) {
+    //   const button = event.target as HTMLButtonElement;
+    //   const cart = await this.store.getCarts();
+    //   console.log(cart);
+      // if (cart && cart.id) {
+      //     await this.store.addLineItem(cart.id);
+    //   // }
+    // }
+  }
+}
 
   </script>
 

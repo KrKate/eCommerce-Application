@@ -135,7 +135,7 @@
         </div>
         <RouterLink class="info-button" :to="{ name: 'product', params: { id: cart.id } }"
           >More info</RouterLink>
-          <AddToCart/>
+          <AddToCart class="add" @click="addToCart"></AddToCart>
       </div>
 
 
@@ -168,7 +168,7 @@
 
 <script lang="ts">
 import { useUserStore } from '@/stores/authorization'
-import type { Category, ProductProjections, ProductResponse } from '@/stores/types'
+import type { Cart, Category, ProductProjections, ProductResponse } from '@/stores/types'
 import type HTMLSelectElement from 'happy-dom/lib/nodes/html-select-element/HTMLSelectElement'
 import AddToCart from '@/components/AddToCart.vue'
 
@@ -189,7 +189,8 @@ export default {
             showSelect: false,
             minPrice: 0,
             maxPrice: 1200,
-            inCart: false
+            cart: {} as Cart,
+            cartID: ''
         };
     },
     async mounted() {
@@ -201,6 +202,12 @@ export default {
         this.products = this.response.results as ProductProjections[];
         this.filteredProducts = [...this.products];
         this.categories = await this.store.getCategories();
+    
+        if (!this.cartID) {
+        this.cart = await this.store.createCart();
+        this.cartID = this.cart.id;
+    }
+        console.log(this.cartID)
         Promise.all(Array.from(document.images)
             .filter((img) => !img.complete)
             .map((img) => new Promise((resolve) => {
@@ -338,9 +345,10 @@ export default {
             clearTimeout(this.timerID);
             this.timerID = setTimeout(() => func(), 500);
         },
-        addToCart() {
-            this.inCart = !this.inCart;
-        }
+        async addToCart() {
+          const version = this.cart ? this.cart.version + 1 : 1;
+          await this.store.addLineItem(this.cartID, version);
+  }
     },
     computed: {
         getParentCategory() {
@@ -391,6 +399,12 @@ main {
 a {
   text-decoration: none;
   color: inherit;
+}
+
+.add {
+  height: 30px;
+  width: 100%;
+  margin: 10px auto;
 }
 
 .cards-container {

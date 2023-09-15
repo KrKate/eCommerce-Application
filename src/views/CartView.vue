@@ -20,10 +20,7 @@ import {type Cart} from '@/stores/types'
       cart: {} as Cart,
     }
   },
-  async beforeMount() {
-    const cart = await this.store.getCarts();
-    console.log(cart)
-  }
+
  }
 
 </script>
