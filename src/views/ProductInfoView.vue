@@ -39,7 +39,7 @@
         </div>
       </div>
       <div class="description">{{ product.masterData?.current.description['en-US'] }}</div>
-      <button class="add-button">Add to Cart</button>
+      <AddToCart @click="addToCart" />
     </div>
     <div class="modal-wrapper" v-show="isModalOpen">
       <div v-show="isModalOpen" class="modal">
@@ -59,60 +59,70 @@
 <script lang="ts">
 import { useUserStore } from '@/stores/authorization'
 import { type Product } from '@/stores/types'
+import {type Cart} from '@/stores/types'
 import router from '@/router'
+import AddToCart from '@/components/AddToCart.vue'
 
 export default {
-  name: 'ProductInfoView',
-  data() {
-    return {
-      store: useUserStore(),
-      product: {} as Product,
-      currentImageIndex: 0,
-      isModalOpen: false
-    }
-  },
-  async beforeMount() {
-    this.store.isLoading = true
-    const productId = this.$route.params.id as string
-    if (!this.store.token) await this.store.readCookie()
-    if (await this.store.checkProductExistsById(productId)) {
-      this.product = await this.store.getProductById(productId)
-    } else {
-      await router.push({ name: '404' })
-    }
-    this.store.isLoading = false
-  },
-  methods: {
-    getDiscount(product: Product) {
-      const discounted =
-        product.masterData?.current?.masterVariant?.prices[0]?.discounted?.value?.centAmount
-      return discounted ? `€ ${(discounted / 100).toFixed(2)}` : ' '
+    name: 'ProductInfoView',
+    data() {
+        return {
+            store: useUserStore(),
+            product: {} as Product,
+            cart: {} as Cart,
+            currentImageIndex: 0,
+            isModalOpen: false
+        };
     },
-    changeImage(index: number) {
-      this.currentImageIndex = index
+    async beforeMount() {
+        this.store.isLoading = true;
+        const productId = this.$route.params.id as string;
+        if (!this.store.token)
+            await this.store.readCookie();
+        if (await this.store.checkProductExistsById(productId)) {
+            this.product = await this.store.getProductById(productId);
+        }
+        else {
+            await router.push({ name: '404' });
+        }
+        this.store.isLoading = false;
     },
-    nextImage() {
-      if (this.currentImageIndex < this.product.masterData.staged.masterVariant.images.length - 1) {
-        this.currentImageIndex++
-      } else {
-        this.currentImageIndex = 0
-      }
+    methods: {
+        getDiscount(product: Product) {
+            const discounted = product.masterData?.current?.masterVariant?.prices[0]?.discounted?.value?.centAmount;
+            return discounted ? `€ ${(discounted / 100).toFixed(2)}` : ' ';
+        },
+        changeImage(index: number) {
+            this.currentImageIndex = index;
+        },
+        nextImage() {
+            if (this.currentImageIndex < this.product.masterData.staged.masterVariant.images.length - 1) {
+                this.currentImageIndex++;
+            }
+            else {
+                this.currentImageIndex = 0;
+            }
+        },
+        previousImage() {
+            if (this.currentImageIndex > 0) {
+                this.currentImageIndex--;
+            }
+            else {
+                this.currentImageIndex = this.product.masterData.staged.masterVariant.images.length - 1;
+            }
+        },
+        openModal(index: number) {
+            this.isModalOpen = true;
+            this.currentImageIndex = index;
+        },
+        closeModal() {
+            this.isModalOpen = false;
+        },
+        async addToCart() {
+
+        }
     },
-    previousImage() {
-      if (this.currentImageIndex > 0) {
-        this.currentImageIndex--
-      } else {
-        this.currentImageIndex = this.product.masterData.staged.masterVariant.images.length - 1
-      }
-    },
-    openModal(index: number) {
-      this.isModalOpen = true
-      this.currentImageIndex = index
-    },
-    closeModal() {
-      this.isModalOpen = false
-    }
-  }
+    components: { AddToCart }
 }
 </script>
 
@@ -233,89 +243,6 @@ h1 {
   }
 }
 
-.add-button {
-  height: 50px;
-  width: 50%;
-  border: none;
-  outline: none;
-  color: #fff;
-  background: #111;
-  cursor: pointer;
-  position: relative;
-  z-index: 0;
-  border-radius: 10px;
-  margin-top: auto;
-  padding: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  text-decoration: none;
-}
-
-.add-button:before {
-  content: '';
-  background: linear-gradient(
-    45deg,
-    #ff0000,
-    #ff7300,
-    #fffb00,
-    #48ff00,
-    #00ffd5,
-    #002bff,
-    #7a00ff,
-    #ff00c8,
-    #ff0000
-  );
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  background-size: 400%;
-  z-index: -1;
-  filter: blur(5px);
-  width: calc(100% + 4px);
-  height: calc(100% + 4px);
-  animation: glowing 20s linear infinite;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-  border-radius: 10px;
-}
-
-.add-button:active {
-  color: #000;
-}
-
-.add-button:active:after {
-  background: transparent;
-}
-
-.add-button:hover:before {
-  opacity: 1;
-}
-
-.add-button:after {
-  z-index: -1;
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: #0075be;
-  left: 0;
-  top: 0;
-  border-radius: 10px;
-}
-
-@keyframes glowing {
-  0% {
-    background-position: 0 0;
-  }
-  50% {
-    background-position: 400% 0;
-  }
-  100% {
-    background-position: 0 0;
-  }
-}
 
 .crossed-out {
   position: relative;

@@ -16,3 +16,30 @@ onBeforeMount(async () => {
 </template>
 
 <style scoped></style>
+
+  //  if (isUserLoggedIn) {
+  //   console.log('Hello, my user')
+  //   } else {
+  //     const cart = await useUserStore().createCart()
+  //     console.log(cart)
+  //   }
+  //   watch(() => useUserStore().isLogin, (newValue) => {
+  //   if (newValue) {
+  //     console.log('Hello, my user')
+  //   } else {
+  //     console.log('Hello, anonymous user')
+  //   }
+  // })
+
+  // if (useUserStore().isLogin) {
+  //   const carts = await useUserStore().getCarts()
+  //   if (carts.length > 0) {
+  //     console.log('У пользователя есть корзина')
+  //   } else {
+  //     console.log('У пользователя нет корзины')
+  //   }
+  // } else {
+  //   console.log('Произошло что-то не то')
+  // }
+  // provide('cartID', cartID.value)
+

@@ -1,20 +1,24 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-import type {
-  Category,
-  CategoryResponse,
-  ChangePasswordDTO,
-  Customer,
-  CustomerInfo,
-  PasswordFlowResponse,
-  Product,
-  ProductResponse,
-  SiteCookie,
-  TokenResponse,
-  UpdateUserInfoDTO,
-  UserRegistrationInfo
-} from '@/stores/types'
+import {
+  type Cart,
+  type CartResponse,
+  type Category,
+  type CategoryResponse,
+  type ChangePasswordDTO,
+  type ChannelResponse,
+  type Customer,
+  type CustomerInfo,
+  type LineItem,
+  type PasswordFlowResponse,
+  type Product,
+  type ProductResponse,
+  type SiteCookie,
+  type TokenResponse,
+  type UpdateUserInfoDTO,
+  type UserRegistrationInfo} from '@/stores/types'
 import router from '@/router'
+import type { Channel } from 'diagnostics_channel'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -29,7 +33,10 @@ export const useUserStore = defineStore('user', {
     email: '',
     userInfo: {} as CustomerInfo,
     redirectTimer: -1,
+
     productsInCart: 0
+    cartID: ''
+
   }),
   actions: {
     async fetchToken() {
@@ -196,7 +203,7 @@ export const useUserStore = defineStore('user', {
         this.refreshToken = data.refreshToken
         this.isLogin = true
       } else {
-        await this.fetchToken()
+        await this.getAnonymousToken()
       }
     },
     clearCookie() {
@@ -293,6 +300,109 @@ export const useUserStore = defineStore('user', {
       } catch (error) {
         return false
       }
+    },
+    async getAnonymousToken()  {
+      try {
+        const anonimousTokenData: PasswordFlowResponse = await axios
+          .post(
+            `https://auth.europe-west1.gcp.commercetools.com/oauth/ecommerce_app_sloths/anonymous/token?grant_type=client_credentials`,
+            {},
+            {
+              headers: {
+                Authorization: `Basic ${btoa(
+                  `dfl2XWxHLbWwv8yU8bYwctWO:rsHEEwEvL3-cpCElTgirDd7Pep8HjTwW`
+                )}`
+              }
+            }
+          )
+          .then((data) => data.data)
+        this.token = anonimousTokenData.access_token
+        this.refreshToken = anonimousTokenData.refresh_token
+        this.expires = anonimousTokenData.expires_in
+        return true
+      } catch (error) {
+        console.log(error)
+        return false
+      }
+    },
+    async createCart() {
+      try {
+        const body = {
+          currency: "EUR"
+        }
+        const cart: Cart = await axios
+          .post(
+            "https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/carts",
+            body,
+            {
+              headers: {
+                Authorization: `Bearer ${this.token}`
+              },
+            }
+          )
+          .then((data) => data.data)
+        console.log(cart);
+        return cart
+      } catch (error) {
+        return {} as Cart
+      }
+    },
+    async getCarts() {
+      try {
+        const cartData: CartResponse = await axios
+          .get(`https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/carts`, {
+            headers: {
+              Authorization: `Bearer ${this.token}`
+            }
+          })
+          .then((data) => data.data)
+        return cartData.results
+      } catch (error) {
+        return [] as Cart[]
+      }
+    },
+    async getChannels() {
+      try {
+        const channelsData: ChannelResponse = await axios
+          .get(`https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/channels`, {
+            headers: {
+              Authorization: `Bearer ${this.token}`
+            }
+          })
+          .then((data) => data.data)
+          console.log(channelsData.results)
+        return channelsData.results
+      } catch (error) {
+        return [] as Channel[]
+      }
+    },
+    async addLineItem(cartID: string, version: number) {
+      try {
+        const lineItemData: LineItem = await axios.post(
+          `https://auth.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/carts/${cartID}`,
+          {
+            version: version,
+            actions: [
+              {
+                action: "addLineItem",
+                productId: "17f9ff5a-8bdb-48b7-a123-b8f6ae4767f0",
+                variantId: 1,
+                quantity: 1
+              }
+            ]
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.token}`
+            }
+          }
+        ).then((data) => data.data);
+        console.log(lineItemData);
+        return lineItemData;
+      } catch (error) {
+        console.log(error)
+      }
     }
+
   }
 })
