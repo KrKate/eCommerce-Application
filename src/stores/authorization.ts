@@ -33,10 +33,7 @@ export const useUserStore = defineStore('user', {
     email: '',
     userInfo: {} as CustomerInfo,
     redirectTimer: -1,
-
-    productsInCart: 0
     cartID: ''
-
   }),
   actions: {
     async fetchToken() {

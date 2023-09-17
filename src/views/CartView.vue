@@ -1,12 +1,8 @@
 <template>
   <main>
     <AmBreadcrumbs :showCurrentCrumb="true" />
-
-    <EmptyCart :product-in-cart=store.productsInCart />
-
     <p>Users cart page</p>
     <p></p>
-
   </main>
 </template>
 
@@ -31,7 +27,6 @@ import {type Cart} from '@/stores/types'
 
 
 <style scoped lang="scss">
-
 main {
   display: flex;
   margin: auto;
@@ -41,7 +36,6 @@ main {
   font-style: italic;
   flex-direction: column;
   align-items: center;
-
   nav {
     display: flex;
     font-size: 1rem;
@@ -50,20 +44,4 @@ main {
   }
 }
 </style>
-
-<script lang="ts">
-import EmptyCart from "@/components/EmptyCart.vue";
-import { useUserStore } from "@/stores/authorization";
-
-export default {
-  data() {
-    return {
-      store: useUserStore()
-    }
-  },
-  components: {
-    EmptyCart
-  }
-}
-</script>
 

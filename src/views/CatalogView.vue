@@ -142,32 +142,14 @@
       <div class="pagination-box">
         <p class="title">{{ response.total }} products found</p>
         <div class="pagination-buttons">
-          <button :disabled="currentPage === 0" @click="previousPage">
-            <img v-if="currentPage !== 0" src="@/assets/icons/left.png" alt="previous" />
-            <img
-              v-if="currentPage === 0"
-              class="dis"
-              src="@/assets/icons/left_dis.png"
-              alt="previous"
-            />
-          </button>
+          <button :disabled="currentPage === 0" @click="previousPage">previous</button>
           Page <span>{{ currentPage + 1 }}</span> of
           <span>{{ Math.ceil(response.total / response.limit) }}</span
           ><button
             @click="nextPage"
             :disabled="currentPage >= Math.ceil(response.total / response.limit) - 1"
           >
-            <img
-              v-if="currentPage < Math.ceil(response.total / response.limit) - 1"
-              src="@/assets/icons/right.png"
-              alt="next"
-            />
-            <img
-              v-if="currentPage >= Math.ceil(response.total / response.limit) - 1"
-              src="@/assets/icons/right_dis.png"
-              alt="next"
-              class="dis"
-            />
+            next
           </button>
           Show products on page
           <input
@@ -191,119 +173,6 @@ import type HTMLSelectElement from 'happy-dom/lib/nodes/html-select-element/HTML
 import AddToCart from '@/components/AddToCart.vue'
 
 export default {
-
-  data() {
-    return {
-      store: useUserStore(),
-      products: [] as ProductProjections[],
-      currentPage: 0,
-      offset: 0,
-      limit: 10,
-      parentCategories: '',
-      categories: [] as Category[],
-      response: {} as ProductResponse,
-      filteredProducts: [] as ProductProjections[],
-      filteredCategory: [] as string[],
-      timerID: -1,
-      showSelect: false,
-      minPrice: 0,
-      maxPrice: 1200
-    }
-  },
-  async mounted() {
-    this.store.isLoading = true
-    if (!this.store.token) {
-      await this.store.readCookie()
-    }
-    this.response = await this.store.getSortedProducts(this.limit.toString())
-    this.products = this.response.results as ProductProjections[]
-    this.filteredProducts = [...this.products]
-    this.categories = await this.store.getCategories()
-    Promise.all(
-      Array.from(document.images)
-        .filter((img) => !img.complete)
-        .map(
-          (img) =>
-            new Promise((resolve) => {
-              img.onload = img.onerror = resolve
-            })
-        )
-    ).then(() => {
-      this.store.isLoading = false
-    })
-  },
-  methods: {
-    getChildCategory(id: string) {
-      return this.categories
-        .filter((value) => value.ancestors.length > 0)
-        .filter((value) => value.ancestors[0].id === id)
-    },
-    changeParenCategory() {
-      this.parentCategories = (this.$refs.selectedCategoryType as HTMLSelectElement).value
-      this.filteredCategory = [this.parentCategories]
-      this.sort()
-    },
-    changeChildCategory() {
-      this.filteredCategory = [(this.$refs.selectedCategoryGen as HTMLSelectElement).value]
-      this.sort()
-    },
-    checkCategory(ev: Event) {
-      const target = ev.target as HTMLInputElement
-      if (target.checked) {
-        this.filteredCategory.push(target.id)
-      } else {
-        this.filteredCategory = this.filteredCategory.filter((value) => value !== target.id)
-      }
-      this.sort()
-    },
-    changeRangeValue(ev: Event) {
-      const target = ev.target as HTMLInputElement
-      const val = parseInt(target.value, 10)
-      if (target.id === 'minRange') {
-        if (val < this.maxPrice) this.minPrice = val
-      } else {
-        if (val > this.minPrice) this.maxPrice = val
-      }
-    },
-    clearFilters() {
-      ;(this.$refs.selectedCategoryType as HTMLSelectElement).value = ''
-      ;(this.$refs.selectedCategoryGen as HTMLSelectElement).value = ''
-      ;(this.$refs.all as HTMLInputElement).checked = true
-      this.minPrice = 0
-      this.maxPrice = 1200
-      this.categories.forEach(
-        (value) =>
-          (((this.$refs[value.id] as HTMLElement[])[0] as HTMLInputElement).checked = false)
-      )
-      this.filteredCategory = []
-      this.sort()
-    },
-    getImageUrl(cart: ProductProjections) {
-      if (cart.masterVariant.images.length > 0) {
-        return cart.masterVariant.images[0].url
-      } else {
-        return '#'
-      }
-    },
-    previousPage() {
-      this.currentPage = this.currentPage - 1
-      this.sort()
-    },
-    changeSorting() {
-      this.currentPage = 0
-      this.offset = 0
-      this.sort()
-    },
-    nextPage() {
-      this.currentPage = this.currentPage + 1
-      this.sort()
-    },
-    changeLimit() {
-      this.currentPage = 0
-      this.offset = 0
-      this.limit = parseInt((this.$refs.limit as HTMLInputElement).value, 10)
-      this.sort()
-
     data() {
         return {
             store: useUserStore(),
@@ -323,32 +192,12 @@ export default {
             cart: {} as Cart,
             cartID: ''
         };
-
     },
     async mounted() {
         this.store.isLoading = true;
         if (!this.store.token) {
             await this.store.readCookie();
         }
-
-      }
-      this.response = await this.store.getSortedProducts(
-        this.limit.toString(),
-        (this.limit * this.currentPage).toString(),
-        `${sort}${cat}${search}`
-      )
-      this.products = this.response.results as ProductProjections[]
-      this.filteredProducts = this.products
-      this.store.isLoading = false
-    },
-    getPriceValue(cart: ProductProjections) {
-      if (cart.masterVariant.prices.length > 0) {
-        const price = cart.masterVariant.prices[0].value.centAmount / 100
-        return `€ ${price}`
-      } else {
-        return 'free'
-      }
-
         this.response = await this.store.getSortedProducts(this.limit.toString());
         this.products = this.response.results as ProductProjections[];
         this.filteredProducts = [...this.products];
@@ -366,7 +215,6 @@ export default {
         }))).then(() => {
             this.store.isLoading = false;
         });
-
     },
     methods: {
         getChildCategory(id: string) {
@@ -586,43 +434,18 @@ a {
       gap: 5px;
       align-items: center;
 
-      span {
-        font-weight: 700;
-        font-size: 0.8rem;
-      }
-
       button {
-        background-color: transparent;
+        border-radius: 7px;
+        max-width: 100px;
+        padding: 5px 10px;
         border: none;
-        display: contents;
-
-        img {
-          display: flex;
-          height: 30px;
-          margin: auto 10px;
-          cursor: pointer;
-
-          &:hover {
-            scale: 1.1;
-          }
-
-          &.dis {
-            cursor: not-allowed;
-            &:hover {
-              scale: 1;
-            }
-          }
-        }
+        outline: none;
       }
 
       input {
-        width: 60px;
-        outline: none;
+        max-width: 40px;
         border: none;
         text-align: center;
-        color: $app_orange;
-        font-weight: 900;
-        font-size: 1.3rem;
       }
     }
   }

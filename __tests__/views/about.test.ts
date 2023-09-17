@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { expect, describe, test } from 'vitest'
-import AboutView from '@/views/AboutView.vue'
+import AboutView from '../../src/views/AboutView.vue'
 
 describe('AboutView', () => {
   test('renders correctly', () => {
