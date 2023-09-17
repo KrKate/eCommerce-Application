@@ -131,8 +131,8 @@
           <div class="product-discount">{{ getDiscount(cart) }}</div>
         </div>
         <RouterLink class="info-button" :to="{ name: 'product', params: { id: cart.id } }"
-          >More info</RouterLink
-        >
+          >More info</RouterLink>
+          <AddToCart class="add" @click="addToCart"></AddToCart>
       </div>
       <div class="pagination-box">
         <p class="title">{{ response.total }} products found</p>
@@ -180,187 +180,189 @@
 </template>
 
 <script lang="ts">
+import AddToCart from '@/components/AddToCart.vue'
 import { useUserStore } from '@/stores/authorization'
-import type { Category, ProductProjections, ProductResponse } from '@/stores/types'
+import type { Cart, Category, ProductProjections, ProductResponse } from '@/stores/types'
 import type HTMLSelectElement from 'happy-dom/lib/nodes/html-select-element/HTMLSelectElement'
 
 export default {
-  data() {
-    return {
-      store: useUserStore(),
-      products: [] as ProductProjections[],
-      currentPage: 0,
-      offset: 0,
-      limit: 10,
-      parentCategories: '',
-      categories: [] as Category[],
-      response: {} as ProductResponse,
-      filteredProducts: [] as ProductProjections[],
-      filteredCategory: [] as string[],
-      timerID: -1,
-      showSelect: false,
-      minPrice: 0,
-      maxPrice: 1200
-    }
-  },
-  async mounted() {
-    this.store.isLoading = true
-    if (!this.store.token) {
-      await this.store.readCookie()
-    }
-    this.response = await this.store.getSortedProducts(this.limit.toString())
-    this.products = this.response.results as ProductProjections[]
-    this.filteredProducts = [...this.products]
-    this.categories = await this.store.getCategories()
-    Promise.all(
-      Array.from(document.images)
-        .filter((img) => !img.complete)
-        .map(
-          (img) =>
-            new Promise((resolve) => {
-              img.onload = img.onerror = resolve
-            })
-        )
-    ).then(() => {
-      this.store.isLoading = false
-    })
-  },
-  methods: {
-    getChildCategory(id: string) {
-      return this.categories
-        .filter((value) => value.ancestors.length > 0)
-        .filter((value) => value.ancestors[0].id === id)
+    data() {
+        return {
+            store: useUserStore(),
+            products: [] as ProductProjections[],
+            currentPage: 0,
+            offset: 0,
+            limit: 10,
+            parentCategories: '',
+            categories: [] as Category[],
+            response: {} as ProductResponse,
+            filteredProducts: [] as ProductProjections[],
+            filteredCategory: [] as string[],
+            timerID: -1,
+            showSelect: false,
+            minPrice: 0,
+            maxPrice: 1200,
+            cart: {} as Cart,
+            cartID: ''
+        };
     },
-    changeParenCategory() {
-      this.parentCategories = (this.$refs.selectedCategoryType as HTMLSelectElement).value
-      this.filteredCategory = [this.parentCategories]
-      this.sort()
-    },
-    changeChildCategory() {
-      this.filteredCategory = [(this.$refs.selectedCategoryGen as HTMLSelectElement).value]
-      this.sort()
-    },
-    checkCategory(ev: Event) {
-      const target = ev.target as HTMLInputElement
-      if (target.checked) {
-        this.filteredCategory.push(target.id)
-      } else {
-        this.filteredCategory = this.filteredCategory.filter((value) => value !== target.id)
-      }
-      this.sort()
-    },
-    changeRangeValue(ev: Event) {
-      const target = ev.target as HTMLInputElement
-      const val = parseInt(target.value, 10)
-      if (target.id === 'minRange') {
-        if (val < this.maxPrice) this.minPrice = val
-      } else {
-        if (val > this.minPrice) this.maxPrice = val
-      }
-    },
-    clearFilters() {
-      ;(this.$refs.selectedCategoryType as HTMLSelectElement).value = ''
-      ;(this.$refs.selectedCategoryGen as HTMLSelectElement).value = ''
-      ;(this.$refs.all as HTMLInputElement).checked = true
-      this.minPrice = 0
-      this.maxPrice = 1200
-      this.categories.forEach(
-        (value) =>
-          (((this.$refs[value.id] as HTMLElement[])[0] as HTMLInputElement).checked = false)
-      )
-      this.filteredCategory = []
-      this.sort()
-    },
-    getImageUrl(cart: ProductProjections) {
-      if (cart.masterVariant.images.length > 0) {
-        return cart.masterVariant.images[0].url
-      } else {
-        return '#'
-      }
-    },
-    previousPage() {
-      this.currentPage = this.currentPage - 1
-      this.sort()
-    },
-    changeSorting() {
-      this.currentPage = 0
-      this.offset = 0
-      this.sort()
-    },
-    nextPage() {
-      this.currentPage = this.currentPage + 1
-      this.sort()
-    },
-    changeLimit() {
-      this.currentPage = 0
-      this.offset = 0
-      this.limit = parseInt((this.$refs.limit as HTMLInputElement).value, 10)
-      this.sort()
-    },
-    async sort() {
-      this.store.isLoading = true
-      let cat = ``
-      let sort = ``
-      let search = ``
-      if (this.filteredCategory.length) {
-        this.filteredCategory.forEach((value) => {
-          cat += `"${value}",`
-        })
-        cat = `&filter.query=categories.id: ${cat.slice(0, -1)}`
-      }
-      if ((this.$refs.small as HTMLInputElement).checked)
-        cat += `&filter.query=variants.attributes.Size:"small"`
-      if ((this.$refs.big as HTMLInputElement).checked)
-        cat += `&filter.query=variants.attributes.Size:"big"`
-      if ((this.$refs.middle as HTMLInputElement).checked)
-        cat += `&filter.query=variants.attributes.Size:"middle"`
-      if ((this.$refs.search as HTMLInputElement).value) {
-        search = `&text.en-us="${(this.$refs.search as HTMLInputElement).value}"&fuzzy=true`
-      }
-      cat += `&filter=variants.price.centAmount:range (${this.minPrice * 100} to ${
-        this.maxPrice * 100
-      })`
-      if ((this.$refs.sorting as HTMLSelectElement).value) {
-        if ((this.$refs.sorting as HTMLSelectElement).value.includes('pr')) {
-          sort = `&sort=price ${(this.$refs.sorting as HTMLSelectElement).value.replace('pr', '')}`
-        } else {
-          sort = `&sort=name.en-us ${(this.$refs.sorting as HTMLSelectElement).value}`
+    async mounted() {
+        this.store.isLoading = true;
+        if (!this.store.token) {
+            await this.store.readCookie();
         }
-      }
-      this.response = await this.store.getSortedProducts(
-        this.limit.toString(),
-        (this.limit * this.currentPage).toString(),
-        `${sort}${cat}${search}`
-      )
-      this.products = this.response.results as ProductProjections[]
-      this.filteredProducts = this.products
-      this.store.isLoading = false
+        this.response = await this.store.getSortedProducts(this.limit.toString());
+        this.products = this.response.results as ProductProjections[];
+        this.filteredProducts = [...this.products];
+        this.categories = await this.store.getCategories();
+        Promise.all(Array.from(document.images)
+            .filter((img) => !img.complete)
+            .map((img) => new Promise((resolve) => {
+            img.onload = img.onerror = resolve;
+        }))).then(() => {
+            this.store.isLoading = false;
+        });
     },
-    getPriceValue(cart: ProductProjections) {
-      if (cart.masterVariant.prices.length > 0) {
-        const price = cart.masterVariant.prices[0].value.centAmount / 100
-        return `€ ${price}`
-      } else {
-        return 'free'
-      }
-    },
-    getDiscount(cart: ProductProjections) {
-      const discounted = cart?.masterVariant?.prices[0]?.discounted?.value?.centAmount
-      return discounted ? `€ ${discounted / 100}` : ' '
-    },
-    toggleSelect() {
-      this.showSelect = !this.showSelect
-    },
-    debounce(func: Function) {
-      clearTimeout(this.timerID)
-      this.timerID = setTimeout(() => func(), 500)
-    }
-  },
-  computed: {
-    getParentCategory() {
-      return this.categories.filter((value) => value.ancestors.length === 0)
-    }
+    methods: {
+        getChildCategory(id: string) {
+            return this.categories
+                .filter((value) => value.ancestors.length > 0)
+                .filter((value) => value.ancestors[0].id === id);
+        },
+        changeParenCategory() {
+            this.parentCategories = (this.$refs.selectedCategoryType as HTMLSelectElement).value;
+            this.filteredCategory = [this.parentCategories];
+            this.sort();
+        },
+        changeChildCategory() {
+            this.filteredCategory = [(this.$refs.selectedCategoryGen as HTMLSelectElement).value];
+            this.sort();
+        },
+        checkCategory(ev: Event) {
+            const target = ev.target as HTMLInputElement;
+            if (target.checked) {
+                this.filteredCategory.push(target.id);
+            }
+            else {
+                this.filteredCategory = this.filteredCategory.filter((value) => value !== target.id);
+            }
+            this.sort();
+        },
+        changeRangeValue(ev: Event) {
+            const target = ev.target as HTMLInputElement;
+            const val = parseInt(target.value, 10);
+            if (target.id === 'minRange') {
+                if (val < this.maxPrice)
+                    this.minPrice = val;
+            }
+            else {
+                if (val > this.minPrice)
+                    this.maxPrice = val;
+            }
+        },
+        clearFilters() {
+            ;
+            (this.$refs.selectedCategoryType as HTMLSelectElement).value = '';
+            (this.$refs.selectedCategoryGen as HTMLSelectElement).value = '';
+            (this.$refs.all as HTMLInputElement).checked = true;
+            this.minPrice = 0;
+            this.maxPrice = 1200;
+            this.categories.forEach((value) => (((this.$refs[value.id] as HTMLElement[])[0] as HTMLInputElement).checked = false));
+            this.filteredCategory = [];
+            this.sort();
+        },
+        getImageUrl(cart: ProductProjections) {
+            if (cart.masterVariant.images.length > 0) {
+                return cart.masterVariant.images[0].url;
+            }
+            else {
+                return '#';
+            }
+        },
+        previousPage() {
+            this.currentPage = this.currentPage - 1;
+            this.sort();
+        },
+        changeSorting() {
+            this.currentPage = 0;
+            this.offset = 0;
+            this.sort();
+        },
+        nextPage() {
+            this.currentPage = this.currentPage + 1;
+            this.sort();
+        },
+        changeLimit() {
+            this.currentPage = 0;
+            this.offset = 0;
+            this.limit = parseInt((this.$refs.limit as HTMLInputElement).value, 10);
+            this.sort();
+        },
+        async sort() {
+            this.store.isLoading = true;
+            let cat = ``;
+            let sort = ``;
+            let search = ``;
+            if (this.filteredCategory.length) {
+                this.filteredCategory.forEach((value) => {
+                    cat += `"${value}",`;
+                });
+                cat = `&filter.query=categories.id: ${cat.slice(0, -1)}`;
+            }
+            if ((this.$refs.small as HTMLInputElement).checked)
+                cat += `&filter.query=variants.attributes.Size:"small"`;
+            if ((this.$refs.big as HTMLInputElement).checked)
+                cat += `&filter.query=variants.attributes.Size:"big"`;
+            if ((this.$refs.middle as HTMLInputElement).checked)
+                cat += `&filter.query=variants.attributes.Size:"middle"`;
+            if ((this.$refs.search as HTMLInputElement).value) {
+                search = `&text.en-us="${(this.$refs.search as HTMLInputElement).value}"&fuzzy=true`;
+            }
+            cat += `&filter=variants.price.centAmount:range (${this.minPrice * 100} to ${this.maxPrice * 100})`;
+            if ((this.$refs.sorting as HTMLSelectElement).value) {
+                if ((this.$refs.sorting as HTMLSelectElement).value.includes('pr')) {
+                    sort = `&sort=price ${(this.$refs.sorting as HTMLSelectElement).value.replace('pr', '')}`;
+                }
+                else {
+                    sort = `&sort=name.en-us ${(this.$refs.sorting as HTMLSelectElement).value}`;
+                }
+            }
+            this.response = await this.store.getSortedProducts(this.limit.toString(), (this.limit * this.currentPage).toString(), `${sort}${cat}${search}`);
+            this.products = this.response.results as ProductProjections[];
+            this.filteredProducts = this.products;
+            this.store.isLoading = false;
+        },
+        getPriceValue(cart: ProductProjections) {
+            if (cart.masterVariant.prices.length > 0) {
+                const price = cart.masterVariant.prices[0].value.centAmount / 100;
+                return `€ ${price}`;
+            }
+            else {
+                return 'free';
+            }
+        },
+        getDiscount(cart: ProductProjections) {
+            const discounted = cart?.masterVariant?.prices[0]?.discounted?.value?.centAmount;
+            return discounted ? `€ ${discounted / 100}` : ' ';
+        },
+        toggleSelect() {
+            this.showSelect = !this.showSelect;
+        },
+        debounce(func: Function) {
+            clearTimeout(this.timerID);
+            this.timerID = setTimeout(() => func(), 500);
+        },
+        async addToCart() {
+          const version = this.cart ? this.cart.version + 1 : 1;
+          await this.store.addLineItem(this.cartID, version);
   }
+    },
+    computed: {
+        getParentCategory() {
+            return this.categories.filter((value) => value.ancestors.length === 0);
+        }
+    },
+    components: { AddToCart }
 }
 </script>
 
@@ -399,6 +401,12 @@ main {
     width: 100%;
     padding-left: 24px;
   }
+}
+
+.add {
+  height: 30px;
+  width: 100%;
+  margin: 10px auto;
 }
 
 .cards-container {
