@@ -345,10 +345,10 @@ export const useUserStore = defineStore('user', {
         return {} as Cart
       }
     },
-    async getCarts() {
+    async getCarts(cartID: string) {
       try {
         const cartData: CartResponse = await axios
-          .get(`https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/carts`, {
+          .get(`https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/carts/${cartID}`, {
             headers: {
               Authorization: `Bearer ${this.token}`
             }
@@ -357,6 +357,20 @@ export const useUserStore = defineStore('user', {
         return cartData.results
       } catch (error) {
         return [] as Cart[]
+      }
+    },
+    async getActiveCart() {
+      try {
+        const cartData = await axios
+          .get(`https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/active-cart`, {
+            headers: {
+              Authorization: `Bearer ${this.token}`
+            }
+          })
+          .then((data) => data.data)
+        return cartData
+      } catch (error) {
+        return error
       }
     },
     async getChannels() {

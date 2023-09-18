@@ -120,8 +120,11 @@
       </div>
       <button @click="clearFilters">Clear filters</button>
     </div>
+
+
     <div class="cards-container">
-      <div class="product-card" v-for="cart in filteredProducts" :key="cart.id">
+      <div class="product-card" v-for="cart in filteredProducts" :key="cart.id"
+      >
         <h3 class="product-title">{{ cart.name['en-US'] }}</h3>
         <img :src="getImageUrl(cart)" alt="Product Image" class="product-image" />
         <div class="prices">
@@ -134,35 +137,19 @@
           >More info</RouterLink>
           <AddToCart class="add" @click="addToCart"></AddToCart>
       </div>
+
+
       <div class="pagination-box">
         <p class="title">{{ response.total }} products found</p>
         <div class="pagination-buttons">
-          <button :disabled="currentPage === 0" @click="previousPage">
-            <img v-if="currentPage !== 0" src="@/assets/icons/left.png" alt="previous" />
-            <img
-              v-if="currentPage === 0"
-              class="dis"
-              src="@/assets/icons/left_dis.png"
-              alt="previous"
-            />
-          </button>
+          <button :disabled="currentPage === 0" @click="previousPage">previous</button>
           Page <span>{{ currentPage + 1 }}</span> of
           <span>{{ Math.ceil(response.total / response.limit) }}</span
           ><button
             @click="nextPage"
             :disabled="currentPage >= Math.ceil(response.total / response.limit) - 1"
           >
-            <img
-              v-if="currentPage < Math.ceil(response.total / response.limit) - 1"
-              src="@/assets/icons/right.png"
-              alt="next"
-            />
-            <img
-              v-if="currentPage >= Math.ceil(response.total / response.limit) - 1"
-              src="@/assets/icons/right_dis.png"
-              alt="next"
-              class="dis"
-            />
+            next
           </button>
           Show products on page
           <input
@@ -180,10 +167,10 @@
 </template>
 
 <script lang="ts">
-import AddToCart from '@/components/AddToCart.vue'
 import { useUserStore } from '@/stores/authorization'
 import type { Cart, Category, ProductProjections, ProductResponse } from '@/stores/types'
 import type HTMLSelectElement from 'happy-dom/lib/nodes/html-select-element/HTMLSelectElement'
+import AddToCart from '@/components/AddToCart.vue'
 
 export default {
     data() {
@@ -192,7 +179,7 @@ export default {
             products: [] as ProductProjections[],
             currentPage: 0,
             offset: 0,
-            limit: 10,
+            limit: 30,
             parentCategories: '',
             categories: [] as Category[],
             response: {} as ProductResponse,
@@ -215,6 +202,12 @@ export default {
         this.products = this.response.results as ProductProjections[];
         this.filteredProducts = [...this.products];
         this.categories = await this.store.getCategories();
+    
+        if (!this.cartID) {
+        this.cart = await this.store.createCart();
+        this.cartID = this.cart.id;
+    }
+
         Promise.all(Array.from(document.images)
             .filter((img) => !img.complete)
             .map((img) => new Promise((resolve) => {
@@ -267,7 +260,7 @@ export default {
             (this.$refs.all as HTMLInputElement).checked = true;
             this.minPrice = 0;
             this.maxPrice = 1200;
-            this.categories.forEach((value) => (((this.$refs[value.id] as HTMLElement[])[0] as HTMLInputElement).checked = false));
+            this.categories.forEach((value) => (this.$refs[value.id][0].checked = false));
             this.filteredCategory = [];
             this.sort();
         },
@@ -334,7 +327,7 @@ export default {
         },
         getPriceValue(cart: ProductProjections) {
             if (cart.masterVariant.prices.length > 0) {
-                const price = cart.masterVariant.prices[0].value.centAmount / 100;
+                const price = parseInt(cart.masterVariant.prices[0].value.centAmount / 100, 10);
                 return `€ ${price}`;
             }
             else {
@@ -353,8 +346,10 @@ export default {
             this.timerID = setTimeout(() => func(), 500);
         },
         async addToCart() {
-          const version = this.cart ? this.cart.version + 1 : 1;
-          await this.store.addLineItem(this.cartID, version);
+          const cartData = await this.store.getActiveCart();
+          const version = cartData ? cartData.version + 1 : 1;
+          console.log(this.cartID, cartData.id)
+          await this.store.addLineItem(cartData.id, version);
   }
     },
     computed: {
@@ -403,6 +398,11 @@ main {
   }
 }
 
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
 .add {
   height: 30px;
   width: 100%;
@@ -436,43 +436,18 @@ main {
       gap: 5px;
       align-items: center;
 
-      span {
-        font-weight: 700;
-        font-size: 0.8rem;
-      }
-
       button {
-        background-color: transparent;
+        border-radius: 7px;
+        max-width: 100px;
+        padding: 5px 10px;
         border: none;
-        display: contents;
-
-        img {
-          display: flex;
-          height: 30px;
-          margin: auto 10px;
-          cursor: pointer;
-
-          &:hover {
-            scale: 1.1;
-          }
-
-          &.dis {
-            cursor: not-allowed;
-            &:hover {
-              scale: 1;
-            }
-          }
-        }
+        outline: none;
       }
 
       input {
-        width: 60px;
-        outline: none;
+        max-width: 40px;
         border: none;
         text-align: center;
-        color: $app_orange;
-        font-weight: 900;
-        font-size: 1.3rem;
       }
     }
   }

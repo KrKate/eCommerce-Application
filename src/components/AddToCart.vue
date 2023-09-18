@@ -1,5 +1,9 @@
 <template>
-    <button class="add-button">Add to Cart</button>
+  <button class="add-button" @click="addToCart" v-if="!cartItemAdded">Add to Cart</button>
+  <div v-else class="already">
+    <span>&#10003;</span>
+    <span>Already in Cart</span>
+  </div>
 </template>
 
 <script lang="ts">
@@ -13,9 +17,13 @@ import { useUserStore } from '@/stores/authorization';
       store: useUserStore(),
           product: {} as Product,
           cart: {} as Cart,
+          cartItemAdded: false
     }
   },
 methods: {
+  addToCart() {
+    this.cartItemAdded = true
+  }
 
 }
 }
@@ -24,7 +32,9 @@ methods: {
 
 
 <style lang="scss">
-.add-button {
+
+
+.add-button, .already {
 height: 50px;
 width: 50%;
 border: none;
@@ -108,5 +118,7 @@ border-radius: 10px;
 }
 }
 
-
+.already {
+  background-color: #308c0c;
+}
 </style>
