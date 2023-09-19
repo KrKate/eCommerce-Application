@@ -1,9 +1,34 @@
 <template>
   <main>
     <AmBreadcrumbs :showCurrentCrumb="true" />
+
     <EmptyCart :product-in-cart=store.productsInCart />
+
+    <p>Users cart page</p>
+    <p></p>
+
   </main>
 </template>
+
+<script lang="ts">
+import { useUserStore } from '@/stores/authorization'
+import { type Product } from '@/stores/types'
+import {type Cart} from '@/stores/types'
+
+ export default {
+  name: 'CartView',
+  data() {
+    return {
+      store: useUserStore(),
+      product: {} as Product,
+      cart: {} as Cart,
+    }
+  },
+
+ }
+
+</script>
+
 
 <style scoped lang="scss">
 
@@ -25,6 +50,7 @@ main {
   }
 }
 </style>
+
 <script lang="ts">
 import EmptyCart from "@/components/EmptyCart.vue";
 import { useUserStore } from "@/stores/authorization";
@@ -40,3 +66,4 @@ export default {
   }
 }
 </script>
+

@@ -471,26 +471,32 @@ offset: number,
 count: number,
 total: number,
 results: Cart[]
+
 }
 
 
 export type Channel = {
-  results: [
-    {
-      id: string,
-      key: string,
-      version: number,
-      roles: [string],
-      createdAt: string,
-      lastModifiedAt: string
-    },
-    {
-      id: string,
-      key: string,
-      version: number,
-      roles: [string],
-      createdAt: string,
-      lastModifiedAt: string
-    }
-  ]
+    results: [
+      {
+        id: string,
+        key: string,
+        version: number,
+        roles: [string],
+        createdAt: string,
+        lastModifiedAt: string
+      },
+      {
+        id: string,
+        key: string,
+        version: number,
+        roles: [string],
+        createdAt: string,
+        lastModifiedAt: string
+      }
+    ]
 }
+
+export type ExistingTokenMiddlewareOptions = {
+  force?: boolean;
+};
+

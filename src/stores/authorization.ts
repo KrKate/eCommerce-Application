@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
+
 import type {
   Cart,
   CartResponse,
@@ -19,7 +20,9 @@ import type {
   UpdateUserInfoDTO,
   UserRegistrationInfo
 } from '@/stores/types'
+
 import router from '@/router'
+import type { Channel } from 'diagnostics_channel'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -34,7 +37,10 @@ export const useUserStore = defineStore('user', {
     email: '',
     userInfo: {} as CustomerInfo,
     redirectTimer: -1,
+
     productsInCart: 0
+    cartID: ''
+
   }),
   actions: {
     async fetchToken() {
@@ -201,7 +207,7 @@ export const useUserStore = defineStore('user', {
         this.refreshToken = data.refreshToken
         this.isLogin = true
       } else {
-        await this.fetchToken()
+        await this.getAnonymousToken()
       }
     },
     clearCookie() {
@@ -345,6 +351,7 @@ export const useUserStore = defineStore('user', {
         return {} as Cart
       }
     },
+
     async getCarts(cartID: string) {
       try {
         const cartData: CartResponse = await axios
@@ -359,6 +366,7 @@ export const useUserStore = defineStore('user', {
         return [] as Cart[]
       }
     },
+
     async getActiveCart() {
       try {
         const cartData = await axios
@@ -373,6 +381,7 @@ export const useUserStore = defineStore('user', {
         return error
       }
     },
+
     async getChannels() {
       try {
         const channelsData: ChannelResponse = await axios
