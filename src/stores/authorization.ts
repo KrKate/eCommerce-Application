@@ -1,22 +1,26 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-import {
-  type Cart,
-  type CartResponse,
-  type Category,
-  type CategoryResponse,
-  type ChangePasswordDTO,
-  type ChannelResponse,
-  type Customer,
-  type CustomerInfo,
-  type LineItem,
-  type PasswordFlowResponse,
-  type Product,
-  type ProductResponse,
-  type SiteCookie,
-  type TokenResponse,
-  type UpdateUserInfoDTO,
-  type UserRegistrationInfo} from '@/stores/types'
+
+import type {
+  Cart,
+  CartResponse,
+  Category,
+  CategoryResponse,
+  ChangePasswordDTO,
+  Channel,
+  ChannelResponse,
+  Customer,
+  CustomerInfo,
+  LineItem,
+  PasswordFlowResponse,
+  Product,
+  ProductResponse,
+  SiteCookie,
+  TokenResponse,
+  UpdateUserInfoDTO,
+  UserRegistrationInfo
+} from '@/stores/types'
+
 import router from '@/router'
 import type { Channel } from 'diagnostics_channel'
 
@@ -347,10 +351,11 @@ export const useUserStore = defineStore('user', {
         return {} as Cart
       }
     },
-    async getCarts() {
+
+    async getCarts(cartID: string) {
       try {
         const cartData: CartResponse = await axios
-          .get(`https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/carts`, {
+          .get(`https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/carts/${cartID}`, {
             headers: {
               Authorization: `Bearer ${this.token}`
             }
@@ -361,6 +366,22 @@ export const useUserStore = defineStore('user', {
         return [] as Cart[]
       }
     },
+
+    async getActiveCart() {
+      try {
+        const cartData = await axios
+          .get(`https://api.europe-west1.gcp.commercetools.com/ecommerce_app_sloths/me/active-cart`, {
+            headers: {
+              Authorization: `Bearer ${this.token}`
+            }
+          })
+          .then((data) => data.data)
+        return cartData
+      } catch (error) {
+        return error
+      }
+    },
+
     async getChannels() {
       try {
         const channelsData: ChannelResponse = await axios

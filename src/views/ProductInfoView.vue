@@ -39,7 +39,17 @@
         </div>
       </div>
       <div class="description">{{ product.masterData?.current.description['en-US'] }}</div>
-      <AddToCart @click="addToCart" />
+      <div class="add-wrapper">
+      <div class="buttons-wrapper">
+      <AddToCart class="add-button" @click="addToCart"/>
+      <button class="delete-product"></button>
+      </div>
+      <div class="quantity-container">
+        <button class="quantity-btn" @click="decreaseQuantity">-</button>
+        <input type="number" class="quantity-input" v-model="quantity" min="1" />
+        <button class="quantity-btn" @click="increaseQuantity">+</button>
+      </div>
+    </div>
     </div>
     <div class="modal-wrapper" v-show="isModalOpen">
       <div v-show="isModalOpen" class="modal">
@@ -71,7 +81,8 @@ export default {
             product: {} as Product,
             cart: {} as Cart,
             currentImageIndex: 0,
-            isModalOpen: false
+            isModalOpen: false,
+            quantity: 1
         };
     },
     async beforeMount() {
@@ -88,6 +99,14 @@ export default {
         this.store.isLoading = false;
     },
     methods: {
+        increaseQuantity() {
+            this.quantity++;
+        },
+        decreaseQuantity() {
+            if (this.quantity > 1) {
+            this.quantity--;
+       }
+        },
         getDiscount(product: Product) {
             const discounted = product.masterData?.current?.masterVariant?.prices[0]?.discounted?.value?.centAmount;
             return discounted ? `€ ${(discounted / 100).toFixed(2)}` : ' ';
@@ -122,6 +141,7 @@ export default {
 
         }
     },
+    
     components: { AddToCart }
 }
 </script>
@@ -364,4 +384,89 @@ h1 {
 .modal-arrow:last-child {
   right: 10px;
 }
+
+.quantity-container {
+  display: flex;
+  align-items: center;
+  width: 50%;
+  gap: 8px;
+}
+
+.quantity-btn {
+  border: none;
+  background-color: transparent;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.quantity-btn:hover {
+  color: #0075be;
+}
+
+.quantity-input {
+  width: 100%;
+  height: 40px;
+  text-align: center;
+  font-size: 1.1rem;
+  border: 2px solid #0075be;
+  border-radius: 10px;
+}
+
+.add-wrapper {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items:flex-start;
+  gap: 20px;
+}
+
+.buttons-wrapper {
+  display: flex;
+  gap: 30px;
+  width: 100%;
+}
+
+.delete-product {
+  width: 45px;
+  height: 45px;
+  border: none;
+  background-image: url(../assets/images/empty-cart.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.6s ease;
+}
+
+.delete-product:hover {
+  animation: sway 0.5s forwards;
+}
+
+@keyframes sway {
+  0% {
+    transform: rotateZ(0deg);
+  }
+  50% {
+    transform: rotateZ(10deg);
+  }
+  100% {
+    transform: rotateZ(0deg);
+  }
+}
+
+
+.delete-product:active {
+  animation: rotate 0.4s;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotateZ(0deg);
+  }
+  100% {
+    transform: rotateZ(360deg);
+  }
+}
+
 </style>
