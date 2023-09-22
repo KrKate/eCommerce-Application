@@ -393,3 +393,110 @@ export type ProductResponse = {
   total: number
   results: Product[] | ProductProjections[]
 }
+
+export type Cart = {
+  type: string,
+  id: string,
+  version: number,
+  createdAt: string,
+  lastModifiedAt: string,
+  lastModifiedBy: {
+    isPlatformClient: boolean
+  },
+  createdBy: {
+    isPlatformClient: boolean
+  },
+  lineItems: [],
+  cartState: string,
+  totalPrice: {
+    type: string,
+    currencyCode: string,
+    centAmount: number,
+    fractionDigits: number
+  },
+  shippingMode: string,
+  shipping: [],
+  customLineItems: [],
+  discountCodes: [],
+  directDiscounts: [],
+  inventoryMode: string,
+  taxMode: string,
+  taxRoundingMode: string,
+  taxCalculationMode: string,
+  refusedGifts: [],
+  origin: string,
+  itemShippingAddresses: []
+}
+
+export type LineItem = {
+action: string,
+productId: string,
+variantId: number,
+quantity: number,
+supplyChannel: {
+  typeId: number,
+  id: string
+},
+// distributionChannel: {
+//   typeId: string,
+//   id: number
+// },
+externalTaxRate: {
+  name: string,
+  amount: number,
+  country: string,
+  state: string
+},
+// shippingDetails: {
+//   targets: [
+//     {
+//       addressKey: string,
+//       quantity: number
+//     }
+//   ]
+// }
+}
+
+export type ChannelResponse = {
+limit: number,
+offset: number,
+count: number,
+total: number,
+results: Channel[]
+}
+
+export type CartResponse = {
+limit: number,
+offset: number,
+count: number,
+total: number,
+results: Cart[]
+
+}
+
+
+export type Channel = {
+    results: [
+      {
+        id: string,
+        key: string,
+        version: number,
+        roles: [string],
+        createdAt: string,
+        lastModifiedAt: string
+      },
+      {
+        id: string,
+        key: string,
+        version: number,
+        roles: [string],
+        createdAt: string,
+        lastModifiedAt: string
+      }
+    ]
+}
+
+export type ExistingTokenMiddlewareOptions = {
+  force?: boolean;
+};
+

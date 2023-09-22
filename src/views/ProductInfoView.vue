@@ -39,7 +39,17 @@
         </div>
       </div>
       <div class="description">{{ product.masterData?.current.description['en-US'] }}</div>
-      <button class="add-button">Add to Cart</button>
+      <div class="add-wrapper">
+      <div class="buttons-wrapper">
+      <AddToCart class="add-button" @click="addToCart"/>
+      <button class="delete-product"></button>
+      </div>
+      <div class="quantity-container">
+        <button class="quantity-btn" @click="decreaseQuantity">-</button>
+        <input type="number" class="quantity-input" v-model="quantity" min="1" />
+        <button class="quantity-btn" @click="increaseQuantity">+</button>
+      </div>
+    </div>
     </div>
     <div class="modal-wrapper" v-show="isModalOpen">
       <div v-show="isModalOpen" class="modal">
@@ -59,60 +69,80 @@
 <script lang="ts">
 import { useUserStore } from '@/stores/authorization'
 import { type Product } from '@/stores/types'
+import {type Cart} from '@/stores/types'
 import router from '@/router'
+import AddToCart from '@/components/AddToCart.vue'
 
 export default {
-  name: 'ProductInfoView',
-  data() {
-    return {
-      store: useUserStore(),
-      product: {} as Product,
-      currentImageIndex: 0,
-      isModalOpen: false
-    }
-  },
-  async beforeMount() {
-    this.store.isLoading = true
-    const productId = this.$route.params.id as string
-    if (!this.store.token) await this.store.readCookie()
-    if (await this.store.checkProductExistsById(productId)) {
-      this.product = await this.store.getProductById(productId)
-    } else {
-      await router.push({ name: '404' })
-    }
-    this.store.isLoading = false
-  },
-  methods: {
-    getDiscount(product: Product) {
-      const discounted =
-        product.masterData?.current?.masterVariant?.prices[0]?.discounted?.value?.centAmount
-      return discounted ? `€ ${(discounted / 100).toFixed(2)}` : ' '
+    name: 'ProductInfoView',
+    data() {
+        return {
+            store: useUserStore(),
+            product: {} as Product,
+            cart: {} as Cart,
+            currentImageIndex: 0,
+            isModalOpen: false,
+            quantity: 1
+        };
     },
-    changeImage(index: number) {
-      this.currentImageIndex = index
+    async beforeMount() {
+        this.store.isLoading = true;
+        const productId = this.$route.params.id as string;
+        if (!this.store.token)
+            await this.store.readCookie();
+        if (await this.store.checkProductExistsById(productId)) {
+            this.product = await this.store.getProductById(productId);
+        }
+        else {
+            await router.push({ name: '404' });
+        }
+        this.store.isLoading = false;
     },
-    nextImage() {
-      if (this.currentImageIndex < this.product.masterData.staged.masterVariant.images.length - 1) {
-        this.currentImageIndex++
-      } else {
-        this.currentImageIndex = 0
-      }
+    methods: {
+        increaseQuantity() {
+            this.quantity++;
+        },
+        decreaseQuantity() {
+            if (this.quantity > 1) {
+            this.quantity--;
+       }
+        },
+        getDiscount(product: Product) {
+            const discounted = product.masterData?.current?.masterVariant?.prices[0]?.discounted?.value?.centAmount;
+            return discounted ? `€ ${(discounted / 100).toFixed(2)}` : ' ';
+        },
+        changeImage(index: number) {
+            this.currentImageIndex = index;
+        },
+        nextImage() {
+            if (this.currentImageIndex < this.product.masterData.staged.masterVariant.images.length - 1) {
+                this.currentImageIndex++;
+            }
+            else {
+                this.currentImageIndex = 0;
+            }
+        },
+        previousImage() {
+            if (this.currentImageIndex > 0) {
+                this.currentImageIndex--;
+            }
+            else {
+                this.currentImageIndex = this.product.masterData.staged.masterVariant.images.length - 1;
+            }
+        },
+        openModal(index: number) {
+            this.isModalOpen = true;
+            this.currentImageIndex = index;
+        },
+        closeModal() {
+            this.isModalOpen = false;
+        },
+        async addToCart() {
+
+        }
     },
-    previousImage() {
-      if (this.currentImageIndex > 0) {
-        this.currentImageIndex--
-      } else {
-        this.currentImageIndex = this.product.masterData.staged.masterVariant.images.length - 1
-      }
-    },
-    openModal(index: number) {
-      this.isModalOpen = true
-      this.currentImageIndex = index
-    },
-    closeModal() {
-      this.isModalOpen = false
-    }
-  }
+    
+    components: { AddToCart }
 }
 </script>
 
@@ -233,89 +263,6 @@ h1 {
   }
 }
 
-.add-button {
-  height: 50px;
-  width: 50%;
-  border: none;
-  outline: none;
-  color: #fff;
-  background: #111;
-  cursor: pointer;
-  position: relative;
-  z-index: 0;
-  border-radius: 10px;
-  margin-top: auto;
-  padding: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  text-decoration: none;
-}
-
-.add-button:before {
-  content: '';
-  background: linear-gradient(
-    45deg,
-    #ff0000,
-    #ff7300,
-    #fffb00,
-    #48ff00,
-    #00ffd5,
-    #002bff,
-    #7a00ff,
-    #ff00c8,
-    #ff0000
-  );
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  background-size: 400%;
-  z-index: -1;
-  filter: blur(5px);
-  width: calc(100% + 4px);
-  height: calc(100% + 4px);
-  animation: glowing 20s linear infinite;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-  border-radius: 10px;
-}
-
-.add-button:active {
-  color: #000;
-}
-
-.add-button:active:after {
-  background: transparent;
-}
-
-.add-button:hover:before {
-  opacity: 1;
-}
-
-.add-button:after {
-  z-index: -1;
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: #0075be;
-  left: 0;
-  top: 0;
-  border-radius: 10px;
-}
-
-@keyframes glowing {
-  0% {
-    background-position: 0 0;
-  }
-  50% {
-    background-position: 400% 0;
-  }
-  100% {
-    background-position: 0 0;
-  }
-}
 
 .crossed-out {
   position: relative;
@@ -437,4 +384,89 @@ h1 {
 .modal-arrow:last-child {
   right: 10px;
 }
+
+.quantity-container {
+  display: flex;
+  align-items: center;
+  width: 50%;
+  gap: 8px;
+}
+
+.quantity-btn {
+  border: none;
+  background-color: transparent;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.quantity-btn:hover {
+  color: #0075be;
+}
+
+.quantity-input {
+  width: 100%;
+  height: 40px;
+  text-align: center;
+  font-size: 1.1rem;
+  border: 2px solid #0075be;
+  border-radius: 10px;
+}
+
+.add-wrapper {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items:flex-start;
+  gap: 20px;
+}
+
+.buttons-wrapper {
+  display: flex;
+  gap: 30px;
+  width: 100%;
+}
+
+.delete-product {
+  width: 45px;
+  height: 45px;
+  border: none;
+  background-image: url(../assets/images/empty-cart.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.6s ease;
+}
+
+.delete-product:hover {
+  animation: sway 0.5s forwards;
+}
+
+@keyframes sway {
+  0% {
+    transform: rotateZ(0deg);
+  }
+  50% {
+    transform: rotateZ(10deg);
+  }
+  100% {
+    transform: rotateZ(0deg);
+  }
+}
+
+
+.delete-product:active {
+  animation: rotate 0.4s;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotateZ(0deg);
+  }
+  100% {
+    transform: rotateZ(360deg);
+  }
+}
+
 </style>
